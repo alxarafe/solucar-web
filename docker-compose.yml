@@ -1,0 +1,18 @@
+services:
+  solucar:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: solucar-web
+    ports:
+      - "127.0.0.1:${SOLUCAR_WEB_PORT:-44200}:4200"
+    volumes:
+      - .:/app
+      - solucar_node_modules:/app/node_modules
+    environment:
+      - NG_CLI_ANALYTICS=false
+    stdin_open: true
+    tty: true
+
+volumes:
+  solucar_node_modules:

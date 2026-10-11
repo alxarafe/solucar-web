@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# bin/down — Stop Solucar development environment
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+cd "${PROJECT_ROOT}"
+
+echo "Stopping Solucar development environment..."
+
+docker compose down --remove-orphans
+
+echo "Solucar stopped."

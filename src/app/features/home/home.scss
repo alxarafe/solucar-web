@@ -1,0 +1,45 @@
+.home {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.home__content {
+  text-align: center;
+  max-width: 40rem;
+}
+
+.home__title {
+  font-size: 3rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+}
+
+.home__subtitle {
+  font-size: 1.25rem;
+  color: #4a4a4a;
+  margin: 0 0 1.5rem;
+  font-weight: 400;
+}
+
+.home__status {
+  font-size: 1rem;
+  color: #6a6a6a;
+  margin: 0;
+  font-weight: 400;
+}
+
+@media (max-width: 480px) {
+  .home__title {
+    font-size: 2.25rem;
+  }
+
+  .home__subtitle {
+    font-size: 1.125rem;
+  }
+}

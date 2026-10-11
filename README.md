@@ -1,2 +1,40 @@
-# solucar-web
-Angular frontend for Solucar, the web client of the Alixar ERP. Modular, API-driven UI designed to progressively replace Dolibarr's legacy views while remaining independent from backend and persistence details.
+# Solucar
+
+> The web frontend for the Alixar ERP.
+
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![Angular client CI](https://github.com/alxarafe/solucar-web/actions/workflows/ci.yml/badge.svg)](https://github.com/alxarafe/solucar-web/actions/workflows/ci.yml)
+
+Solucar is the Angular web client for the Alixar ERP.
+
+It provides a modular, API-driven user interface designed to progressively
+replace Dolibarr's legacy views while remaining independent from backend
+implementation and persistence details.
+
+**Solucar → frontend**  
+**Alixar  → backend and business authority**
+
+## Status
+
+Project bootstrapped with Angular 22. Initial screen operational. No business features implemented yet.
+
+## Development
+
+```bash
+./bin/up        # Start development server (http://127.0.0.1:44200)
+./bin/down      # Stop development server
+./bin/test      # Run tests
+./bin/check     # Full validation (install, type-check, test, build)
+```
+
+Requires Docker and Docker Compose. No host Node.js installation needed.
+
+## Documentation
+
+- [Architecture](docs/architecture.md)
+- [Development](docs/development.md)
+- [Agent working agreement](AGENTS.md)
+
+## License
+
+Copyright (c) 2026 Alxarafe. Licensed under [Apache-2.0](LICENSE).
