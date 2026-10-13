@@ -4,6 +4,9 @@
 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![Angular client CI](https://github.com/alxarafe/solucar-web/actions/workflows/ci.yml/badge.svg)](https://github.com/alxarafe/solucar-web/actions/workflows/ci.yml)
+[![Node.js 24 LTS](https://img.shields.io/badge/Node.js-24%20LTS-green)](https://nodejs.org/)
+[![Angular 22](https://img.shields.io/badge/Angular-22-red)](https://angular.io/)
+[![Docker](https://img.shields.io/badge/Docker-%E2%9C%93-blue)](https://www.docker.com/)
 
 Solucar is the Angular web client for the Alixar ERP.
 

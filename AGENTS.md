@@ -8,7 +8,7 @@ System, platform, security, and higher-priority instructions always take precede
 
 **Solucar is the Angular web frontend of the Alixar ERP.**
 
-Alixar will be the authority over business rules.
+Alixar is the backend and business authority.
 
 Solucar:
 - presents data;
@@ -166,7 +166,37 @@ The frontend may use capabilities supplied by the API, for example:
 ```
 but must not become the authority that deduces them.
 
-## Verification
+## Canonical API boundary
+
+Solucar consumes the **Alixar canonical API**. It must not infer contracts from:
+
+- Dolibarr
+- dolibarr-reference
+- Dolibarr Swagger
+- legacy DTOs
+- database schema
+
+If observed legacy behavior influences the product, that decision must first be expressed by Alixar's canonical API.
+
+Frontend types and UI models should reflect Alixar concepts, not legacy field names.
+
+No `fk_soc`, `socid`, `llx_*`, or Dolibarr-specific response quirks in features.
+
+## Verification layers
+
+Solucar has two complementary validation levels that must not be treated as interchangeable:
+
+- **`./bin/test`** — Deterministic unit/type/build tests. Runs in Docker. Proves internal logic correctness.
+
+- **`./bin/check`** — Complete self-contained local validation. Runs install, type-check, tests, and production build. Does not depend on Alixar or Dolibarr.
+
+A green `./bin/test` does not prove real Alixar integration.
+A passing `./bin/check` does not prove Alixar compatibility.
+Do not make `./bin/check` depend on Alixar or `dolibarr-reference`.
+
+Future E2E/full-stack verification must not silently replace unit/type/build checks.
+
+## Verification requirements
 
 Before closing a task, execute as applicable:
 
@@ -175,6 +205,7 @@ Before closing a task, execute as applicable:
 ```
 
 or individually:
+
 ```bash
 ./bin/test
 ./bin/check
@@ -190,29 +221,123 @@ Code and versioned public documentation: English.
 
 Detailed Spanish working documentation may be kept locally under a directory excluded by `.gitignore` if decided. That directory is not a security boundary and must not store secrets.
 
-## Documentation impact review
+## Public documentation policy
 
-After each change, check whether it affects:
-- visible behavior;
-- architecture;
-- configuration;
-- commands;
-- development workflow;
-- capabilities;
-- limitations;
-- relationship with Alixar.
+`README.md` is a **stable public landing page** for project purpose, high-level capabilities, architecture and ecosystem relationships, essential quick start, onboarding and configuration, principal limitations, verifiable badges, and links to detailed documentation.
 
-If it affects any of these, update the corresponding documentation in the same task.
+README is **NOT**:
+- a changelog
+- a task history
+- a screen inventory
+- an endpoint catalogue
+- a test report
 
-Do not modify README merely to record activity.
+Functional and technical detail belongs primarily under `docs/`.
 
-README must remain a brief landing page.
+**Every task must review documentation impact** after implementation, validation and scope review, before the final local commit. If the change makes public behavior, architecture, configuration, workflow, capability or limitations materially false or incomplete, update the relevant documentation **within the same task**. Do not modify docs merely to record that a review happened.
 
-Detailed information belongs in `docs/`.
+## Cross-repository documentation policy
+
+Solucar participates in:
+- `dolibarr-reference`
+- `alxarafe/alixar`
+- `alxarafe/solucar-web`
+
+Cross-repository documentation synchronization is required only when a change affects:
+- shared policy
+- canonical API/contract expectations
+- architecture/ecosystem relationship
+- materially false information in another repository
+- a significant milestone genuinely visible across repositories
+
+Do not modify multiple repositories for every small feature.
+Changes in each repository must remain separate commits/tasks.
+Historical reports must remain historical and must not be rewritten to appear current.
+
+## Badge policy
+
+Badges may represent only **real and verifiable facts**.
+
+Distinguish at least:
+- Angular CI (GitHub Actions)
+- local Solucar validation (`./bin/check`)
+- future real integration with Alixar
+- future full-stack demo
+
+Never use a static green badge to imply a check that GitHub does not actually execute continuously.
+Badge links and workflow names must remain current.
+
+## No magic literals
+
+Any literal with meaningful **domain, contract, protocol, configuration, or behavioral** semantics should have an explicit source of truth rather than being scattered. This includes, where applicable:
+
+- API routes
+- HTTP headers
+- media types
+- HTTP/error codes
+- route names
+- capability/action names
+- configuration keys
+- environment-variable names
+- timeouts
+- pagination limits
+- state names
+- validation regexes
+
+Preference order:
+1. Angular/platform APIs/constants
+2. existing project types/constants
+3. configuration
+4. narrowly scoped named constants
+
+Do not mechanically replace all literals. Explicitly allow incidental fixture values, array indexes, loop counters, and obvious local structural values to remain inline. Do not create pointless global constants.
+
+Tests follow the same principle without coupling unnecessarily to implementation internals.
+
+During final scope review, inspect newly introduced meaningful literals.
+
+## Safe repository changes
+
+Before editing, inspect **staged, unstaged, and untracked** changes.
+
+Preserve unrelated user work.
+
+Do not perform:
+- hard reset
+- stash
+- checkout overwrite
+- broad deletion
+- unrelated formatting
+
+without explicit authorization.
+
+If the approved change cannot be isolated safely, report the conflict.
+
+Never expose secrets/tokens/private data in:
+- source
+- logs
+- docs
+- commits
+- delivery reports
+
+## Deployment authorization
+
+Task approval permits implementation, validation, and final local commit.
+
+It does **NOT** authorize:
+- push
+- PR creation
+- merge
+- tag
+- release
+- publication
+- deployment
+
+Deployment requires separate express authorization.
 
 ## Engineering simplicity
 
-Prefer simple, explicit, maintainable solutions.
+Prefer simple, explicit, and maintainable solutions.
 
 Apply these principles:
 
@@ -226,4 +351,30 @@ Do not introduce layers, helpers, factories, interfaces, services, or abstractio
 
 Simplicity must not compromise correctness, security, performance, clarity, testability, or contractual behavior.
 
-When duplication is small and removing it would create a more complex abstraction, prefer the clearer solution over mechanically applying DRY.
+**When duplication is small and removing it would require a more complex abstraction, prefer the clearer duplication.**
+
+Do not introduce layers, helpers, factories, interfaces, services, or abstractions merely for architectural symmetry or possible future use.
+
+## Business rule boundary
+
+**Alixar is the business authority.**
+
+Solucar may reproduce purely UX validations:
+- required
+- maxlength
+- format
+
+But a rule such as:
+- an invoice may be validated
+- an order may be shipped
+- a stock movement is allowed
+
+must be decided by Alixar.
+
+The frontend may use capabilities supplied by the API, for example:
+```json
+{
+  "availableActions": ["EDIT", "VALIDATE"]
+}
+```
+but must not become the authority that deduces them.
