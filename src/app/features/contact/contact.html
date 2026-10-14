@@ -1,0 +1,140 @@
+<main class="contact">
+  <header class="contact__header">
+    <h1 class="contact__title" i18n="@@contact.page.title">Contacts</h1>
+  </header>
+
+  <section class="contact__section contact__section--search" aria-labelledby="search-title">
+    <h2 id="search-title" class="contact__section-title" i18n="@@contact.search.title">Find contact</h2>
+
+    <form [formGroup]="searchForm" (ngSubmit)="searchContact()" class="contact__form">
+      <div class="contact__field-row">
+        <label for="contactId" class="contact__label" i18n="@@contact.search.id">Contact ID</label>
+        <input
+          id="contactId"
+          type="number"
+          formControlName="contactId"
+          class="contact__input"
+          [class.contact__input--invalid]="searchForm.get('contactId')?.invalid && searchForm.get('contactId')?.touched"
+          min="1"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="contact__button contact__button--search"
+        [disabled]="searchForm.invalid || searchLoading()"
+      >
+        @if (searchLoading()) {
+          <span class="contact__button-spinner" aria-hidden="true"></span>
+        }
+        {{ searchButtonText() }}
+      </button>
+    </form>
+  </section>
+
+  <section class="contact__section contact__section--create" aria-labelledby="create-title">
+    <h2 id="create-title" class="contact__section-title" i18n="@@contact.create.title">Create contact</h2>
+
+    <form [formGroup]="createForm" (ngSubmit)="createContact()" class="contact__form">
+      <div class="contact__field-row">
+        <label for="lastName" class="contact__label contact__label--required">
+          <span i18n="@@contact.field.lastName">Last name</span>
+          <span class="contact__required" aria-hidden="true">*</span>
+        </label>
+        <input
+          id="lastName"
+          type="text"
+          formControlName="lastName"
+          class="contact__input"
+          [class.contact__input--invalid]="createForm.get('lastName')?.invalid && createForm.get('lastName')?.touched"
+          autocomplete="family-name"
+        />
+        @if (createForm.get('lastName')?.hasError('required') && createForm.get('lastName')?.touched) {
+          <span class="contact__error" i18n="@@contact.validation.lastNameRequired">Last name is required.</span>
+        }
+      </div>
+
+      <div class="contact__field-row">
+        <label for="firstName" class="contact__label" i18n="@@contact.field.firstName">First name</label>
+        <input
+          id="firstName"
+          type="text"
+          formControlName="firstName"
+          class="contact__input"
+          autocomplete="given-name"
+        />
+      </div>
+
+      <div class="contact__field-row">
+        <label for="email" class="contact__label" i18n="@@contact.field.email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          class="contact__input"
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="contact__field-row">
+        <label for="thirdPartyId" class="contact__label" i18n="@@contact.field.thirdPartyId">Third party ID</label>
+        <input
+          id="thirdPartyId"
+          type="number"
+          formControlName="thirdPartyId"
+          class="contact__input"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="contact__button contact__button--create"
+        [disabled]="createForm.invalid || createLoading()"
+      >
+        @if (createLoading()) {
+          <span class="contact__button-spinner" aria-hidden="true"></span>
+        }
+        {{ createButtonText() }}
+      </button>
+    </form>
+  </section>
+
+  @if (createdId()) {
+    <div class="contact__success" i18n="@@contact.create.success">
+      Contact created with ID {{ createdId() }}
+    </div>
+  }
+
+  @if (contact()) {
+    <section class="contact__section contact__section--result" aria-labelledby="result-title">
+      <h2 id="result-title" class="contact__section-title" i18n="@@contact.result.title">
+        Contact #{{ contact()!.id }}
+      </h2>
+
+      <dl class="contact__details">
+        <div class="contact__detail-row">
+          <dt class="contact__detail-label" i18n="@@contact.field.lastName">Last name</dt>
+          <dd class="contact__detail-value">{{ contact()!.lastName }}</dd>
+        </div>
+        <div class="contact__detail-row">
+          <dt class="contact__detail-label" i18n="@@contact.field.firstName">First name</dt>
+          <dd class="contact__detail-value">{{ contact()!.firstName ?? '—' }}</dd>
+        </div>
+        <div class="contact__detail-row">
+          <dt class="contact__detail-label" i18n="@@contact.field.email">Email</dt>
+          <dd class="contact__detail-value">{{ contact()!.email ?? '—' }}</dd>
+        </div>
+        <div class="contact__detail-row">
+          <dt class="contact__detail-label" i18n="@@contact.field.thirdPartyId">Third party ID</dt>
+          <dd class="contact__detail-value">{{ contact()!.thirdPartyId ?? '—' }}</dd>
+        </div>
+      </dl>
+    </section>
+  }
+
+  @if (error()) {
+    <div class="contact__error-banner" role="alert">
+      {{ error() }}
+    </div>
+  }
+</main>

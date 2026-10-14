@@ -11,6 +11,8 @@ services:
       - solucar_node_modules:/app/node_modules
     environment:
       - NG_CLI_ANALYTICS=false
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     stdin_open: true
     tty: true
 

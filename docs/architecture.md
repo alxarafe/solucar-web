@@ -27,8 +27,11 @@ Solucar is the Angular web frontend for the Alixar ERP. It owns presentation, na
 
 - Angular 22 bootstrap with standalone components
 - Core API infrastructure in `core/api`
-- Initial screen (`features/home`)
+- Contact feature (`features/contact`) — create and retrieve contacts via Alixar canonical API
+- Accept-Language header derived from `LOCALE_ID`
+- Development proxy for `/api/**` → `host.docker.internal:48081`
 - Docker-only development environment
+- Internationalization (i18n) with English (source) and Spanish
 
 ## Planned (Not Implemented)
 
@@ -76,7 +79,7 @@ src/app/
 │   └── modules/  # Core modules
 ├── shared/       # Genuinely reused components, utilities, elements
 └── features/     # ERP functional modules
-    └── home/     # Initial screen
+    └── contact/  # Contact management (create, retrieve)
 ```
 
 ## Fundamental Rules
@@ -157,3 +160,49 @@ Accept-Language
       ↓
 Alixar ProblemDetail title/detail
 ```
+
+## Backend Boundary (`core/api`)
+
+All HTTP communication with the Alixar canonical API is centralized in `core/api`:
+
+- `ContactApi` — typed operations for Contact domain:
+  - `getContact(id: number): Observable<Contact>`
+  - `createContact(request: CreateContactRequest): Observable<CreateContactResponse>`
+- `acceptLanguageInterceptor` — functional HTTP interceptor that adds `Accept-Language` header derived from Angular's `LOCALE_ID` to all `/api/**` requests
+- TypeScript contracts mirror the canonical API exactly (`Contact`, `CreateContactRequest`, `CreateContactResponse`, `ProblemDetail`)
+
+No generic repositories, facades, or adapter layers exist. The boundary is concrete and minimal.
+
+## Development Proxy
+
+During development, Solucar serves on `http://127.0.0.1:44200` and proxies `/api/**` to the Alixar development server at `http://host.docker.internal:48081`.
+
+Configuration:
+- `proxy.conf.json` — defines `/api/**` → `http://host.docker.internal:48081`
+- `angular.json` — references proxy in `serve.options.proxyConfig`
+- `docker-compose.yml` — `extra_hosts: ["host.docker.internal:host-gateway"]` enables container-to-host connectivity
+
+This allows same-origin requests from the browser to `http://127.0.0.1:44200/api/contacts` without CORS configuration in Alixar.
+
+Production builds use relative `/api/...` URLs directly; the proxy is development-only.
+
+## ProblemDetail Error Handling
+
+Alixar returns RFC 9457-compatible `ProblemDetail` responses:
+
+```typescript
+interface ProblemDetail {
+  type: string;
+  title: string;
+  status: number;
+  detail: string;
+  instance?: string;
+  code: string;
+  field?: string;
+}
+```
+
+Frontend handling:
+- On HTTP error, if `error.detail` exists, display it directly (already localized by Alixar)
+- On network failure or malformed/unexpected error, display frontend-owned localized fallback: `Unable to communicate with Alixar.`
+- Canonical error codes (`VALIDATION_REQUIRED`, `CONTACT_NOT_FOUND`, `CONTACT_INVALID_THIRD_PARTY_REFERENCE`) are available internally for future structured behavior but not translated in the frontend

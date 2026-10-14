@@ -2,18 +2,132 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
-      <trans-unit id="home.subtitle" datatype="html">
-        <source> Alixar ERP web frontend </source>
+      <trans-unit id="contact.page.title" datatype="html">
+        <source>Contacts</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/home/home.html</context>
-          <context context-type="linenumber">5,7</context>
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">3,6</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="home.status" datatype="html">
-        <source> Initial project status </source>
+      <trans-unit id="contact.search.title" datatype="html">
+        <source>Find contact</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/home/home.html</context>
-          <context context-type="linenumber">8,10</context>
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">7,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.search.id" datatype="html">
+        <source>Contact ID</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">11,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.create.title" datatype="html">
+        <source>Create contact</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">36,38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.field.lastName" datatype="html">
+        <source>Last name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">41,42</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">116,117</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.validation.lastNameRequired" datatype="html">
+        <source>Last name is required.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">53,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.field.firstName" datatype="html">
+        <source>First name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">58,60</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">120,121</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.field.email" datatype="html">
+        <source>Email</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">69,71</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">124,125</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.field.thirdPartyId" datatype="html">
+        <source>Third party ID</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">80,82</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">128,129</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.create.success" datatype="html">
+        <source> Contact created with ID <x id="INTERPOLATION" equiv-text="{{ createdId() }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">104,108</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.result.title" datatype="html">
+        <source> Contact #<x id="INTERPOLATION" equiv-text="{{ contact()!.id }}"/> </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.html</context>
+          <context context-type="linenumber">111,114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3338971166232190370" datatype="html">
+        <source>@@contact.action.searching:Searching...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="linenumber">40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2757425444155157396" datatype="html">
+        <source>@@contact.action.search:Search</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8139557047606324330" datatype="html">
+        <source>@@contact.action.creating:Creating...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8489695624259538665" datatype="html">
+        <source>@@contact.action.create:Create contact</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="970038021582801989" datatype="html">
+        <source>@@contact.error.unexpected:Unable to communicate with Alixar.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
+          <context context-type="linenumber">122</context>
         </context-group>
       </trans-unit>
     </body>
