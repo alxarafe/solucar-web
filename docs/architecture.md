@@ -91,3 +91,69 @@ src/app/
 ## Architecture Goal
 
 Progressively replace the backend (from Dolibarr adapters to new domain) **without modifying features** for legacy peculiarities.
+
+## Internationalization (i18n) Architecture
+
+### Mechanism
+
+Angular native i18n (`@angular/localize`) is the chosen mechanism.
+
+- English is the source/default locale.
+- Spanish is initially supported.
+- Production generates localized variants for each supported locale.
+- Angular development server serves one locale at a time.
+- Dynamic in-place language switching is not currently implemented.
+- Future language selection may navigate/reload between localized variants.
+
+### Feature ownership
+
+Each feature owns its translatable messages through namespaced custom IDs:
+
+```text
+home.subtitle
+home.status
+contact.title
+contact.form.lastName
+```
+
+Physical app-level XLF files are retained because they are the standard Angular mechanism. No custom per-module translation loader exists.
+
+### Translation file format
+
+Angular standard XLIFF (XLF) via `ng extract-i18n`.
+
+```text
+src/locale/messages.xlf       # English source (generated)
+src/locale/messages.es.xlf    # Spanish translation
+```
+
+Custom message IDs are explicit and namespaced by feature:
+
+```text
+@@home.subtitle
+@@home.status
+```
+
+### Supported locales
+
+- Default/fallback: English (`en`)
+- Supported: `en`, `es` (including regional variants like `es-ES`)
+- Resolution: Angular `LOCALE_ID` at build time; future runtime selection may navigate/reload between localized variants.
+
+### Production
+
+`ng build` with `localize: ["en", "es"]` produces separate localized application variants.
+
+Development server serves one locale at a time (`ng serve --configuration development-es` for Spanish).
+
+### Future Alixar integration
+
+When Solucar calls Alixar, the current Solucar locale will be used to populate `Accept-Language`. Angular's existing locale information will be preferred over introducing a separate language source of truth.
+
+```text
+Solucar locale
+      ↓
+Accept-Language
+      ↓
+Alixar ProblemDetail title/detail
+```

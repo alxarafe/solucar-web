@@ -355,6 +355,69 @@ Simplicity must not compromise correctness, security, performance, clarity, test
 
 Do not introduce layers, helpers, factories, interfaces, services, or abstractions merely for architectural symmetry or possible future use.
 
+## Internationalization (i18n)
+
+### User-visible text
+
+Human-readable UI text that may vary by language must use Angular's standard i18n mechanism.
+
+Do not hardcode localizable text in templates or TypeScript.
+
+### Standard Angular first
+
+Prefer:
+
+```text
+template i18n markers
+$localize
+Angular CLI extraction/localization
+LOCALE_ID
+```
+
+before custom infrastructure.
+
+Do not introduce a translation dependency while Angular's facilities satisfy the requirement.
+
+### Stable identifiers are not translated
+
+Do not translate:
+
+- API field names;
+- canonical error codes;
+- routes;
+- URL paths;
+- capability/action identifiers;
+- configuration keys;
+- protocol/header names;
+- product/module identifiers;
+- other machine-readable contract values.
+
+### Feature ownership
+
+Messages belong logically to the feature that owns the concept.
+
+Use namespaced message IDs such as:
+
+```text
+home.*
+contact.*
+sales.*
+inventory.*
+core.*
+```
+
+Do not centralize semantic ownership merely because Angular stores a locale's translations in an application-level catalogue.
+
+### Reusable messages
+
+Do not duplicate equivalent messages unnecessarily, but do not create premature generic translation abstractions.
+
+### Final review
+
+Every task must inspect new user-visible literals and determine whether they need i18n.
+
+Integrate this with the existing `No magic literals` policy without duplicating that entire section.
+
 ## Business rule boundary
 
 **Alixar is the business authority.**
