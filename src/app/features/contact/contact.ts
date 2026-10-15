@@ -37,14 +37,14 @@ export class ContactComponent {
 
   readonly searchButtonText = computed(() =>
     this.searchLoading()
-      ? $localize`@@contact.action.searching:Searching...`
-      : $localize`@@contact.action.search:Search`
+      ? $localize`:@@contact.action.searching:Searching...`
+      : $localize`:@@contact.action.search:Search`
   );
 
   readonly createButtonText = computed(() =>
     this.createLoading()
-      ? $localize`@@contact.action.creating:Creating...`
-      : $localize`@@contact.action.create:Create contact`
+      ? $localize`:@@contact.action.creating:Creating...`
+      : $localize`:@@contact.action.create:Create contact`
   );
 
   searchContact(): void {
@@ -119,6 +119,6 @@ export class ContactComponent {
         return problemDetail.detail;
       }
     }
-    return $localize`@@contact.error.unexpected:Unable to communicate with Alixar.`;
+    return $localize`:@@contact.error.unexpected:Unable to communicate with Alixar.`;
   }
 }

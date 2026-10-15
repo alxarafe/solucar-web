@@ -106,41 +106,41 @@
           <context context-type="linenumber">118,121</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="3338971166232190370" datatype="html">
-        <source>@@contact.action.searching:Searching...</source>
-        <target>@@contact.action.searching:Buscando...</target>
+      <trans-unit id="contact.action.searching" datatype="html">
+        <source>Searching...</source>
+        <target>Buscando...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
           <context context-type="linenumber">40</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2757425444155157396" datatype="html">
-        <source>@@contact.action.search:Search</source>
-        <target>@@contact.action.search:Buscar</target>
+      <trans-unit id="contact.action.search" datatype="html">
+        <source>Search</source>
+        <target>Buscar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
           <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8139557047606324330" datatype="html">
-        <source>@@contact.action.creating:Creating...</source>
-        <target>@@contact.action.creating:Creando...</target>
+      <trans-unit id="contact.action.creating" datatype="html">
+        <source>Creating...</source>
+        <target>Creando...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
           <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8489695624259538665" datatype="html">
-        <source>@@contact.action.create:Create contact</source>
-        <target>@@contact.action.create:Crear contacto</target>
+      <trans-unit id="contact.action.create" datatype="html">
+        <source>Create contact</source>
+        <target>Crear contacto</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
           <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="970038021582801989" datatype="html">
-        <source>@@contact.error.unexpected:Unable to communicate with Alixar.</source>
-        <target>@@contact.error.unexpected:No se puede comunicar con Alixar.</target>
+      <trans-unit id="contact.error.unexpected" datatype="html">
+        <source>Unable to communicate with Alixar.</source>
+        <target>No se puede comunicar con Alixar.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
           <context context-type="linenumber">122</context>

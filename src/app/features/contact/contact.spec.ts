@@ -73,26 +73,28 @@ describe('ContactComponent', () => {
   it('should render page title', () => {
     const fixture = setup();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.contact__title')?.textContent).toContain('Contacts');
+    expect(compiled.querySelector('.contact__title')?.textContent?.trim()).toBe('Contacts');
   });
 
   it('should render search section', () => {
     const fixture = setup();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('#search-title')?.textContent).toContain('Find contact');
+    expect(compiled.querySelector('#search-title')?.textContent?.trim()).toBe('Find contact');
     expect(compiled.querySelector('input[id="contactId"]')).toBeTruthy();
-    expect(getSearchForm(fixture)?.querySelector('button[type="submit"]')?.textContent).toContain('Search');
+    const searchBtn = getSearchForm(fixture)?.querySelector('button[type="submit"]');
+    expect(searchBtn?.textContent?.trim()).toBe('Search');
   });
 
   it('should render create section', () => {
     const fixture = setup();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('#create-title')?.textContent).toContain('Create contact');
+    expect(compiled.querySelector('#create-title')?.textContent?.trim()).toBe('Create contact');
     expect(compiled.querySelector('input[id="lastName"]')).toBeTruthy();
     expect(compiled.querySelector('input[id="firstName"]')).toBeTruthy();
     expect(compiled.querySelector('input[id="email"]')).toBeTruthy();
     expect(compiled.querySelector('input[id="thirdPartyId"]')).toBeTruthy();
-    expect(getCreateForm(fixture)?.querySelector('button[type="submit"]')?.textContent).toContain('Create contact');
+    const createBtn = getCreateForm(fixture)?.querySelector('button[type="submit"]');
+    expect(createBtn?.textContent?.trim()).toBe('Create contact');
   });
 
   it('should not submit create form when lastName is blank', () => {
@@ -165,7 +167,7 @@ describe('ContactComponent', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.contact__success')?.textContent).toContain('Contact created with ID 27');
+    expect(compiled.querySelector('.contact__success')?.textContent?.trim()).toBe('Contact created with ID 27');
   });
 
   it('should automatically retrieve created contact after POST', () => {
@@ -214,10 +216,10 @@ describe('ContactComponent', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.contact__detail-value')?.textContent).toContain('Doe');
-    expect(compiled.querySelectorAll('.contact__detail-value')[1]?.textContent).toContain('John');
-    expect(compiled.querySelectorAll('.contact__detail-value')[2]?.textContent).toContain('john@example.test');
-    expect(compiled.querySelectorAll('.contact__detail-value')[3]?.textContent).toContain('—');
+    expect(compiled.querySelector('.contact__detail-value')?.textContent?.trim()).toBe('Doe');
+    expect(compiled.querySelectorAll('.contact__detail-value')[1]?.textContent?.trim()).toBe('John');
+    expect(compiled.querySelectorAll('.contact__detail-value')[2]?.textContent?.trim()).toBe('john@example.test');
+    expect(compiled.querySelectorAll('.contact__detail-value')[3]?.textContent?.trim()).toBe('—');
   });
 
   it('should render nullable values safely', () => {
@@ -240,9 +242,9 @@ describe('ContactComponent', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     const values = compiled.querySelectorAll('.contact__detail-value');
-    expect(values[1]?.textContent).toContain('—');
-    expect(values[2]?.textContent).toContain('—');
-    expect(values[3]?.textContent).toContain('—');
+    expect(values[1]?.textContent?.trim()).toBe('—');
+    expect(values[2]?.textContent?.trim()).toBe('—');
+    expect(values[3]?.textContent?.trim()).toBe('—');
   });
 
   it('should search contact by ID and display it', () => {
@@ -269,11 +271,11 @@ describe('ContactComponent', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.contact__section--result .contact__section-title')?.textContent).toContain('Contact #42');
-    expect(compiled.querySelector('.contact__detail-value')?.textContent).toContain('Smith');
-    expect(compiled.querySelectorAll('.contact__detail-value')[1]?.textContent).toContain('Jane');
-    expect(compiled.querySelectorAll('.contact__detail-value')[2]?.textContent).toContain('jane@example.test');
-    expect(compiled.querySelectorAll('.contact__detail-value')[3]?.textContent).toContain('5');
+    expect(compiled.querySelector('.contact__section--result .contact__section-title')?.textContent?.trim()).toBe('Contact #42');
+    expect(compiled.querySelector('.contact__detail-value')?.textContent?.trim()).toBe('Smith');
+    expect(compiled.querySelectorAll('.contact__detail-value')[1]?.textContent?.trim()).toBe('Jane');
+    expect(compiled.querySelectorAll('.contact__detail-value')[2]?.textContent?.trim()).toBe('jane@example.test');
+    expect(compiled.querySelectorAll('.contact__detail-value')[3]?.textContent?.trim()).toBe('5');
   });
 
   it('should display ProblemDetail.detail on 400 validation error', () => {
@@ -309,7 +311,7 @@ describe('ContactComponent', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.contact__error-banner')?.textContent).toContain('The field Third party ID must reference an existing third party.');
+    expect(compiled.querySelector('.contact__error-banner')?.textContent?.trim()).toBe('The field Third party ID must reference an existing third party.');
   });
 
   it('should display ProblemDetail.detail on 404 error', () => {
@@ -339,7 +341,7 @@ describe('ContactComponent', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.contact__error-banner')?.textContent).toContain('Contact with ID 999 not found.');
+    expect(compiled.querySelector('.contact__error-banner')?.textContent?.trim()).toBe('Contact with ID 999 not found.');
   });
 
   it('should display ProblemDetail.detail on 422 error', () => {
@@ -375,7 +377,7 @@ describe('ContactComponent', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.contact__error-banner')?.textContent).toContain('Third party with ID 999 does not exist.');
+    expect(compiled.querySelector('.contact__error-banner')?.textContent?.trim()).toBe('Third party with ID 999 does not exist.');
   });
 
   it('should display localized fallback on network error', () => {
@@ -395,7 +397,7 @@ describe('ContactComponent', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.contact__error-banner')?.textContent).toContain('Unable to communicate with Alixar.');
+    expect(compiled.querySelector('.contact__error-banner')?.textContent?.trim()).toBe('Unable to communicate with Alixar.');
   });
 
   it('should display localized fallback on unexpected 5xx error', () => {
@@ -418,7 +420,7 @@ describe('ContactComponent', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.contact__error-banner')?.textContent).toContain('Unable to communicate with Alixar.');
+    expect(compiled.querySelector('.contact__error-banner')?.textContent?.trim()).toBe('Unable to communicate with Alixar.');
   });
 
   it('should send Accept-Language: en for English locale', () => {
@@ -488,5 +490,77 @@ describe('ContactComponent', () => {
     fixture.detectChanges();
 
     expect(button?.disabled).toBe(false);
+  });
+
+  it('should show Searching label while search request is pending', () => {
+    const fixture = setup();
+    const component = fixture.componentInstance;
+
+    component.searchForm.patchValue({ contactId: 42 });
+    fixture.detectChanges();
+
+    const form = getSearchForm(fixture);
+    expect(form).toBeTruthy();
+    form!.dispatchEvent(new Event('submit'));
+    fixture.detectChanges();
+
+    const searchBtn = getSearchForm(fixture)?.querySelector('button[type="submit"]');
+    expect(searchBtn?.textContent?.trim()).toBe('Searching...');
+
+    const req = httpMock.expectOne('/api/contacts/42');
+    req.flush({
+      id: 42,
+      lastName: 'Smith',
+      firstName: 'Jane',
+      email: 'jane@example.test',
+      thirdPartyId: 5,
+    });
+    fixture.detectChanges();
+
+    expect(searchBtn?.textContent?.trim()).toBe('Search');
+  });
+
+  it('should show Creating label while create request is pending', () => {
+    const fixture = setup();
+    const component = fixture.componentInstance;
+
+    component.createForm.patchValue({
+      lastName: 'Doe',
+      firstName: 'John',
+      email: 'john@example.test',
+      thirdPartyId: null,
+    });
+    fixture.detectChanges();
+
+    const form = getCreateForm(fixture);
+    expect(form).toBeTruthy();
+    form!.dispatchEvent(new Event('submit'));
+    fixture.detectChanges();
+
+    const createBtn = getCreateForm(fixture)?.querySelector('button[type="submit"]');
+    expect(createBtn?.textContent?.trim()).toBe('Creating...');
+
+    const postReq = httpMock.expectOne('/api/contacts');
+    postReq.flush({ id: 27 });
+    fixture.detectChanges();
+
+    const getReq = httpMock.expectOne('/api/contacts/27');
+    getReq.flush({
+      id: 27,
+      lastName: 'Doe',
+      firstName: 'John',
+      email: 'john@example.test',
+      thirdPartyId: null,
+    });
+    fixture.detectChanges();
+
+    expect(createBtn?.textContent?.trim()).toBe('Create contact');
+  });
+
+  it('should not render any @contact. marker in visible UI text', () => {
+    const fixture = setup();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const allText = compiled.textContent || '';
+    expect(allText).not.toContain('@@contact.');
   });
 });

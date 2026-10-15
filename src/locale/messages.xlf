@@ -95,36 +95,36 @@
           <context context-type="linenumber">111,114</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="3338971166232190370" datatype="html">
-        <source>@@contact.action.searching:Searching...</source>
+      <trans-unit id="contact.action.searching" datatype="html">
+        <source>Searching...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
           <context context-type="linenumber">40</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2757425444155157396" datatype="html">
-        <source>@@contact.action.search:Search</source>
+      <trans-unit id="contact.action.search" datatype="html">
+        <source>Search</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
           <context context-type="linenumber">41</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8139557047606324330" datatype="html">
-        <source>@@contact.action.creating:Creating...</source>
+      <trans-unit id="contact.action.creating" datatype="html">
+        <source>Creating...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
           <context context-type="linenumber">46</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8489695624259538665" datatype="html">
-        <source>@@contact.action.create:Create contact</source>
+      <trans-unit id="contact.action.create" datatype="html">
+        <source>Create contact</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
           <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="970038021582801989" datatype="html">
-        <source>@@contact.error.unexpected:Unable to communicate with Alixar.</source>
+      <trans-unit id="contact.error.unexpected" datatype="html">
+        <source>Unable to communicate with Alixar.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
           <context context-type="linenumber">122</context>
