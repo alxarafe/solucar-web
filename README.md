@@ -17,9 +17,19 @@ implementation and persistence details.
 **Solucar → frontend**  
 **Alixar  → backend and business authority**
 
-## Status
+## Related repository
 
-Project bootstrapped with Angular 22. Initial screen operational. No business features implemented yet.
+Solucar is the web frontend of the Solucar / Alixar ERP.
+
+Backend and business authority:
+- [Alixar](https://github.com/alxarafe/alixar)
+
+## Project status
+
+Solucar is under active development.
+
+See [Current implementation status](docs/status.md) for implemented capabilities,
+integration boundaries and known pending areas.
 
 ## Development
 
@@ -34,6 +44,7 @@ Requires Docker and Docker Compose. No host Node.js installation needed.
 
 ## Documentation
 
+- [Current implementation status](docs/status.md)
 - [Architecture](docs/architecture.md)
 - [Development](docs/development.md)
 - [Agent working agreement](AGENTS.md)
