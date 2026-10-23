@@ -1,5 +1,8 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, computed, inject, signal } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { authErrorMessage, AuthError } from './core/auth/auth-error';
+import { AuthSessionService } from './core/auth/auth-session.service';
+import { LOGIN_PATH } from './core/auth/auth-navigation';
 
 @Component({
   imports: [RouterOutlet],
@@ -7,4 +10,45 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss',
   templateUrl: './app.html',
 })
-export class App {}
+export class App {
+  readonly auth = inject(AuthSessionService);
+  private readonly router = inject(Router);
+
+  readonly loggingOut = signal(false);
+  readonly logoutError = signal<AuthError | null>(null);
+
+  readonly logoutLabel = computed(() =>
+    this.loggingOut()
+      ? $localize`:@@auth.action.loggingOut:Signing out...`
+      : $localize`:@@auth.action.logout:Log out`,
+  );
+
+  readonly logoutErrorMessage = computed(() => {
+    const error = this.logoutError();
+    return error ? authErrorMessage(error) : null;
+  });
+
+  readonly logoutErrorDetail = computed(() => {
+    const error = this.logoutError();
+    const message = this.logoutErrorMessage();
+    return error?.detail && error.detail !== message ? error.detail : null;
+  });
+
+  async logout(): Promise<void> {
+    if (this.loggingOut()) {
+      return;
+    }
+
+    this.loggingOut.set(true);
+    this.logoutError.set(null);
+    const error = await this.auth.logout();
+    this.loggingOut.set(false);
+
+    if (error) {
+      this.logoutError.set(error);
+      return;
+    }
+
+    await this.router.navigateByUrl(LOGIN_PATH);
+  }
+}

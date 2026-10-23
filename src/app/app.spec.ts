@@ -1,22 +1,99 @@
 import { TestBed } from '@angular/core/testing';
+import { signal } from '@angular/core';
+import { provideRouter, Router } from '@angular/router';
+import { vi } from 'vitest';
 import { App } from './app';
+import { AuthIdentity } from './core/auth/auth-api';
+import { AuthError } from './core/auth/auth-error';
+import { AuthSessionService, AuthStatus } from './core/auth/auth-session.service';
+
+const IDENTITY: AuthIdentity = {
+  id: '8f796219-e501-44e8-a4ab-4c014821ba58',
+  username: 'alice',
+  email: 'alice@example.test',
+};
+
+class AuthSessionStub {
+  readonly status = signal<AuthStatus>('unknown');
+  readonly identity = signal<AuthIdentity | null>(null);
+  readonly error = signal<AuthError | null>(null);
+  readonly logout = vi.fn<() => Promise<AuthError | null>>().mockResolvedValue(null);
+}
 
 describe('App', () => {
+  let auth: AuthSessionStub;
+  let router: Router;
+
   beforeEach(async () => {
+    auth = new AuthSessionStub();
     await TestBed.configureTestingModule({
       imports: [App],
+      providers: [
+        provideRouter([]),
+        { provide: AuthSessionService, useValue: auth },
+      ],
     }).compileComponents();
+    router = TestBed.inject(Router);
+    vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
   });
 
-  it('should create the app', () => {
+  it('should not render authenticated content while status is unknown', () => {
     const fixture = TestBed.createComponent(App);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should render router outlet', () => {
-    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelector('.app__status')?.textContent?.trim()).toBe('Loading...');
+    expect(compiled.querySelector('router-outlet')).toBeNull();
+    expect(compiled.querySelector('.app__header')).toBeNull();
+  });
+
+  it('should render public content without a session header when anonymous', () => {
+    auth.status.set('anonymous');
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelector('.app__header')).toBeNull();
     expect(compiled.querySelector('router-outlet')).toBeTruthy();
+  });
+
+  it('should render the identity and logout action when authenticated', () => {
+    auth.status.set('authenticated');
+    auth.identity.set(IDENTITY);
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelector('.app__identity')?.textContent?.trim()).toBe('alice');
+    expect(compiled.querySelector('.app__logout')?.textContent?.trim()).toBe('Log out');
+  });
+
+  it('should clear the frontend session and navigate to login after logout', async () => {
+    auth.status.set('authenticated');
+    auth.identity.set(IDENTITY);
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    await fixture.componentInstance.logout();
+
+    expect(auth.logout).toHaveBeenCalledOnce();
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/login');
+  });
+
+  it('should keep the session and show an error when logout fails', async () => {
+    auth.status.set('authenticated');
+    auth.identity.set(IDENTITY);
+    auth.logout.mockResolvedValue({ kind: 'unavailable' });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    await fixture.componentInstance.logout();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(router.navigateByUrl).not.toHaveBeenCalled();
+    expect(compiled.querySelector('.app__alert')?.textContent).toContain(
+      'Authentication is temporarily unavailable',
+    );
   });
 });

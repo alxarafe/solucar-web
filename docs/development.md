@@ -23,6 +23,43 @@ The host does **not** need Node.js, npm, Angular CLI, or Vitest installed.
 ./bin/check
 ```
 
+## Authentication in development
+
+Solucar uses same-origin session authentication through the development proxy:
+
+- Browser origin: `http://127.0.0.1:44200`
+- API requests: `/api/auth/**` proxied to Alixar on host port `48081`
+- Application bootstrap: `GET /api/auth/me`
+- Login page: `http://127.0.0.1:44200/login`
+
+A provisioned Alixar user is required to sign in. Credentials are sent only to
+Alixar; Solucar does not persist credentials or tokens. The password field is
+cleared after each completed login attempt. SESSION cookies remain browser-managed;
+PAT and JWT are deliberately absent from the SPA.
+
+Angular `HttpClient` handles the `XSRF-TOKEN` cookie and `X-XSRF-TOKEN` header
+automatically for same-origin non-safe requests. Do not add a custom CSRF
+interceptor or copy the cookie manually.
+
+`/contacts` remains public. Effective permissions are not exposed by Alixar yet,
+so Solucar has no permission-based guards or UI.
+
+### Manual session smoke test
+
+1. Start Alixar locally on host port `48081`.
+2. Start Solucar with `./bin/up`.
+3. Open `http://127.0.0.1:44200/login`.
+4. In browser network tools, verify bootstrap `/api/auth/me` returns `401` without a session and issues `XSRF-TOKEN`. No login form should flash before bootstrap completes.
+5. Verify an invalid login shows the localized invalid-credentials message.
+6. Sign in with a provisioned user. Verify POST login carries Angular's `X-XSRF-TOKEN`, the browser receives `JSESSIONID`, the subsequent `/me` refreshes identity/CSRF, and the header shows the username.
+7. Reload the page and verify the session is restored through `/api/auth/me`.
+8. Log out; verify POST logout returns `204`, subsequent `/me` returns `401` and renews `XSRF-TOKEN`, and the app returns to `/login`.
+9. Sign in again to verify CSRF remains usable after logout.
+10. With the backend unreachable or a stalled `/me`, verify loading ends within the 10-second request deadline and manual Retry is available at `/login`.
+
+This manual flow is required when browser cookie and CSRF behavior must be
+proven; unit tests alone do not prove real browser/session integration.
+
 ## Configuration
 
 The host port is configurable via `SOLUCAR_WEB_PORT` (default: 44200):
@@ -41,7 +78,8 @@ The Docker container uses Node.js 24.19.0 and runs:
 - `npm start -- --host 0.0.0.0 --port 4200` for development
 - `npm test -- --watch=false` for tests
 - `npx tsc --noEmit` for type checking
-- `npm run build` for production builds
+- `npm run build` for production builds (English and Spanish variants)
+- `npx ng extract-i18n` to regenerate `src/locale/messages.xlf`
 
 A named volume (`solucar_node_modules`) persists `node_modules` between container runs.
 

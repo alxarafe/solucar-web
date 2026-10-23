@@ -8,6 +8,22 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 
 ## Implemented capabilities
 
+### Session authentication
+
+- **Login route**: `/login`
+- **Bootstrap**: an Angular app initializer starts `GET /api/auth/me`; a loading state hides login and routed content until the lookup resolves; stalled auth requests are cancelled after 10 seconds
+- **Login**: `POST /api/auth/login` with `identifier` and `password`
+- **Logout**: `POST /api/auth/logout` clears identity on `204`, then `/api/auth/me` reconciles the server session and renews CSRF; a failed refresh is reported as unavailable without undoing logout
+- **Session state**: `unknown`, `authenticated`, `anonymous`, `unavailable`
+- **Identity**: `id`, `username`, `email` only; effective permissions are not exposed by Alixar yet
+- **CSRF**: Angular's built-in `HttpClient` support reads `XSRF-TOKEN` and sends `X-XSRF-TOKEN` on same-origin non-safe requests
+- **Login retry**: a `403` login response triggers one CSRF renewal and one retry, never an unbounded retry loop
+- **Return URL**: only internal root-relative destinations are accepted; external, protocol-relative and `/login` targets fall back to `/contacts`
+- **Errors**: invalid credentials, validation, forbidden, unavailable, network, session expired and unexpected authentication errors have distinct localized messages
+- **Cookies**: the browser owns `JSESSIONID` (HttpOnly) and `XSRF-TOKEN`; Solucar application code never reads or stores session credentials or tokens
+
+`/contacts` remains public in this slice. Authentication does not yet protect application routes or expose authorization decisions.
+
 ### Contact
 
 - **Route**: `/contacts` as the main application route
@@ -15,15 +31,25 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 - **Canonical creation**: `POST /api/contacts` via `ContactApi.createContact(request)`
 - **Frontend API types**: `Contact`, `CreateContactRequest`, `CreateContactResponse`, `ProblemDetail` — mirror the Alixar canonical API exactly
 - **Error handling**: RFC 9457 `ProblemDetail` responses handled; Alixar-localized `detail` displayed directly; frontend-owned fallback for network/unexpected errors
+- **Shared error type**: `ProblemDetail` is defined in `core/api` and reused by Contact and authentication
+
+### Authentication errors
+
+- HTTP status determines the authentication error kind before the response body is inspected
+- `401` means invalid credentials during login and session expired during bootstrap or session refresh
+- `403` means the session or CSRF state could not be verified
+- `503` means authentication is temporarily unavailable; `503 AUDIT_UNAVAILABLE` specifically reports the mandatory audit dependency, never invalid credentials
+- Alixar `detail` is shown as secondary information when it adds detail beyond the frontend-owned message
 
 ## Backend boundary
 
-- All HTTP communication centralized in `core/api` (`ContactApi`, `acceptLanguageInterceptor`)
+- All HTTP communication centralized in `core/api` and `core/auth` (`ContactApi`, `AuthApi`, `acceptLanguageInterceptor`)
 - No business rules in frontend — Alixar is the authority
 - No database schema knowledge — no `llx_*` names in frontend
 - No Dolibarr vocabulary as internal model — no `fk_soc`, `socid`, `llx_*`
 - Frontend types reflect Alixar canonical concepts, not legacy field names
 - `Accept-Language` header derived from Angular `LOCALE_ID` propagated to backend
+- Session authentication uses the Alixar canonical `/api/auth/**` endpoints over same-origin HTTP
 
 ## Internationalization
 
@@ -31,7 +57,7 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 - **Source locale**: English (`en`)
 - **Supported locale**: Spanish (`es`, including `es-ES`)
 - **Translation files**: `src/locale/messages.xlf` (English), `src/locale/messages.es.xlf` (Spanish)
-- **Custom message IDs**: Namespaced by feature (e.g., `@@contact.title`, `@@contact.form.lastName`)
+- **Custom message IDs**: Namespaced by feature (e.g., `@@contact.field.lastName`, `@@auth.login.title`)
 - **Build output**: `ng build` with `localize: ["en", "es"]` produces separate localized variants
 - **Development**: `ng serve --configuration development-es` serves Spanish variant
 - **Runtime language switching**: Not implemented
@@ -47,7 +73,8 @@ See [Development](development.md) for full workflow details.
 
 ## Not yet implemented
 
-- Authentication/authorization UI
+- Effective permission exposure and authorization UI/guards
+- Password reset, account self-service and remember-me
 - Broad ERP UI beyond the current Contact slice
 - Automated end-to-end validation against a running Alixar instance
 - Dynamic in-place language switching

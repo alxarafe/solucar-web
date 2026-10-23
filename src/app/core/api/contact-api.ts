@@ -21,16 +21,6 @@ export interface CreateContactResponse {
   id: number;
 }
 
-export interface ProblemDetail {
-  type: string;
-  title: string;
-  status: number;
-  detail: string;
-  instance?: string;
-  code: string;
-  field?: string;
-}
-
 @Injectable({ providedIn: 'root' })
 export class ContactApi {
   private readonly baseUrl = '/api/contacts';

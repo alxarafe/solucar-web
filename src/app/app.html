@@ -1,1 +1,28 @@
-<router-outlet />
+@if (auth.status() === 'unknown') {
+  <p class="app__status" role="status" i18n="@@auth.status.loading">Loading...</p>
+} @else {
+  @if (auth.status() === 'authenticated') {
+    <header class="app__header">
+      <span class="app__identity">{{ auth.identity()?.username }}</span>
+      <button
+        type="button"
+        class="app__logout"
+        [disabled]="loggingOut()"
+        (click)="logout()"
+      >
+        {{ logoutLabel() }}
+      </button>
+    </header>
+  }
+
+  @if (logoutErrorMessage()) {
+    <div class="app__alert" role="alert">
+      <p class="app__alert-message">{{ logoutErrorMessage() }}</p>
+      @if (logoutErrorDetail()) {
+        <p class="app__alert-detail">{{ logoutErrorDetail() }}</p>
+      }
+    </div>
+  }
+
+  <router-outlet />
+}
