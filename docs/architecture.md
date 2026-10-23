@@ -27,6 +27,10 @@ Solucar is the Angular web frontend for the Alixar ERP. It owns presentation, na
 
 - Angular 22 bootstrap with standalone components
 - Core API infrastructure in `core/api`
+- Session authentication foundation in `core/auth` and `features/auth`
+- Application bootstrap through `GET /api/auth/me`
+- Login and logout against the Alixar canonical API
+- Angular built-in CSRF handling for same-origin non-safe requests
 - Contact feature (`features/contact`) — create and retrieve contacts via Alixar canonical API
 - Accept-Language header derived from `LOCALE_ID`
 - Development proxy for `/api/**` → `host.docker.internal:48081`
@@ -35,7 +39,7 @@ Solucar is the Angular web frontend for the Alixar ERP. It owns presentation, na
 
 ## Planned (Not Implemented)
 
-- Authentication/authorization UI
+- Effective permissions, authorization UI and route guards
 - ERP feature modules (thirdparties, catalog, sales, billing, inventory, accounting)
 - OpenAPI client generation (if adopted)
 - Real Alixar integration (e2e)
@@ -63,22 +67,20 @@ Rules:
 1. No business rules in the frontend — Alixar is the authority.
 2. No database schema knowledge — no `llx_*` names.
 3. No Dolibarr vocabulary as internal model — no `fk_soc`, `socid`, `llx_*`.
-4. HTTP details centralized in `core/api`.
-4. Features must not encode backend quirks.
-5. Frontend types and UI models reflect Alixar concepts, not legacy field names.
+4. HTTP details centralized in `core/api` and `core/auth`.
+5. Features must not encode backend quirks.
+6. Frontend types and UI models reflect Alixar concepts, not legacy field names.
 
 ## Angular Code Organization
 
 ```
 src/app/
 ├── core/         # Frontend singleton infrastructure
-│   ├── auth/     # Authentication
-│   ├── api/      # Centralized HTTP client
-│   ├── config/   # Global configuration
-│   ├── permissions/ # Permissions
-│   └── modules/  # Core modules
+│   ├── api/      # Contact HTTP client and shared ProblemDetail
+│   └── auth/     # Session state, auth HTTP client, errors, navigation
 ├── shared/       # Genuinely reused components, utilities, elements
 └── features/     # ERP functional modules
+    ├── auth/     # Login screen
     └── contact/  # Contact management (create, retrieve)
 ```
 
@@ -87,7 +89,7 @@ src/app/
 1. **No critical business rules** in frontend — belong to Alixar.
 2. **No physical database knowledge** — no `llx_*` names.
 3. **No Dolibarr legacy vocabulary** as internal model.
-4. **Consume Alixar canonical API** — HTTP centralized in `core/api`.
+4. **Consume Alixar canonical API** — HTTP centralized in `core/api` and `core/auth`.
 5. **Features must not encode backend quirks**.
 6. **No speculative abstractions** — features emerge from real use cases.
 
@@ -113,10 +115,10 @@ Angular native i18n (`@angular/localize`) is the chosen mechanism.
 Each feature owns its translatable messages through namespaced custom IDs:
 
 ```text
-home.subtitle
-home.status
-contact.title
-contact.form.lastName
+contact.field.lastName
+contact.action.create
+auth.login.title
+auth.error.invalidCredentials
 ```
 
 Physical app-level XLF files are retained because they are the standard Angular mechanism. No custom per-module translation loader exists.
@@ -133,8 +135,8 @@ src/locale/messages.es.xlf    # Spanish translation
 Custom message IDs are explicit and namespaced by feature:
 
 ```text
-@@home.subtitle
-@@home.status
+@@contact.field.lastName
+@@auth.login.title
 ```
 
 ### Supported locales
@@ -161,17 +163,44 @@ Accept-Language
 Alixar ProblemDetail title/detail
 ```
 
-## Backend Boundary (`core/api`)
+## Backend Boundary (`core/api` and `core/auth`)
 
-All HTTP communication with the Alixar canonical API is centralized in `core/api`:
+All HTTP communication with the Alixar canonical API is centralized in `core/api` and `core/auth`:
 
 - `ContactApi` — typed operations for Contact domain:
   - `getContact(id: number): Observable<Contact>`
   - `createContact(request: CreateContactRequest): Observable<CreateContactResponse>`
+- `AuthApi` — typed session operations:
+  - `login(request: LoginRequest): Observable<AuthIdentity>`
+  - `me(): Observable<AuthIdentity>`
+  - `logout(): Observable<void>`
 - `acceptLanguageInterceptor` — functional HTTP interceptor that adds `Accept-Language` header derived from Angular's `LOCALE_ID` to all `/api/**` requests
-- TypeScript contracts mirror the canonical API exactly (`Contact`, `CreateContactRequest`, `CreateContactResponse`, `ProblemDetail`)
+- TypeScript contracts mirror the canonical API exactly (`Contact`, `CreateContactRequest`, `CreateContactResponse`, `AuthIdentity`, `ProblemDetail`)
 
 No generic repositories, facades, or adapter layers exist. The boundary is concrete and minimal.
+
+## Authentication and Session
+
+Solucar treats the Alixar session as the single source of truth.
+
+- An Angular app initializer starts `AuthSessionService.bootstrap()`. The root renders a loading state while session status is `unknown`, hiding both login and routed content until the lookup completes.
+- `bootstrap()` calls `GET /api/auth/me`; `200` becomes `authenticated`, `401` becomes `anonymous`, and other failures become `unavailable`.
+- Login calls `POST /api/auth/login`, then refreshes identity through `/api/auth/me` instead of trusting the login response as the complete session state.
+- Logout calls `POST /api/auth/logout`; `204` immediately clears frontend identity. A subsequent `/api/auth/me` renews CSRF: `401` confirms `anonymous`, an outage becomes `unavailable`, and `200` honors a concurrent server session. A failed refresh does not undo logout; navigation returns to `/login`.
+- A `403` login response is treated as a possibly stale CSRF state: Solucar renews the token through `/api/auth/me` and retries login once.
+- Identity contains `id`, `username` and `email`. Effective permissions are not exposed by Alixar yet, so Solucar does not infer them.
+
+Authentication uses HTTP SESSION, deliberately without PAT or JWT. Every auth request has a 10-second RxJS deadline that cancels a stalled request; bootstrap also completes on HTTP failures, network errors and timeouts. Only `id`, `username` and `email` are kept as session identity. Passwords remain transient form/request values and the password field is cleared after each completed attempt. Credentials and tokens are never persisted in localStorage or sessionStorage. `JSESSIONID` is HttpOnly; `XSRF-TOKEN` is intentionally non-HttpOnly and Angular's built-in CSRF support reads it. Solucar does not read or store the CSRF cookie itself. No custom CSRF interceptor, token storage, PAT or JWT is used.
+
+## CSRF and Same-Origin
+
+Angular `HttpClient` reads the `XSRF-TOKEN` cookie and sends it as `X-XSRF-TOKEN` for same-origin requests whose method is not `GET` or `HEAD`. Solucar relies on this built-in behavior.
+
+All API URLs are relative (`/api/...`). Development uses the proxy described below; production requires an equivalent same-origin reverse proxy. Alixar does not provide CORS for this frontend.
+
+`GET /api/auth/me` is a safe request that also gives Alixar an opportunity to issue or renew the CSRF cookie. Solucar uses it before retrying a CSRF-rejected login and after logout.
+
+The `/contacts` route remains public in this slice. Route protection and permission-based UI are intentionally deferred until Alixar exposes effective permissions.
 
 ## Development Proxy
 
@@ -188,7 +217,7 @@ Production builds use relative `/api/...` URLs directly; the proxy is developmen
 
 ## ProblemDetail Error Handling
 
-Alixar returns RFC 9457-compatible `ProblemDetail` responses:
+Alixar returns RFC 9457-compatible `ProblemDetail` responses. Contact displays Alixar's localized `detail` directly. Authentication maps HTTP status to frontend-owned localized messages and shows Alixar `detail` only as secondary information.
 
 ```typescript
 interface ProblemDetail {
@@ -203,6 +232,7 @@ interface ProblemDetail {
 ```
 
 Frontend handling:
-- On HTTP error, if `error.detail` exists, display it directly (already localized by Alixar)
-- On network failure or malformed/unexpected error, display frontend-owned localized fallback: `Unable to communicate with Alixar.`
+- Contact: if `error.detail` exists, display it directly (already localized by Alixar)
+- Contact: on network failure or malformed/unexpected error, display frontend-owned localized fallback: `Unable to communicate with Alixar.`
+- Authentication: HTTP status determines the error kind, then the `ProblemDetail.code` refines it; `detail` is secondary. `400` is validation, login `401` is rejected credentials, `/me` `401` means no valid session (normal during anonymous bootstrap), auth `403` indicates session/CSRF verification, `503` is temporary unavailability, and `503 AUDIT_UNAVAILABLE` specifically identifies the mandatory audit dependency. Network/status `0` and timeouts indicate an unreachable backend. There is no global 401 redirect interceptor.
 - Canonical error codes (`VALIDATION_REQUIRED`, `CONTACT_NOT_FOUND`, `CONTACT_INVALID_THIRD_PARTY_REFERENCE`) are available internally for future structured behavior but not translated in the frontend

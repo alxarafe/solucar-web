@@ -1,0 +1,71 @@
+<main class="login">
+  @switch (auth.status()) {
+    @case ('unknown') {
+      <p class="login__status" role="status" i18n="@@auth.status.loading">Loading...</p>
+    }
+    @case ('authenticated') {
+      <p class="login__status" role="status" i18n="@@auth.login.redirecting">Redirecting...</p>
+    }
+    @case ('unavailable') {
+      <section class="login__panel">
+        <h1 class="login__title" i18n="@@auth.login.title">Sign in</h1>
+
+        @if (errorMessage()) {
+          <div class="login__error" role="alert">
+            <p class="login__error-message">{{ errorMessage() }}</p>
+            @if (errorDetail()) {
+              <p class="login__error-detail">{{ errorDetail() }}</p>
+            }
+          </div>
+        }
+
+        <button type="button" class="login__button" (click)="retry()" i18n="@@auth.login.retry">Retry</button>
+      </section>
+    }
+    @default {
+      <section class="login__panel">
+        <h1 class="login__title" i18n="@@auth.login.title">Sign in</h1>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" class="login__form">
+          <div class="login__field">
+            <label for="identifier" class="login__label" i18n="@@auth.login.identifier">Username or email</label>
+            <input
+              id="identifier"
+              type="text"
+              formControlName="identifier"
+              class="login__input"
+              autocomplete="username"
+            />
+          </div>
+
+          <div class="login__field">
+            <label for="password" class="login__label" i18n="@@auth.login.password">Password</label>
+            <input
+              id="password"
+              type="password"
+              formControlName="password"
+              class="login__input"
+              autocomplete="current-password"
+            />
+          </div>
+
+          <button type="submit" class="login__button" [disabled]="form.invalid || submitting()">
+            @if (submitting()) {
+              <span class="login__spinner" aria-hidden="true"></span>
+            }
+            {{ submitLabel() }}
+          </button>
+        </form>
+
+        @if (errorMessage()) {
+          <div class="login__error" role="alert">
+            <p class="login__error-message">{{ errorMessage() }}</p>
+            @if (errorDetail()) {
+              <p class="login__error-detail">{{ errorDetail() }}</p>
+            }
+          </div>
+        }
+      </section>
+    }
+  }
+</main>

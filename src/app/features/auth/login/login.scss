@@ -1,0 +1,125 @@
+.login {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}
+
+.login__panel {
+  width: 100%;
+  max-width: 24rem;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.login__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+  text-align: center;
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.login__label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #333333;
+}
+
+.login__input {
+  padding: 0.625rem 0.875rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #1a1a1a;
+  background-color: #ffffff;
+  border: 1px solid #c8c8c8;
+  border-radius: 0.375rem;
+}
+
+.login__input:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.15);
+}
+
+.login__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: inherit;
+  color: #ffffff;
+  background-color: #1976d2;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.login__button:hover:not(:disabled) {
+  background-color: #1565c0;
+}
+
+.login__button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.3);
+}
+
+.login__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login__spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: login-spin 0.75s linear infinite;
+}
+
+.login__status {
+  color: #4a4a4a;
+  text-align: center;
+}
+
+.login__error {
+  margin-top: 1rem;
+  padding: 0.875rem 1rem;
+  background-color: #fdecea;
+  border: 1px solid #f5b7b1;
+  border-radius: 0.375rem;
+  color: #b71c1c;
+}
+
+.login__error-message,
+.login__error-detail {
+  margin: 0;
+}
+
+.login__error-detail {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+@keyframes login-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
