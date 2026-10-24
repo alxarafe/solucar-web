@@ -29,6 +29,8 @@ Solucar is the Angular web frontend for the Alixar ERP. It owns presentation, na
 - Core API infrastructure in `core/api`
 - Session authentication foundation in `core/auth` and `features/auth`
 - Application bootstrap through `GET /api/auth/me`
+- Effective authorization context (`roles` and `permissions`) kept in memory
+- Permission lookup, `requirePermission` route guard factory, `/forbidden` view and permission-aware navigation metadata
 - Login and logout against the Alixar canonical API
 - Angular built-in CSRF handling for same-origin non-safe requests
 - Contact feature (`features/contact`) — create and retrieve contacts via Alixar canonical API
@@ -39,7 +41,7 @@ Solucar is the Angular web frontend for the Alixar ERP. It owns presentation, na
 
 ## Planned (Not Implemented)
 
-- Effective permissions, authorization UI and route guards
+- Authorization applied to real protected ERP routes
 - ERP feature modules (thirdparties, catalog, sales, billing, inventory, accounting)
 - OpenAPI client generation (if adopted)
 - Real Alixar integration (e2e)
@@ -75,13 +77,14 @@ Rules:
 
 ```
 src/app/
-├── core/         # Frontend singleton infrastructure
-│   ├── api/      # Contact HTTP client and shared ProblemDetail
-│   └── auth/     # Session state, auth HTTP client, errors, navigation
-├── shared/       # Genuinely reused components, utilities, elements
-└── features/     # ERP functional modules
-    ├── auth/     # Login screen
-    └── contact/  # Contact management (create, retrieve)
+├── core/             # Frontend singleton infrastructure
+│   ├── api/          # Contact HTTP client and shared ProblemDetail
+│   ├── auth/         # Session state, permissions, guard, HTTP, errors, navigation
+│   └── navigation/   # Permission-aware navigation metadata
+├── shared/           # Genuinely reused components, utilities, elements
+└── features/         # ERP functional modules
+    ├── auth/         # Login and forbidden views
+    └── contact/      # Contact management (create, retrieve)
 ```
 
 ## Fundamental Rules
@@ -172,10 +175,10 @@ All HTTP communication with the Alixar canonical API is centralized in `core/api
   - `createContact(request: CreateContactRequest): Observable<CreateContactResponse>`
 - `AuthApi` — typed session operations:
   - `login(request: LoginRequest): Observable<AuthIdentity>`
-  - `me(): Observable<AuthIdentity>`
+  - `me(): Observable<CurrentUser>`
   - `logout(): Observable<void>`
 - `acceptLanguageInterceptor` — functional HTTP interceptor that adds `Accept-Language` header derived from Angular's `LOCALE_ID` to all `/api/**` requests
-- TypeScript contracts mirror the canonical API exactly (`Contact`, `CreateContactRequest`, `CreateContactResponse`, `AuthIdentity`, `ProblemDetail`)
+- TypeScript contracts mirror the canonical API exactly (`Contact`, `CreateContactRequest`, `CreateContactResponse`, `AuthIdentity`, `CurrentUser`, `ProblemDetail`)
 
 No generic repositories, facades, or adapter layers exist. The boundary is concrete and minimal.
 
@@ -185,12 +188,16 @@ Solucar treats the Alixar session as the single source of truth.
 
 - An Angular app initializer starts `AuthSessionService.bootstrap()`. The root renders a loading state while session status is `unknown`, hiding both login and routed content until the lookup completes.
 - `bootstrap()` calls `GET /api/auth/me`; `200` becomes `authenticated`, `401` becomes `anonymous`, and other failures become `unavailable`.
-- Login calls `POST /api/auth/login`, then refreshes identity through `/api/auth/me` instead of trusting the login response as the complete session state.
-- Logout calls `POST /api/auth/logout`; `204` immediately clears frontend identity. A subsequent `/api/auth/me` renews CSRF: `401` confirms `anonymous`, an outage becomes `unavailable`, and `200` honors a concurrent server session. A failed refresh does not undo logout; navigation returns to `/login`.
+- Login calls `POST /api/auth/login`, then refreshes the current user through `/api/auth/me` instead of trusting the login response as the complete session state.
+- Logout calls `POST /api/auth/logout`; `204` immediately clears the frontend authorization context. A subsequent `/api/auth/me` renews CSRF: `401` confirms `anonymous`, an outage becomes `unavailable`, and `200` honors a concurrent server session. A failed refresh does not undo logout; navigation returns to `/login`.
 - A `403` login response is treated as a possibly stale CSRF state: Solucar renews the token through `/api/auth/me` and retries login once.
-- Identity contains `id`, `username` and `email`. Effective permissions are not exposed by Alixar yet, so Solucar does not infer them.
+- `/api/auth/me` returns `id`, `username`, `email`, `roles` and `permissions`. `CurrentUser` extends `AuthIdentity`; login remains an `AuthIdentity` because it is not the complete session state.
 
-Authentication uses HTTP SESSION, deliberately without PAT or JWT. Every auth request has a 10-second RxJS deadline that cancels a stalled request; bootstrap also completes on HTTP failures, network errors and timeouts. Only `id`, `username` and `email` are kept as session identity. Passwords remain transient form/request values and the password field is cleared after each completed attempt. Credentials and tokens are never persisted in localStorage or sessionStorage. `JSESSIONID` is HttpOnly; `XSRF-TOKEN` is intentionally non-HttpOnly and Angular's built-in CSRF support reads it. Solucar does not read or store the CSRF cookie itself. No custom CSRF interceptor, token storage, PAT or JWT is used.
+Authentication uses HTTP SESSION, deliberately without PAT or JWT. Every auth request has a 10-second RxJS deadline that cancels a stalled request; bootstrap also completes on HTTP failures, network errors and timeouts. The complete current-user context is kept only in memory. Passwords remain transient form/request values and the password field is cleared after each completed attempt. Credentials, roles, permissions and tokens are never persisted in localStorage or sessionStorage. `JSESSIONID` is HttpOnly; `XSRF-TOKEN` is intentionally non-HttpOnly and Angular's built-in CSRF support reads it. Solucar does not read or store the CSRF cookie itself. No custom CSRF interceptor, token storage, PAT or JWT is used.
+
+Authorization follows `USER → ROLES → PERMISSIONS`. Solucar never grants access from role names and does not model direct user permissions or per-user denies. `AuthSessionService.hasPermission()` checks only the effective permissions returned by Alixar. Permission checks are a presentation concern: Alixar remains the authority and must enforce authorization on every protected operation. A browser-side permission check is never treated as a security boundary.
+
+`requirePermission(permission)` produces a functional route guard. It waits for an unresolved bootstrap before deciding. Anonymous or unauthenticated users are sent to `/login` with the requested internal URL as `returnUrl`; authenticated users without the required permission are sent to `/forbidden`. A missing permission never logs the user out. No real ERP route uses the guard yet, and `/contacts` remains public. Navigation entries can declare `label`, `route` and `requiredPermission`; only entries whose permission is effective are visible.
 
 ## CSRF and Same-Origin
 
@@ -200,7 +207,7 @@ All API URLs are relative (`/api/...`). Development uses the proxy described bel
 
 `GET /api/auth/me` is a safe request that also gives Alixar an opportunity to issue or renew the CSRF cookie. Solucar uses it before retrying a CSRF-rejected login and after logout.
 
-The `/contacts` route remains public in this slice. Route protection and permission-based UI are intentionally deferred until Alixar exposes effective permissions.
+The `/contacts` route remains public. Authorization infrastructure exists for future protected routes, but no current route is guarded. Alixar still enforces authorization server-side.
 
 ## Development Proxy
 

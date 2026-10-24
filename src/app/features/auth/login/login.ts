@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthSessionService } from '../../../core/auth/auth-session.service';
 import { authErrorMessage } from '../../../core/auth/auth-error';
-import { safeReturnUrl } from '../../../core/auth/auth-navigation';
+import { RETURN_URL_PARAM, safeReturnUrl } from '../../../core/auth/auth-navigation';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +23,7 @@ export class Login implements OnInit {
   });
 
   readonly submitting = signal(false);
-  readonly returnUrl = safeReturnUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
+  readonly returnUrl = safeReturnUrl(this.route.snapshot.queryParamMap.get(RETURN_URL_PARAM));
 
   readonly submitLabel = computed(() =>
     this.submitting()

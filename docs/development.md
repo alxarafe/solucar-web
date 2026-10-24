@@ -41,8 +41,11 @@ Angular `HttpClient` handles the `XSRF-TOKEN` cookie and `X-XSRF-TOKEN` header
 automatically for same-origin non-safe requests. Do not add a custom CSRF
 interceptor or copy the cookie manually.
 
-`/contacts` remains public. Effective permissions are not exposed by Alixar yet,
-so Solucar has no permission-based guards or UI.
+`/contacts` remains public. `GET /api/auth/me` now includes effective `roles`
+and `permissions`; Solucar keeps them in memory and exposes `hasPermission()`.
+The `requirePermission()` guard, `/forbidden` view and permission-aware
+navigation metadata are available, but no real ERP route is protected yet.
+Frontend permission checks are UX only; Alixar must still enforce `403`.
 
 ### Manual session smoke test
 
@@ -51,11 +54,13 @@ so Solucar has no permission-based guards or UI.
 3. Open `http://127.0.0.1:44200/login`.
 4. In browser network tools, verify bootstrap `/api/auth/me` returns `401` without a session and issues `XSRF-TOKEN`. No login form should flash before bootstrap completes.
 5. Verify an invalid login shows the localized invalid-credentials message.
-6. Sign in with a provisioned user. Verify POST login carries Angular's `X-XSRF-TOKEN`, the browser receives `JSESSIONID`, the subsequent `/me` refreshes identity/CSRF, and the header shows the username.
-7. Reload the page and verify the session is restored through `/api/auth/me`.
-8. Log out; verify POST logout returns `204`, subsequent `/me` returns `401` and renews `XSRF-TOKEN`, and the app returns to `/login`.
-9. Sign in again to verify CSRF remains usable after logout.
-10. With the backend unreachable or a stalled `/me`, verify loading ends within the 10-second request deadline and manual Retry is available at `/login`.
+6. Sign in with a provisioned user. Verify POST login carries Angular's `X-XSRF-TOKEN`, the browser receives `JSESSIONID`, the subsequent `/me` refreshes the current user, roles and permissions plus CSRF, and the header shows the username.
+7. Verify the `/me` response contains `roles` and `permissions`, and that Solucar does not write them to browser storage.
+8. Reload the page and verify the session and authorization context are restored through `/api/auth/me`.
+9. Open `/forbidden` directly and verify the localized access-denied message.
+10. Log out; verify POST logout returns `204`, subsequent `/me` returns `401` and renews `XSRF-TOKEN`, and the app returns to `/login`.
+11. Sign in again to verify CSRF remains usable after logout.
+12. With the backend unreachable or a stalled `/me`, verify loading ends within the 10-second request deadline and manual Retry is available at `/login`.
 
 This manual flow is required when browser cookie and CSRF behavior must be
 proven; unit tests alone do not prove real browser/session integration.

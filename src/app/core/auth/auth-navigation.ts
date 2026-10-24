@@ -2,6 +2,8 @@ import { DefaultUrlSerializer, PRIMARY_OUTLET } from '@angular/router';
 
 export const DEFAULT_AUTHENTICATED_PATH = '/contacts';
 export const LOGIN_PATH = '/login';
+export const FORBIDDEN_PATH = '/forbidden';
+export const RETURN_URL_PARAM = 'returnUrl';
 const UNSAFE_RETURN_URL = /[\\\u0000-\u0020\u007f]/;
 
 export function safeReturnUrl(candidate: string | null): string {
