@@ -11,6 +11,11 @@ export interface AuthIdentity {
   email: string;
 }
 
+export interface CurrentUser extends AuthIdentity {
+  roles: string[];
+  permissions: string[];
+}
+
 export interface LoginRequest {
   identifier: string;
   password: string;
@@ -21,20 +26,20 @@ export class AuthApi {
   constructor(private readonly http: HttpClient) {}
 
   login(request: LoginRequest): Observable<AuthIdentity> {
-    return this.http.post<AuthIdentity>(`${AUTH_BASE_PATH}/login`, request).pipe(
-      timeout(AUTH_REQUEST_TIMEOUT_MS),
-    );
+    return this.http
+      .post<AuthIdentity>(`${AUTH_BASE_PATH}/login`, request)
+      .pipe(timeout(AUTH_REQUEST_TIMEOUT_MS));
   }
 
-  me(): Observable<AuthIdentity> {
-    return this.http.get<AuthIdentity>(`${AUTH_BASE_PATH}/me`).pipe(
-      timeout(AUTH_REQUEST_TIMEOUT_MS),
-    );
+  me(): Observable<CurrentUser> {
+    return this.http
+      .get<CurrentUser>(`${AUTH_BASE_PATH}/me`)
+      .pipe(timeout(AUTH_REQUEST_TIMEOUT_MS));
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>(`${AUTH_BASE_PATH}/logout`, null).pipe(
-      timeout(AUTH_REQUEST_TIMEOUT_MS),
-    );
+    return this.http
+      .post<void>(`${AUTH_BASE_PATH}/logout`, null)
+      .pipe(timeout(AUTH_REQUEST_TIMEOUT_MS));
   }
 }

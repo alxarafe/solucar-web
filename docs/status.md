@@ -13,16 +13,25 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 - **Login route**: `/login`
 - **Bootstrap**: an Angular app initializer starts `GET /api/auth/me`; a loading state hides login and routed content until the lookup resolves; stalled auth requests are cancelled after 10 seconds
 - **Login**: `POST /api/auth/login` with `identifier` and `password`
-- **Logout**: `POST /api/auth/logout` clears identity on `204`, then `/api/auth/me` reconciles the server session and renews CSRF; a failed refresh is reported as unavailable without undoing logout
+- **Logout**: `POST /api/auth/logout` clears the authorization context on `204`, then `/api/auth/me` reconciles the server session and renews CSRF; a failed refresh is reported as unavailable without undoing logout
 - **Session state**: `unknown`, `authenticated`, `anonymous`, `unavailable`
-- **Identity**: `id`, `username`, `email` only; effective permissions are not exposed by Alixar yet
+- **Current user**: `id`, `username`, `email`, `roles` and `permissions`; the complete context is held only in memory and is never persisted
 - **CSRF**: Angular's built-in `HttpClient` support reads `XSRF-TOKEN` and sends `X-XSRF-TOKEN` on same-origin non-safe requests
 - **Login retry**: a `403` login response triggers one CSRF renewal and one retry, never an unbounded retry loop
 - **Return URL**: only internal root-relative destinations are accepted; external, protocol-relative and `/login` targets fall back to `/contacts`
 - **Errors**: invalid credentials, validation, forbidden, unavailable, network, session expired and unexpected authentication errors have distinct localized messages
 - **Cookies**: the browser owns `JSESSIONID` (HttpOnly) and `XSRF-TOKEN`; Solucar application code never reads or stores session credentials or tokens
 
-`/contacts` remains public in this slice. Authentication does not yet protect application routes or expose authorization decisions.
+### Authorization UI foundation
+
+- **Model**: `USER → ROLES → PERMISSIONS`; Solucar checks effective permission codes and never grants access from role names
+- **Permission lookup**: `AuthSessionService.hasPermission(permission)` over an in-memory `Set` derived from `/api/auth/me`
+- **Route guard**: `requirePermission(permission)` waits for an unresolved bootstrap, redirects anonymous users to `/login` with a safe `returnUrl` and authenticated users without the permission to `/forbidden`; it never logs the user out
+- **Forbidden view**: localized `/forbidden` route
+- **Navigation metadata**: entries declare `label`, `route` and `requiredPermission`; only effective entries are visible
+- **Backend authority**: frontend checks are UX only; Alixar must enforce authorization and return `403` for forbidden operations
+
+`/contacts` remains public and no real ERP route uses the permission guard yet. The authorization foundation is ready for protected routes as they are introduced.
 
 ### Contact
 
@@ -73,7 +82,7 @@ See [Development](development.md) for full workflow details.
 
 ## Not yet implemented
 
-- Effective permission exposure and authorization UI/guards
+- Authorization applied to real protected ERP routes
 - Password reset, account self-service and remember-me
 - Broad ERP UI beyond the current Contact slice
 - Automated end-to-end validation against a running Alixar instance

@@ -1,19 +1,28 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { LOCALE_ID } from '@angular/core';
 import { vi } from 'vitest';
 import { Observable, TimeoutError } from 'rxjs';
-import { AUTH_REQUEST_TIMEOUT_MS, AuthApi, AuthIdentity, LoginRequest } from './auth-api';
+import {
+  AUTH_REQUEST_TIMEOUT_MS,
+  AuthApi,
+  AuthIdentity,
+  CurrentUser,
+  LoginRequest,
+} from './auth-api';
 import { acceptLanguageInterceptor } from '../api/accept-language.interceptor';
 
 const IDENTITY: AuthIdentity = {
   id: '8f796219-e501-44e8-a4ab-4c014821ba58',
   username: 'alice',
   email: 'alice@example.test',
+};
+
+const CURRENT_USER: CurrentUser = {
+  ...IDENTITY,
+  roles: ['system-admin'],
+  permissions: ['users.manage', 'audit.read'],
 };
 
 describe('AuthApi', () => {
@@ -60,9 +69,9 @@ describe('AuthApi', () => {
     req.flush(IDENTITY);
   });
 
-  it('should issue GET /api/auth/me', () => {
-    api.me().subscribe((identity) => {
-      expect(identity).toEqual(IDENTITY);
+  it('should issue GET /api/auth/me and consume roles and permissions', () => {
+    api.me().subscribe((currentUser) => {
+      expect(currentUser).toEqual(CURRENT_USER);
     });
 
     const req = httpMock.expectOne('/api/auth/me');
@@ -70,7 +79,7 @@ describe('AuthApi', () => {
     expect(req.request.headers.has('Authorization')).toBe(false);
     expect(req.request.headers.has('X-XSRF-TOKEN')).toBe(false);
     expect(req.request.withCredentials).toBe(false);
-    req.flush(IDENTITY);
+    req.flush(CURRENT_USER);
   });
 
   it('should issue POST /api/auth/logout without a request body', () => {
@@ -100,7 +109,7 @@ describe('AuthApi', () => {
     api.me().subscribe();
     const me = httpMock.expectOne('/api/auth/me');
     expect(me.request.headers.has('X-XSRF-TOKEN')).toBe(false);
-    me.flush(IDENTITY);
+    me.flush(CURRENT_USER);
 
     api.logout().subscribe();
     const logout = httpMock.expectOne('/api/auth/logout');
@@ -108,18 +117,26 @@ describe('AuthApi', () => {
     logout.flush(null);
   });
 
-  it.each(['me', 'login', 'logout'] as const)('should cancel a stalled %s request', async (operation) => {
-    vi.useFakeTimers();
-    const response: Observable<unknown> = operation === 'login'
-      ? api.login({ identifier: 'alice', password: 'secret' })
-      : api[operation]();
-    let failure: unknown;
-    response.subscribe({ error: (error: unknown) => { failure = error; } });
-    const request = httpMock.expectOne(`/api/auth/${operation}`);
+  it.each(['me', 'login', 'logout'] as const)(
+    'should cancel a stalled %s request',
+    async (operation) => {
+      vi.useFakeTimers();
+      const response: Observable<unknown> =
+        operation === 'login'
+          ? api.login({ identifier: 'alice', password: 'secret' })
+          : api[operation]();
+      let failure: unknown;
+      response.subscribe({
+        error: (error: unknown) => {
+          failure = error;
+        },
+      });
+      const request = httpMock.expectOne(`/api/auth/${operation}`);
 
-    await vi.advanceTimersByTimeAsync(AUTH_REQUEST_TIMEOUT_MS);
+      await vi.advanceTimersByTimeAsync(AUTH_REQUEST_TIMEOUT_MS);
 
-    expect(request.cancelled).toBe(true);
-    expect(failure).toBeInstanceOf(TimeoutError);
-  });
+      expect(request.cancelled).toBe(true);
+      expect(failure).toBeInstanceOf(TimeoutError);
+    },
+  );
 });

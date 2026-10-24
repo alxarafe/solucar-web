@@ -1,14 +1,11 @@
 import { TestBed } from '@angular/core/testing';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { LOCALE_ID } from '@angular/core';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { vi } from 'vitest';
 import { acceptLanguageInterceptor } from '../../../core/api/accept-language.interceptor';
-import { AuthIdentity } from '../../../core/auth/auth-api';
+import { AuthIdentity, CurrentUser } from '../../../core/auth/auth-api';
 import { AuthSessionService } from '../../../core/auth/auth-session.service';
 import { Login } from './login';
 
@@ -16,6 +13,12 @@ const IDENTITY: AuthIdentity = {
   id: '8f796219-e501-44e8-a4ab-4c014821ba58',
   username: 'alice',
   email: 'alice@example.test',
+};
+
+const CURRENT_USER: CurrentUser = {
+  ...IDENTITY,
+  roles: ['system-admin'],
+  permissions: ['users.manage'],
 };
 
 const tick = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
@@ -71,7 +74,7 @@ describe('Login', () => {
     if (options.resolveBootstrap !== false) {
       const request = httpMock.expectOne('/api/auth/me');
       if (options.bootstrap === 'authenticated') {
-        request.flush(IDENTITY);
+        request.flush(CURRENT_USER);
       } else if (options.bootstrap === 'unavailable') {
         request.flush(
           { code: 'AUDIT_UNAVAILABLE', detail: 'Audit trail unavailable.' },
@@ -107,10 +110,13 @@ describe('Login', () => {
     expect(compiled.querySelector('.login__status')?.textContent?.trim()).toBe('Loading...');
     expect(compiled.querySelector('form')).toBeNull();
 
-    httpMock.expectOne('/api/auth/me').flush({}, {
-      status: 401,
-      statusText: 'Unauthorized',
-    });
+    httpMock.expectOne('/api/auth/me').flush(
+      {},
+      {
+        status: 401,
+        statusText: 'Unauthorized',
+      },
+    );
     await bootstrap;
   });
 
@@ -121,7 +127,7 @@ describe('Login', () => {
     const submit = fixture.componentInstance.submit();
     httpMock.expectOne('/api/auth/login').flush(IDENTITY);
     await tick();
-    httpMock.expectOne('/api/auth/me').flush(IDENTITY);
+    httpMock.expectOne('/api/auth/me').flush(CURRENT_USER);
     await submit;
     fixture.detectChanges();
 
@@ -159,7 +165,9 @@ describe('Login', () => {
     password.value = 'secret';
     identifier.dispatchEvent(new Event('input'));
     password.dispatchEvent(new Event('input'));
-    element.querySelector('form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    element
+      .querySelector('form')!
+      .dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     await fixture.componentInstance.submit();
     const request = httpMock.expectOne('/api/auth/login');
     expect(request.request.body).toEqual({ identifier: 'alice@example.test', password: 'secret' });
@@ -177,7 +185,9 @@ describe('Login', () => {
     httpMock.expectOne('/api/auth/login').error(new ProgressEvent('error'));
     await submit;
     fixture.detectChanges();
-    expect((fixture.nativeElement as HTMLElement).querySelector('[role="alert"]')?.textContent).toContain('Unable to communicate with Alixar.');
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('[role="alert"]')?.textContent,
+    ).toContain('Unable to communicate with Alixar.');
     expect(router.navigateByUrl).not.toHaveBeenCalled();
   });
 
@@ -186,10 +196,12 @@ describe('Login', () => {
     fillCredentials(fixture);
 
     const submit = fixture.componentInstance.submit();
-    httpMock.expectOne('/api/auth/login').flush(
-      { code: 'VALIDATION_REQUIRED', detail: 'Required.', field: 'identifier' },
-      { status: 400, statusText: 'Bad Request' },
-    );
+    httpMock
+      .expectOne('/api/auth/login')
+      .flush(
+        { code: 'VALIDATION_REQUIRED', detail: 'Required.', field: 'identifier' },
+        { status: 400, statusText: 'Bad Request' },
+      );
     await submit;
     fixture.detectChanges();
 
@@ -204,10 +216,12 @@ describe('Login', () => {
     fillCredentials(fixture);
 
     const submit = fixture.componentInstance.submit();
-    httpMock.expectOne('/api/auth/login').flush(
-      { code: 'AUDIT_UNAVAILABLE', detail: 'Audit trail unavailable.' },
-      { status: 503, statusText: 'Service Unavailable' },
-    );
+    httpMock
+      .expectOne('/api/auth/login')
+      .flush(
+        { code: 'AUDIT_UNAVAILABLE', detail: 'Audit trail unavailable.' },
+        { status: 503, statusText: 'Service Unavailable' },
+      );
     await submit;
     fixture.detectChanges();
 
@@ -225,19 +239,25 @@ describe('Login', () => {
     fillCredentials(fixture);
 
     const submit = fixture.componentInstance.submit();
-    httpMock.expectOne('/api/auth/login').flush({}, {
-      status: 403,
-      statusText: 'Forbidden',
-    });
+    httpMock.expectOne('/api/auth/login').flush(
+      {},
+      {
+        status: 403,
+        statusText: 'Forbidden',
+      },
+    );
     await tick();
-    httpMock.expectOne('/api/auth/me').flush({}, {
-      status: 401,
-      statusText: 'Unauthorized',
-    });
+    httpMock.expectOne('/api/auth/me').flush(
+      {},
+      {
+        status: 401,
+        statusText: 'Unauthorized',
+      },
+    );
     await tick();
     httpMock.expectOne('/api/auth/login').flush(IDENTITY);
     await tick();
-    httpMock.expectOne('/api/auth/me').flush(IDENTITY);
+    httpMock.expectOne('/api/auth/me').flush(CURRENT_USER);
     await submit;
     fixture.detectChanges();
 
@@ -252,7 +272,7 @@ describe('Login', () => {
     const submit = fixture.componentInstance.submit();
     httpMock.expectOne('/api/auth/login').flush(IDENTITY);
     await tick();
-    httpMock.expectOne('/api/auth/me').flush(IDENTITY);
+    httpMock.expectOne('/api/auth/me').flush(CURRENT_USER);
     await submit;
 
     expect(router.navigateByUrl).toHaveBeenCalledWith('/contacts?tab=1');
@@ -265,7 +285,7 @@ describe('Login', () => {
     const submit = fixture.componentInstance.submit();
     httpMock.expectOne('/api/auth/login').flush(IDENTITY);
     await tick();
-    httpMock.expectOne('/api/auth/me').flush(IDENTITY);
+    httpMock.expectOne('/api/auth/me').flush(CURRENT_USER);
     await submit;
 
     expect(router.navigateByUrl).toHaveBeenCalledWith('/contacts');
@@ -275,9 +295,7 @@ describe('Login', () => {
     const { fixture } = await setup({ bootstrap: 'authenticated' });
     const compiled = fixture.nativeElement as HTMLElement;
 
-    expect(compiled.querySelector('.login__status')?.textContent?.trim()).toBe(
-      'Redirecting...',
-    );
+    expect(compiled.querySelector('.login__status')?.textContent?.trim()).toBe('Redirecting...');
     expect(router.navigateByUrl).toHaveBeenCalledWith('/contacts');
   });
 
@@ -291,7 +309,7 @@ describe('Login', () => {
     expect(compiled.querySelector('form')).toBeNull();
 
     const retry = fixture.componentInstance.retry();
-    httpMock.expectOne('/api/auth/me').flush(IDENTITY);
+    httpMock.expectOne('/api/auth/me').flush(CURRENT_USER);
     await retry;
 
     expect(auth.status()).toBe('authenticated');

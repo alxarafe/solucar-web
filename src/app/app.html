@@ -3,13 +3,15 @@
 } @else {
   @if (auth.status() === 'authenticated') {
     <header class="app__header">
-      <span class="app__identity">{{ auth.identity()?.username }}</span>
-      <button
-        type="button"
-        class="app__logout"
-        [disabled]="loggingOut()"
-        (click)="logout()"
-      >
+      <span class="app__identity">{{ auth.currentUser()?.username }}</span>
+      @if (visibleNavigation().length) {
+        <nav class="app__nav">
+          @for (entry of visibleNavigation(); track entry.route) {
+            <a class="app__nav-link" [routerLink]="entry.route">{{ entry.label }}</a>
+          }
+        </nav>
+      }
+      <button type="button" class="app__logout" [disabled]="loggingOut()" (click)="logout()">
         {{ logoutLabel() }}
       </button>
     </header>

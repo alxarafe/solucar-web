@@ -7,6 +7,7 @@ import { routes } from './app.routes';
 import { AuthSessionService } from './core/auth/auth-session.service';
 import { ContactComponent } from './features/contact/contact';
 import { Login } from './features/auth/login/login';
+import { Forbidden } from './features/auth/forbidden/forbidden';
 
 describe('session routing', () => {
   beforeEach(() => {
@@ -19,7 +20,9 @@ describe('session routing', () => {
 
   it('should keep /contacts public after an anonymous bootstrap', async () => {
     const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
-    TestBed.inject(HttpTestingController).expectOne('/api/auth/me').flush(null, { status: 401, statusText: 'Unauthorized' });
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/auth/me')
+      .flush(null, { status: 401, statusText: 'Unauthorized' });
     await bootstrap;
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl('/contacts', ContactComponent);
@@ -28,9 +31,15 @@ describe('session routing', () => {
 
   it('should redirect an authenticated /login visit to its internal destination', async () => {
     const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
-    TestBed.inject(HttpTestingController).expectOne('/api/auth/me').flush({
-      id: '8f796219-e501-44e8-a4ab-4c014821ba58', username: 'alice', email: 'alice@example.test',
-    });
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/auth/me')
+      .flush({
+        id: '8f796219-e501-44e8-a4ab-4c014821ba58',
+        username: 'alice',
+        email: 'alice@example.test',
+        roles: ['system-admin'],
+        permissions: ['users.manage'],
+      });
     await bootstrap;
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl('/login?returnUrl=%2Fcontacts%3Ftab%3D1');
@@ -38,9 +47,21 @@ describe('session routing', () => {
     expect(TestBed.inject(Router).url).toBe('/contacts?tab=1');
   });
 
+  it('should expose /forbidden without requiring a session', async () => {
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/forbidden', Forbidden);
+
+    expect(TestBed.inject(Router).url).toBe('/forbidden');
+    expect(harness.routeNativeElement?.querySelector('h1')?.textContent?.trim()).toBe(
+      'Access denied',
+    );
+  });
+
   it('should expose /login to an anonymous user', async () => {
     const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
-    TestBed.inject(HttpTestingController).expectOne('/api/auth/me').flush(null, { status: 401, statusText: 'Unauthorized' });
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/auth/me')
+      .flush(null, { status: 401, statusText: 'Unauthorized' });
     await bootstrap;
     const harness = await RouterTestingHarness.create();
     await harness.navigateByUrl('/login', Login);

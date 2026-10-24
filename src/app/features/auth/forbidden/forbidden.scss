@@ -1,0 +1,22 @@
+.forbidden {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.forbidden__panel {
+  max-width: 32rem;
+  text-align: center;
+}
+
+.forbidden__title {
+  margin-bottom: 1rem;
+}
+
+.forbidden__message {
+  margin-bottom: 1.5rem;
+}
+
+.forbidden__link {
+  font-weight: 600;
+}

@@ -1,11 +1,12 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { authErrorMessage, AuthError } from './core/auth/auth-error';
 import { AuthSessionService } from './core/auth/auth-session.service';
 import { LOGIN_PATH } from './core/auth/auth-navigation';
+import { NavigationEntry, visibleNavigationEntries } from './core/navigation/navigation-entry';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterLink, RouterOutlet],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',
@@ -16,6 +17,13 @@ export class App {
 
   readonly loggingOut = signal(false);
   readonly logoutError = signal<AuthError | null>(null);
+
+  readonly navigationEntries: readonly NavigationEntry[] = [];
+  readonly visibleNavigation = computed(() =>
+    visibleNavigationEntries(this.navigationEntries, (permission) =>
+      this.auth.hasPermission(permission),
+    ),
+  );
 
   readonly logoutLabel = computed(() =>
     this.loggingOut()

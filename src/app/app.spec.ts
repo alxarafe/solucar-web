@@ -3,20 +3,23 @@ import { signal } from '@angular/core';
 import { provideRouter, Router } from '@angular/router';
 import { vi } from 'vitest';
 import { App } from './app';
-import { AuthIdentity } from './core/auth/auth-api';
+import { CurrentUser } from './core/auth/auth-api';
 import { AuthError } from './core/auth/auth-error';
 import { AuthSessionService, AuthStatus } from './core/auth/auth-session.service';
 
-const IDENTITY: AuthIdentity = {
+const CURRENT_USER: CurrentUser = {
   id: '8f796219-e501-44e8-a4ab-4c014821ba58',
   username: 'alice',
   email: 'alice@example.test',
+  roles: ['system-admin'],
+  permissions: ['users.manage'],
 };
 
 class AuthSessionStub {
   readonly status = signal<AuthStatus>('unknown');
-  readonly identity = signal<AuthIdentity | null>(null);
+  readonly currentUser = signal<CurrentUser | null>(null);
   readonly error = signal<AuthError | null>(null);
+  readonly hasPermission = vi.fn<(permission: string) => boolean>().mockReturnValue(false);
   readonly logout = vi.fn<() => Promise<AuthError | null>>().mockResolvedValue(null);
 }
 
@@ -28,10 +31,7 @@ describe('App', () => {
     auth = new AuthSessionStub();
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [
-        provideRouter([]),
-        { provide: AuthSessionService, useValue: auth },
-      ],
+      providers: [provideRouter([]), { provide: AuthSessionService, useValue: auth }],
     }).compileComponents();
     router = TestBed.inject(Router);
     vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
@@ -59,7 +59,7 @@ describe('App', () => {
 
   it('should render the identity and logout action when authenticated', () => {
     auth.status.set('authenticated');
-    auth.identity.set(IDENTITY);
+    auth.currentUser.set(CURRENT_USER);
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
@@ -70,7 +70,7 @@ describe('App', () => {
 
   it('should clear the frontend session and navigate to login after logout', async () => {
     auth.status.set('authenticated');
-    auth.identity.set(IDENTITY);
+    auth.currentUser.set(CURRENT_USER);
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
@@ -82,7 +82,7 @@ describe('App', () => {
 
   it('should keep the session and show an error when logout fails', async () => {
     auth.status.set('authenticated');
-    auth.identity.set(IDENTITY);
+    auth.currentUser.set(CURRENT_USER);
     auth.logout.mockResolvedValue({ kind: 'unavailable' });
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();

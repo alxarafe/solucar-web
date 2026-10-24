@@ -17,14 +17,14 @@
         <source>Signing out...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.ts</context>
-          <context context-type="linenumber">22</context>
+          <context context-type="linenumber">30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="auth.action.logout" datatype="html">
         <source>Log out</source>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.ts</context>
-          <context context-type="linenumber">23</context>
+          <context context-type="linenumber">31</context>
         </context-group>
       </trans-unit>
       <trans-unit id="auth.error.invalidCredentials" datatype="html">
@@ -81,6 +81,27 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/auth/auth-error.ts</context>
           <context context-type="linenumber">76</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.forbidden.title" datatype="html">
+        <source>Access denied</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/forbidden/forbidden.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.forbidden.message" datatype="html">
+        <source> Your account does not have permission to access this page. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/forbidden/forbidden.html</context>
+          <context context-type="linenumber">5,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="auth.forbidden.backToContacts" datatype="html">
+        <source> Back to contacts </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/auth/forbidden/forbidden.html</context>
+          <context context-type="linenumber">8,12</context>
         </context-group>
       </trans-unit>
       <trans-unit id="auth.login.redirecting" datatype="html">
