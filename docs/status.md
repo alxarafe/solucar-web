@@ -31,7 +31,16 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 - **Navigation metadata**: entries declare `label`, `route` and `requiredPermission`; only effective entries are visible
 - **Backend authority**: frontend checks are UX only; Alixar must enforce authorization and return `403` for forbidden operations
 
-`/contacts` remains public and no real ERP route uses the permission guard yet. The authorization foundation is ready for protected routes as they are introduced.
+`/contacts` remains public. User administration routes use the permission guard; see [Architecture](architecture.md#user-administration) for the contract and authorization boundaries.
+
+### User administration
+
+- `/admin/users`, `/admin/users/new`, `/admin/users/:id` require `users.manage`
+- Server-side search, active/inactive filter and pagination; detail and creation
+- Username changes, explicit account activation/deactivation, administrative password reset
+- Read-only role catalogue and replacement of User → Roles assignments, including zero roles
+- Email is entered on creation and read-only afterward; no direct user permissions
+- Role CRUD, role permission editing, deletion and audit UI remain outside this feature
 
 ### Contact
 
@@ -52,7 +61,7 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 
 ## Backend boundary
 
-- All HTTP communication centralized in `core/api` and `core/auth` (`ContactApi`, `AuthApi`, `acceptLanguageInterceptor`)
+- All HTTP communication centralized in `core/api` and `core/auth` (`ContactApi`, `AdminUsersApi`, `AuthApi`, `acceptLanguageInterceptor`)
 - No business rules in frontend — Alixar is the authority
 - No database schema knowledge — no `llx_*` names in frontend
 - No Dolibarr vocabulary as internal model — no `fk_soc`, `socid`, `llx_*`
@@ -82,8 +91,7 @@ See [Development](development.md) for full workflow details.
 
 ## Not yet implemented
 
-- Authorization applied to real protected ERP routes
-- Password reset, account self-service and remember-me
+- Self-service password recovery, account self-service and remember-me
 - Broad ERP UI beyond the current Contact slice
 - Automated end-to-end validation against a running Alixar instance
 - Dynamic in-place language switching

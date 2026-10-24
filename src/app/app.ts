@@ -4,6 +4,8 @@ import { authErrorMessage, AuthError } from './core/auth/auth-error';
 import { AuthSessionService } from './core/auth/auth-session.service';
 import { LOGIN_PATH } from './core/auth/auth-navigation';
 import { NavigationEntry, visibleNavigationEntries } from './core/navigation/navigation-entry';
+import { Permission } from './core/auth/permission';
+import { ADMIN_USERS_PATH } from './features/admin-users/admin-users-navigation';
 
 @Component({
   imports: [RouterLink, RouterOutlet],
@@ -18,7 +20,13 @@ export class App {
   readonly loggingOut = signal(false);
   readonly logoutError = signal<AuthError | null>(null);
 
-  readonly navigationEntries: readonly NavigationEntry[] = [];
+  readonly navigationEntries: readonly NavigationEntry[] = [
+    {
+      label: $localize`:@@adminUsers.title:Users`,
+      route: ADMIN_USERS_PATH,
+      requiredPermission: Permission.UsersManage,
+    },
+  ];
   readonly visibleNavigation = computed(() =>
     visibleNavigationEntries(this.navigationEntries, (permission) =>
       this.auth.hasPermission(permission),

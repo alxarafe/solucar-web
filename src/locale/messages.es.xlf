@@ -318,6 +318,494 @@
           <context context-type="linenumber">122</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="adminUsers.title" datatype="html">
+        <source>Users</source>
+        <target>Usuarios</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.ts</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.field.roles" datatype="html">
+        <source>Roles</source>
+        <target>Roles</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-role-picker.ts</context>
+          <context context-type="linenumber">8,9</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">32,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.roles.empty" datatype="html">
+        <source>No roles available.</source>
+        <target>No hay roles disponibles.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-role-picker.ts</context>
+          <context context-type="linenumber">16,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.back" datatype="html">
+        <source>Back to users</source>
+        <target>Volver a usuarios</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-create.html</context>
+          <context context-type="linenumber">2,3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">2,3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.new" datatype="html">
+        <source>New user</source>
+        <target>Nuevo usuario</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-create.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">4,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.create.inactive" datatype="html">
+        <source>New users are inactive. Enable the account from its detail page when ready.</source>
+        <target>Los usuarios nuevos están inactivos. Active la cuenta desde su detalle cuando esté preparada.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-create.html</context>
+          <context context-type="linenumber">4,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.roles.loading" datatype="html">
+        <source>Loading roles...</source>
+        <target>Cargando roles...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-create.html</context>
+          <context context-type="linenumber">5,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.retry" datatype="html">
+        <source>Retry</source>
+        <target>Reintentar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-create.html</context>
+          <context context-type="linenumber">8,10</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">22,24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.field.username" datatype="html">
+        <source>Username</source>
+        <target>Nombre de usuario</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-create.html</context>
+          <context context-type="linenumber">12,13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">20,21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">29,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.field.email" datatype="html">
+        <source>Email</source>
+        <target>Correo electrónico</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-create.html</context>
+          <context context-type="linenumber">14,15</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">10,11</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">30,31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.field.initialPassword" datatype="html">
+        <source>Initial password</source>
+        <target>Contraseña inicial</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-create.html</context>
+          <context context-type="linenumber">16,17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.password.help" datatype="html">
+        <source>Use at least <x id="INTERPOLATION" equiv-text="{{ passwordMinLength }}"/> characters.</source>
+        <target>Utilice al menos <x id="INTERPOLATION" equiv-text="{{ passwordMinLength }}"/> caracteres.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-create.html</context>
+          <context context-type="linenumber">18,19</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">47,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.validation.create" datatype="html">
+        <source>Enter a username, a valid email and a password of sufficient length.</source>
+        <target>Introduzca un nombre de usuario, un correo válido y una contraseña con longitud suficiente.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-create.html</context>
+          <context context-type="linenumber">20,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.create" datatype="html">
+        <source>Create user</source>
+        <target>Crear usuario</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-create.html</context>
+          <context context-type="linenumber">23,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.detail.title" datatype="html">
+        <source>User details</source>
+        <target>Detalle del usuario</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.loading" datatype="html">
+        <source>Loading users...</source>
+        <target>Cargando usuarios...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">4,5</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">19,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.field.status" datatype="html">
+        <source>Status</source>
+        <target>Estado</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">11,12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">27,28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">10,11</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">31,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.status.active" datatype="html">
+        <source>Active</source>
+        <target>Activo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">13,14</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.status.inactive" datatype="html">
+        <source>Inactive</source>
+        <target>Inactivo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">12,13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">14,16</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">39,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.field.createdAt" datatype="html">
+        <source>Created</source>
+        <target>Creado</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.field.updatedAt" datatype="html">
+        <source>Updated</source>
+        <target>Actualizado</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.username.title" datatype="html">
+        <source>Change username</source>
+        <target>Cambiar nombre de usuario</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">19,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.validation.username" datatype="html">
+        <source>Enter a username.</source>
+        <target>Introduzca un nombre de usuario.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">22,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.save" datatype="html">
+        <source>Save</source>
+        <target>Guardar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">23,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.disable" datatype="html">
+        <source>Disable</source>
+        <target>Desactivar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.enable" datatype="html">
+        <source>Enable</source>
+        <target>Activar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">30,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.enabled.confirm" datatype="html">
+        <source>Confirm this account status change? Disabling an account invalidates its sessions.</source>
+        <target>¿Confirma el cambio de estado de esta cuenta? Desactivar una cuenta invalida sus sesiones.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">33,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.confirm" datatype="html">
+        <source>Confirm</source>
+        <target>Confirmar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">34,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.cancel" datatype="html">
+        <source>Cancel</source>
+        <target>Cancelar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">35,38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.saveRoles" datatype="html">
+        <source>Save roles</source>
+        <target>Guardar roles</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">40,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.resetPassword" datatype="html">
+        <source>Reset password</source>
+        <target>Restablecer contraseña</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">44,45</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">49,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.field.password" datatype="html">
+        <source>Password</source>
+        <target>Contraseña</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">45,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.validation.password" datatype="html">
+        <source>Enter a password of sufficient length.</source>
+        <target>Introduzca una contraseña con longitud suficiente.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.html</context>
+          <context context-type="linenumber">48,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.password.success" datatype="html">
+        <source>Password reset successfully.</source>
+        <target>Contraseña restablecida correctamente.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.ts</context>
+          <context context-type="linenumber">91</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.save.success" datatype="html">
+        <source>User saved successfully.</source>
+        <target>Usuario guardado correctamente.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-detail.ts</context>
+          <context context-type="linenumber">107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.error.forbidden" datatype="html">
+        <source>You do not have permission to manage users.</source>
+        <target>No tiene permiso para administrar usuarios.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-error.ts</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.error.notFound" datatype="html">
+        <source>The requested user or role was not found.</source>
+        <target>No se encontró el usuario o rol solicitado.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-error.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.error.conflict" datatype="html">
+        <source>The change conflicts with the current data.</source>
+        <target>El cambio entra en conflicto con los datos actuales.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-error.ts</context>
+          <context context-type="linenumber">16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.error.unavailable" datatype="html">
+        <source>User administration is temporarily unavailable. Please try again.</source>
+        <target>La administración de usuarios no está disponible temporalmente. Inténtelo de nuevo.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-error.ts</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.error.unexpected" datatype="html">
+        <source>Unable to complete the user administration request.</source>
+        <target>No se pudo completar la solicitud de administración de usuarios.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-error.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.signIn" datatype="html">
+        <source>Sign in again</source>
+        <target>Volver a iniciar sesión</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-user-error.ts</context>
+          <context context-type="linenumber">34,39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.search" datatype="html">
+        <source>Search</source>
+        <target>Buscar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">8,9</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">16,19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.status.all" datatype="html">
+        <source>All</source>
+        <target>Todos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">12,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.field.details" datatype="html">
+        <source>Details</source>
+        <target>Detalle</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">33,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.view" datatype="html">
+        <source>View user</source>
+        <target>Ver usuario</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">41,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.empty" datatype="html">
+        <source>No users found</source>
+        <target>No se encontraron usuarios</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">47,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.pagination.label" datatype="html">
+        <source>User pages</source>
+        <target>Páginas de usuarios</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.previous" datatype="html">
+        <source>Previous</source>
+        <target>Anterior</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">49,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.pagination.summary" datatype="html">
+        <source>Page <x id="INTERPOLATION" equiv-text="{{ page.page + 1 }}"/> · <x id="INTERPOLATION_1" equiv-text="{{ page.total }}"/> users</source>
+        <target>Página <x id="INTERPOLATION" equiv-text="{{ page.page + 1 }}"/> · <x id="INTERPOLATION_1" equiv-text="{{ page.total }}"/> usuarios</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">50,51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminUsers.action.next" datatype="html">
+        <source>Next</source>
+        <target>Siguiente</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-users/admin-users-list.html</context>
+          <context context-type="linenumber">51,55</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

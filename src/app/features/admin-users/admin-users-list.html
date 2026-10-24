@@ -1,0 +1,87 @@
+<main class="admin-users">
+  <header>
+    <h1 i18n="@@adminUsers.title">Users</h1>
+    <a [routerLink]="newPath" i18n="@@adminUsers.action.new">New user</a>
+  </header>
+  <form [formGroup]="form" (ngSubmit)="search()">
+    <fieldset [disabled]="loading()">
+      <label for="user-search" i18n="@@adminUsers.action.search">Search</label>
+      <input id="user-search" formControlName="q" type="search" />
+      <label for="user-status" i18n="@@adminUsers.field.status">Status</label>
+      <select id="user-status" formControlName="enabled">
+        <option value="" i18n="@@adminUsers.status.all">All</option>
+        <option value="true" i18n="@@adminUsers.status.active">Active</option>
+        <option value="false" i18n="@@adminUsers.status.inactive">Inactive</option>
+      </select>
+      <button type="submit" i18n="@@adminUsers.action.search">Search</button>
+    </fieldset>
+  </form>
+  @if (loading()) {
+    <p role="status" i18n="@@adminUsers.loading">Loading users...</p>
+  }
+  @if (error()) {
+    <app-admin-user-error [error]="error()" />
+    <button type="button" (click)="load()" i18n="@@adminUsers.action.retry">Retry</button>
+  }
+  @if (result(); as page) {
+    @if (page.items.length) {
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" i18n="@@adminUsers.field.username">Username</th>
+              <th scope="col" i18n="@@adminUsers.field.email">Email</th>
+              <th scope="col" i18n="@@adminUsers.field.status">Status</th>
+              <th scope="col" i18n="@@adminUsers.field.roles">Roles</th>
+              <th scope="col" i18n="@@adminUsers.field.details">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (user of page.items; track user.id) {
+              <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                  @if (user.enabled) {
+                    <span i18n="@@adminUsers.status.active">Active</span>
+                  } @else {
+                    <span i18n="@@adminUsers.status.inactive">Inactive</span>
+                  }
+                </td>
+                <td>{{ user.roles.join(', ') }}</td>
+                <td>
+                  <a [routerLink]="[usersPath, user.id]" i18n="@@adminUsers.action.view"
+                    >View user</a
+                  >
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p role="status" i18n="@@adminUsers.empty">No users found</p>
+    }
+    <nav class="pagination" aria-label="User pages" i18n-aria-label="@@adminUsers.pagination.label">
+      <button
+        type="button"
+        [disabled]="page.page === 0"
+        (click)="this.page(-1)"
+        i18n="@@adminUsers.action.previous"
+      >
+        Previous
+      </button>
+      <span i18n="@@adminUsers.pagination.summary"
+        >Page {{ page.page + 1 }} · {{ page.total }} users</span
+      >
+      <button
+        type="button"
+        [disabled]="(page.page + 1) * page.size >= page.total"
+        (click)="this.page(1)"
+        i18n="@@adminUsers.action.next"
+      >
+        Next
+      </button>
+    </nav>
+  }
+</main>

@@ -1,0 +1,113 @@
+<main class="admin-users">
+  <a [routerLink]="usersPath" i18n="@@adminUsers.action.back">Back to users</a>
+  <h1 i18n="@@adminUsers.detail.title">User details</h1>
+  @if (loading()) {
+    <p role="status" i18n="@@adminUsers.loading">Loading users...</p>
+  }
+  @if (error()) {
+    <app-admin-user-error [error]="error()" />
+  }
+  @if (success()) {
+    <p role="status">{{ success() }}</p>
+  }
+  @if (user(); as user) {
+    <dl>
+      <dt i18n="@@adminUsers.field.username">Username</dt>
+      <dd>{{ user.username }}</dd>
+      <dt i18n="@@adminUsers.field.email">Email</dt>
+      <dd>{{ user.email }}</dd>
+      <dt i18n="@@adminUsers.field.status">Status</dt>
+      <dd>
+        @if (user.enabled) {
+          <span i18n="@@adminUsers.status.active">Active</span>
+        } @else {
+          <span i18n="@@adminUsers.status.inactive">Inactive</span>
+        }
+      </dd>
+      <dt i18n="@@adminUsers.field.roles">Roles</dt>
+      <dd>{{ user.roles.join(', ') }}</dd>
+      <dt i18n="@@adminUsers.field.createdAt">Created</dt>
+      <dd>{{ user.createdAt | date: 'medium' }}</dd>
+      <dt i18n="@@adminUsers.field.updatedAt">Updated</dt>
+      <dd>{{ user.updatedAt | date: 'medium' }}</dd>
+    </dl>
+    <form [formGroup]="usernameForm" (ngSubmit)="saveUsername()">
+      <fieldset [disabled]="busy()">
+        <legend i18n="@@adminUsers.username.title">Change username</legend>
+        <label for="edit-username" i18n="@@adminUsers.field.username">Username</label>
+        <input id="edit-username" formControlName="username" autocomplete="off" required />
+        @if (usernameForm.touched && usernameForm.invalid) {
+          <p role="alert" i18n="@@adminUsers.validation.username">Enter a username.</p>
+        }
+        <button type="submit" i18n="@@adminUsers.action.save">Save</button>
+      </fieldset>
+    </form>
+    <section>
+      <h2 i18n="@@adminUsers.field.status">Status</h2>
+      @if (!confirmingEnabled()) {
+        <button type="button" [disabled]="busy()" (click)="confirmingEnabled.set(true)">
+          @if (user.enabled) {
+            <span i18n="@@adminUsers.action.disable">Disable</span>
+          } @else {
+            <span i18n="@@adminUsers.action.enable">Enable</span>
+          }
+        </button>
+      } @else {
+        <p i18n="@@adminUsers.enabled.confirm">
+          Confirm this account status change? Disabling an account invalidates its sessions.
+        </p>
+        <button
+          type="button"
+          [disabled]="busy()"
+          (click)="confirmEnabled()"
+          i18n="@@adminUsers.action.confirm"
+        >
+          Confirm
+        </button>
+        <button
+          type="button"
+          [disabled]="busy()"
+          (click)="confirmingEnabled.set(false)"
+          i18n="@@adminUsers.action.cancel"
+        >
+          Cancel
+        </button>
+      }
+    </section>
+    <form (submit)="$event.preventDefault(); saveRoles()">
+      <app-admin-role-picker
+        [roles]="roles()"
+        [selected]="selectedRoles()"
+        (selectedChange)="selectedRoles.set($event)"
+        [disabled]="busy()"
+      />
+      <button type="submit" [disabled]="busy()" i18n="@@adminUsers.action.saveRoles">
+        Save roles
+      </button>
+    </form>
+    <form [formGroup]="passwordForm" (ngSubmit)="resetPassword()">
+      <fieldset [disabled]="busy()">
+        <legend i18n="@@adminUsers.action.resetPassword">Reset password</legend>
+        <label for="reset-password" i18n="@@adminUsers.field.password">Password</label>
+        <input
+          id="reset-password"
+          type="password"
+          formControlName="newPassword"
+          autocomplete="new-password"
+          required
+          [minlength]="passwordMinLength"
+          aria-describedby="password-help"
+        />
+        <p id="password-help" i18n="@@adminUsers.password.help">
+          Use at least {{ passwordMinLength }} characters.
+        </p>
+        @if (passwordForm.touched && passwordForm.invalid) {
+          <p role="alert" i18n="@@adminUsers.validation.password">
+            Enter a password of sufficient length.
+          </p>
+        }
+        <button type="submit" i18n="@@adminUsers.action.resetPassword">Reset password</button>
+      </fieldset>
+    </form>
+  }
+</main>

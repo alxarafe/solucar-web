@@ -68,6 +68,26 @@ describe('App', () => {
     expect(compiled.querySelector('.app__logout')?.textContent?.trim()).toBe('Log out');
   });
 
+  it('shows Users only when users.manage is effective', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({ ...CURRENT_USER, roles: [], permissions: ['users.manage'] });
+    auth.hasPermission.mockImplementation((permission) => permission === 'users.manage');
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const link = fixture.nativeElement.querySelector('.app__nav-link');
+    expect(link?.textContent.trim()).toBe('Users');
+    expect(link?.getAttribute('href')).toBe('/admin/users');
+  });
+
+  it('hides Users for a system-admin without effective permissions', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({ ...CURRENT_USER, roles: ['system-admin'], permissions: [] });
+    auth.hasPermission.mockReturnValue(false);
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.app__nav-link')).toBeNull();
+  });
+
   it('should clear the frontend session and navigate to login after logout', async () => {
     auth.status.set('authenticated');
     auth.currentUser.set(CURRENT_USER);
