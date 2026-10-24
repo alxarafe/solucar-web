@@ -28,7 +28,7 @@ The host does **not** need Node.js, npm, Angular CLI, or Vitest installed.
 Solucar uses same-origin session authentication through the development proxy:
 
 - Browser origin: `http://127.0.0.1:44200`
-- API requests: `/api/auth/**` proxied to Alixar on host port `48081`
+- API requests: `/api/**` proxied to Alixar on host port `48081`
 - Application bootstrap: `GET /api/auth/me`
 - Login page: `http://127.0.0.1:44200/login`
 
@@ -44,7 +44,8 @@ interceptor or copy the cookie manually.
 `/contacts` remains public. `GET /api/auth/me` now includes effective `roles`
 and `permissions`; Solucar keeps them in memory and exposes `hasPermission()`.
 The `requirePermission()` guard, `/forbidden` view and permission-aware
-navigation metadata are available, but no real ERP route is protected yet.
+navigation metadata protect `/admin/users`, `/admin/users/new` and
+`/admin/users/:id` with `users.manage`.
 Frontend permission checks are UX only; Alixar must still enforce `403`.
 
 ### Manual session smoke test
@@ -64,6 +65,19 @@ Frontend permission checks are UX only; Alixar must still enforce `403`.
 
 This manual flow is required when browser cookie and CSRF behavior must be
 proven; unit tests alone do not prove real browser/session integration.
+
+### Manual user administration smoke
+
+Use a disposable Alixar database and a provisioned user with `users.manage`.
+Sign in through Solucar, verify `/me` and Users navigation, create a user with
+a catalogue role, then open detail, change username, disable/enable the account
+and reset its password. New accounts start inactive. Check login with the new
+password and verify mutating same-origin requests pass CSRF. Destroy only the
+disposable containers and volumes afterward; Alixar has no administrative delete.
+
+If the development proxy cannot reach a loopback-only Alixar via
+`host.docker.internal`, use temporary smoke-only networking/proxy configuration.
+Do not add a product dependency or change the permanent deployment architecture.
 
 ## Configuration
 

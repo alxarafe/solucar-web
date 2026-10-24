@@ -33,6 +33,7 @@ Solucar is the Angular web frontend for the Alixar ERP. It owns presentation, na
 - Permission lookup, `requirePermission` route guard factory, `/forbidden` view and permission-aware navigation metadata
 - Login and logout against the Alixar canonical API
 - Angular built-in CSRF handling for same-origin non-safe requests
+- User administration (`features/admin-users`) protected by `users.manage`
 - Contact feature (`features/contact`) — create and retrieve contacts via Alixar canonical API
 - Accept-Language header derived from `LOCALE_ID`
 - Development proxy for `/api/**` → `host.docker.internal:48081`
@@ -41,7 +42,6 @@ Solucar is the Angular web frontend for the Alixar ERP. It owns presentation, na
 
 ## Planned (Not Implemented)
 
-- Authorization applied to real protected ERP routes
 - ERP feature modules (thirdparties, catalog, sales, billing, inventory, accounting)
 - OpenAPI client generation (if adopted)
 - Real Alixar integration (e2e)
@@ -78,12 +78,13 @@ Rules:
 ```
 src/app/
 ├── core/             # Frontend singleton infrastructure
-│   ├── api/          # Contact HTTP client and shared ProblemDetail
+│   ├── api/          # Canonical HTTP clients and shared ProblemDetail
 │   ├── auth/         # Session state, permissions, guard, HTTP, errors, navigation
 │   └── navigation/   # Permission-aware navigation metadata
 ├── shared/           # Genuinely reused components, utilities, elements
 └── features/         # ERP functional modules
     ├── auth/         # Login and forbidden views
+    ├── admin-users/  # User administration, local forms and read-only role catalogue
     └── contact/      # Contact management (create, retrieve)
 ```
 
@@ -173,6 +174,7 @@ All HTTP communication with the Alixar canonical API is centralized in `core/api
 - `ContactApi` — typed operations for Contact domain:
   - `getContact(id: number): Observable<Contact>`
   - `createContact(request: CreateContactRequest): Observable<CreateContactResponse>`
+- `AdminUsersApi` — typed user list/detail/create, username/status changes, password reset, complete role replacement and read-only role catalogue; administrative state stays local to the feature
 - `AuthApi` — typed session operations:
   - `login(request: LoginRequest): Observable<AuthIdentity>`
   - `me(): Observable<CurrentUser>`
@@ -197,7 +199,7 @@ Authentication uses HTTP SESSION, deliberately without PAT or JWT. Every auth re
 
 Authorization follows `USER → ROLES → PERMISSIONS`. Solucar never grants access from role names and does not model direct user permissions or per-user denies. `AuthSessionService.hasPermission()` checks only the effective permissions returned by Alixar. Permission checks are a presentation concern: Alixar remains the authority and must enforce authorization on every protected operation. A browser-side permission check is never treated as a security boundary.
 
-`requirePermission(permission)` produces a functional route guard. It waits for an unresolved bootstrap before deciding. Anonymous or unauthenticated users are sent to `/login` with the requested internal URL as `returnUrl`; authenticated users without the required permission are sent to `/forbidden`. A missing permission never logs the user out. No real ERP route uses the guard yet, and `/contacts` remains public. Navigation entries can declare `label`, `route` and `requiredPermission`; only entries whose permission is effective are visible.
+`requirePermission(permission)` produces a functional route guard. It waits for an unresolved bootstrap before deciding. Anonymous or unauthenticated users are sent to `/login` with the requested internal URL as `returnUrl`; authenticated users without the required permission are sent to `/forbidden`. A missing permission never logs the user out. `/admin/users`, `/admin/users/new` and `/admin/users/:id` require `users.manage`; `/contacts` remains public. Navigation entries can declare `label`, `route` and `requiredPermission`; only entries whose permission is effective are visible.
 
 ## CSRF and Same-Origin
 
@@ -207,7 +209,7 @@ All API URLs are relative (`/api/...`). Development uses the proxy described bel
 
 `GET /api/auth/me` is a safe request that also gives Alixar an opportunity to issue or renew the CSRF cookie. Solucar uses it before retrying a CSRF-rejected login and after logout.
 
-The `/contacts` route remains public. Authorization infrastructure exists for future protected routes, but no current route is guarded. Alixar still enforces authorization server-side.
+The `/contacts` route remains public. User administration routes require `users.manage`. Alixar still enforces authorization server-side.
 
 ## Development Proxy
 
@@ -243,3 +245,29 @@ Frontend handling:
 - Contact: on network failure or malformed/unexpected error, display frontend-owned localized fallback: `Unable to communicate with Alixar.`
 - Authentication: HTTP status determines the error kind, then the `ProblemDetail.code` refines it; `detail` is secondary. `400` is validation, login `401` is rejected credentials, `/me` `401` means no valid session (normal during anonymous bootstrap), auth `403` indicates session/CSRF verification, `503` is temporary unavailability, and `503 AUDIT_UNAVAILABLE` specifically identifies the mandatory audit dependency. Network/status `0` and timeouts indicate an unreachable backend. There is no global 401 redirect interceptor.
 - Canonical error codes (`VALIDATION_REQUIRED`, `CONTACT_NOT_FOUND`, `CONTACT_INVALID_THIRD_PARTY_REFERENCE`) are available internally for future structured behavior but not translated in the frontend
+
+## User administration
+
+`/admin/users` → requires `users.manage`; the creation and detail routes use the same guard.
+Users navigation is filtered by that effective permission. Roles are assignments;
+permissions are effective capabilities. Alixar is authoritative on every request.
+User administration modifies User → Roles. It never grants permissions directly to users.
+There is no individual permission editor or per-user deny.
+
+The list submits `q` and optional `enabled` with backend page/size parameters.
+Pages are zero-based (default size 20, backend maximum 100) and ordered by username
+then id in Alixar. The frontend never loads all users for local pagination.
+
+Creation sends `roleCodes: []` when no roles are selected. Alixar creates inactive
+accounts; enable them explicitly from detail. Role edits replace the complete
+assignment list in one `PUT`. Email is set only during creation and read-only
+afterward. Username/status/role updates use the returned user as current state.
+Password resets are separate administrative operations, with no old-password
+field; passwords require at least 12 characters and remain transient.
+
+Administration distinguishes validation (400), expired session (401), forbidden
+(403), missing user/role (404), conflict (409), unavailability (503, including
+audit) and network failure. It displays useful localized ProblemDetail detail
+as secondary information. An explicit sign-in action after 401 refreshes the
+session and preserves the safe internal destination. A 403 never logs out.
+The permission snapshot may become stale; backend denial wins, without polling.

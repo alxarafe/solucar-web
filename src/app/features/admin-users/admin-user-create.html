@@ -1,0 +1,55 @@
+<main class="admin-users">
+  <a [routerLink]="usersPath" i18n="@@adminUsers.action.back">Back to users</a>
+  <h1 i18n="@@adminUsers.action.new">New user</h1>
+  <p i18n="@@adminUsers.create.inactive">
+    New users are inactive. Enable the account from its detail page when ready.
+  </p>
+  @if (loading()) {
+    <p role="status" i18n="@@adminUsers.roles.loading">Loading roles...</p>
+  }
+  @if (error()) {
+    <app-admin-user-error [error]="error()" />
+  }
+  @if (!catalogReady() && !loading()) {
+    <button type="button" (click)="loadRoles()" i18n="@@adminUsers.action.retry">Retry</button>
+  }
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <fieldset [disabled]="submitting() || !catalogReady()">
+      <label for="new-username" i18n="@@adminUsers.field.username">Username</label>
+      <input id="new-username" formControlName="username" autocomplete="off" required />
+      <label for="new-email" i18n="@@adminUsers.field.email">Email</label>
+      <input id="new-email" formControlName="email" type="email" autocomplete="off" required />
+      <label for="new-password" i18n="@@adminUsers.field.initialPassword">Initial password</label>
+      <input
+        id="new-password"
+        formControlName="password"
+        type="password"
+        autocomplete="new-password"
+        required
+        [minlength]="passwordMinLength"
+        aria-describedby="password-help"
+      />
+      <p id="password-help" i18n="@@adminUsers.password.help">
+        Use at least {{ passwordMinLength }} characters.
+      </p>
+      @if (form.touched && form.invalid) {
+        <p role="alert" i18n="@@adminUsers.validation.create">
+          Enter a username, a valid email and a password of sufficient length.
+        </p>
+      }
+      <app-admin-role-picker
+        [roles]="roles()"
+        [selected]="selectedRoles()"
+        (selectedChange)="selectedRoles.set($event)"
+        [disabled]="submitting() || !catalogReady()"
+      />
+      <button
+        type="submit"
+        [disabled]="submitting() || !catalogReady()"
+        i18n="@@adminUsers.action.create"
+      >
+        Create user
+      </button>
+    </fieldset>
+  </form>
+</main>
