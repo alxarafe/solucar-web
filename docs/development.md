@@ -88,6 +88,14 @@ The Docker container uses Node.js 24.19.0 and runs:
 
 A named volume (`solucar_node_modules`) persists `node_modules` between container runs.
 
+### Temporary dependency override
+
+`package.json` pins Vite `8.3.3` for `@angular/build` through a narrow npm
+override. The current `@angular/build` version resolves Vite `8.3.0`, which is
+affected by security advisories; Vite 8.3.x versions below `8.3.3` are affected.
+Remove this override as soon as a supported `@angular/build` version resolves
+Vite `>= 8.3.3` by itself.
+
 ## Troubleshooting
 
 View logs:
