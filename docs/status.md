@@ -40,7 +40,7 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 - Username changes, explicit account activation/deactivation, administrative password reset
 - Read-only role catalogue and replacement of User → Roles assignments, including zero roles
 - Email is entered on creation and read-only afterward; no direct user permissions
-- Audit UI remains outside this feature
+- Audit event consultation is owned by the audit event viewer
 
 ### Role administration
 
@@ -54,6 +54,22 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
   and the role is preserved
 - User → Roles assignment remains owned by user administration; roles never receive
   direct user permissions
+
+### Audit event viewer
+
+- `/admin/audit` requires `audit.read`; the Audit navigation entry uses the same permission
+- Read-only event consultation with the real filters `action`, `resourceType`,
+  `resourceId`, `actorUserId` and `result`; the cursor `afterSequence` and `limit`
+  are managed internally
+- Ascending keyset pagination by `sequence`; Load more appends batches and no total
+  or page-number contract is invented
+- Refresh reloads from the beginning with the applied filters; load-more failures
+  preserve the already loaded events
+- Inline expandable detail with the complete event contract, including full hashes
+- Manual integrity verification via `GET /api/admin/audit-events/verification`;
+  invalid results report the canonical failure without attributing a cause
+- `audit.configure` does not grant access to events or verification; audit
+  configuration and read-policy UI remain outside this slice
 
 ### Contact
 
@@ -74,7 +90,7 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 
 ## Backend boundary
 
-- All HTTP communication centralized in `core/api` and `core/auth` (`ContactApi`, `AdminUsersApi`, `AdminRolesApi`, `AuthApi`, `acceptLanguageInterceptor`)
+- All HTTP communication centralized in `core/api` and `core/auth` (`ContactApi`, `AdminUsersApi`, `AdminRolesApi`, `AdminAuditApi`, `AuthApi`, `acceptLanguageInterceptor`)
 - No business rules in frontend — Alixar is the authority
 - No database schema knowledge — no `llx_*` names in frontend
 - No Dolibarr vocabulary as internal model — no `fk_soc`, `socid`, `llx_*`
@@ -106,7 +122,7 @@ See [Development](development.md) for full workflow details.
 
 - Self-service password recovery, account self-service and remember-me
 - Broad ERP UI beyond the current Contact slice
-- Audit user interface
+- Audit configuration and audit read-policy UI
 - Automated end-to-end validation against a running Alixar instance
 - Dynamic in-place language switching
 

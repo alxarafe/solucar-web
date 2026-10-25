@@ -1,0 +1,263 @@
+<main class="admin-audit">
+  <header>
+    <h1 i18n="@@adminAudit.events.title">Audit events</h1>
+    <button
+      type="button"
+      [disabled]="listBusy()"
+      (click)="refresh()"
+      i18n="@@adminAudit.action.refresh"
+    >
+      Refresh
+    </button>
+  </header>
+
+  <form [formGroup]="form" (ngSubmit)="applyFilters()">
+    <fieldset [disabled]="listBusy()">
+      <legend i18n="@@adminAudit.filters.title">Filters</legend>
+      <label for="audit-action" i18n="@@adminAudit.field.action">Action</label>
+      <select id="audit-action" formControlName="action">
+        <option value="" i18n="@@adminAudit.filters.all">All</option>
+        @for (action of actions; track action) {
+          <option [value]="action">{{ action }}</option>
+        }
+      </select>
+
+      <label for="audit-resource-type" i18n="@@adminAudit.field.resourceType"
+        >Resource type</label
+      >
+      <select id="audit-resource-type" formControlName="resourceType">
+        <option value="" i18n="@@adminAudit.filters.all">All</option>
+        @for (resourceType of resourceTypes; track resourceType) {
+          <option [value]="resourceType">{{ resourceType }}</option>
+        }
+      </select>
+
+      <label for="audit-result" i18n="@@adminAudit.field.result">Result</label>
+      <select id="audit-result" formControlName="result">
+        <option value="" i18n="@@adminAudit.filters.all">All</option>
+        @for (result of results; track result) {
+          <option [value]="result">{{ resultLabel(result) }}</option>
+        }
+      </select>
+
+      <label for="audit-resource-id" i18n="@@adminAudit.field.resourceId">Resource ID</label>
+      <input id="audit-resource-id" formControlName="resourceId" autocomplete="off" />
+
+      <label for="audit-actor-user-id" i18n="@@adminAudit.field.actorUserId"
+        >Actor user ID</label
+      >
+      <input id="audit-actor-user-id" formControlName="actorUserId" autocomplete="off" />
+      @if (form.controls.actorUserId.touched && form.controls.actorUserId.invalid) {
+        <p role="alert" i18n="@@adminAudit.validation.actorUserId">Enter a valid UUID.</p>
+      }
+
+      <div class="admin-audit__filter-actions">
+        <button type="submit" i18n="@@adminAudit.action.applyFilters">Apply filters</button>
+        <button type="button" (click)="clearFilters()" i18n="@@adminAudit.action.clearFilters">
+          Clear filters
+        </button>
+      </div>
+    </fieldset>
+  </form>
+
+  @if (loading()) {
+    <p role="status" i18n="@@adminAudit.loading">Loading audit events...</p>
+  }
+  @if (error()) {
+    <app-admin-audit-error [error]="error()" />
+    <button type="button" (click)="refresh()" i18n="@@adminAudit.action.retry">Retry</button>
+  }
+
+  @if (events(); as events) {
+    @if (events.length) {
+      <p class="admin-audit__count">
+        <span i18n="@@adminAudit.loadedLabel">Events loaded</span>: {{ events.length }}
+      </p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" i18n="@@adminAudit.field.sequence">Sequence</th>
+              <th scope="col" i18n="@@adminAudit.field.occurredAt">Date</th>
+              <th scope="col" i18n="@@adminAudit.field.actor">Actor</th>
+              <th scope="col" i18n="@@adminAudit.field.action">Action</th>
+              <th scope="col" i18n="@@adminAudit.field.resourceType">Resource type</th>
+              <th scope="col" i18n="@@adminAudit.field.resourceId">Resource ID</th>
+              <th scope="col" i18n="@@adminAudit.field.result">Result</th>
+              <th scope="col" i18n="@@adminAudit.field.details">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (event of events; track event.id) {
+              <tr>
+                <td>{{ event.sequence }}</td>
+                <td>
+                  <time [attr.datetime]="event.occurredAt">{{ event.occurredAt }}</time>
+                </td>
+                <td>
+                  @if (event.actorUsername) {
+                    {{ event.actorUsername }}
+                    @if (event.actorUserId) {
+                      <span class="admin-audit__secondary">{{ event.actorUserId }}</span>
+                    }
+                  } @else if (event.actorUserId) {
+                    <code>{{ event.actorUserId }}</code>
+                  } @else {
+                    —
+                  }
+                </td>
+                <td><code>{{ event.action }}</code></td>
+                <td><code>{{ event.resourceType }}</code></td>
+                <td>
+                  @if (event.resourceId) {
+                    {{ event.resourceId }}
+                  } @else {
+                    —
+                  }
+                </td>
+                <td>{{ resultLabel(event.result) }}</td>
+                <td>
+                  <details>
+                    <summary i18n="@@adminAudit.action.viewDetails">View details</summary>
+                    <dl class="admin-audit__detail">
+                      <dt i18n="@@adminAudit.field.id">Event ID</dt>
+                      <dd><code>{{ event.id }}</code></dd>
+                      <dt i18n="@@adminAudit.field.chainId">Chain ID</dt>
+                      <dd><code>{{ event.chainId }}</code></dd>
+                      <dt i18n="@@adminAudit.field.sequence">Sequence</dt>
+                      <dd>{{ event.sequence }}</dd>
+                      <dt i18n="@@adminAudit.field.occurredAt">Date</dt>
+                      <dd>
+                        <time [attr.datetime]="event.occurredAt">{{ event.occurredAt }}</time>
+                      </dd>
+                      <dt i18n="@@adminAudit.field.actorUserId">Actor user ID</dt>
+                      <dd>
+                        @if (event.actorUserId) {
+                          <code>{{ event.actorUserId }}</code>
+                        } @else {
+                          —
+                        }
+                      </dd>
+                      <dt i18n="@@adminAudit.field.actorUsername">Actor username</dt>
+                      <dd>
+                        @if (event.actorUsername) {
+                          {{ event.actorUsername }}
+                        } @else {
+                          —
+                        }
+                      </dd>
+                      <dt i18n="@@adminAudit.field.authenticationType">Authentication type</dt>
+                      <dd>
+                        @if (event.authenticationType) {
+                          <code>{{ event.authenticationType }}</code>
+                        } @else {
+                          —
+                        }
+                      </dd>
+                      <dt i18n="@@adminAudit.field.action">Action</dt>
+                      <dd><code>{{ event.action }}</code></dd>
+                      <dt i18n="@@adminAudit.field.resourceType">Resource type</dt>
+                      <dd><code>{{ event.resourceType }}</code></dd>
+                      <dt i18n="@@adminAudit.field.resourceId">Resource ID</dt>
+                      <dd>
+                        @if (event.resourceId) {
+                          {{ event.resourceId }}
+                        } @else {
+                          —
+                        }
+                      </dd>
+                      <dt i18n="@@adminAudit.field.result">Result</dt>
+                      <dd><code>{{ event.result }}</code></dd>
+                      <dt i18n="@@adminAudit.field.requestId">Request ID</dt>
+                      <dd>
+                        @if (event.requestId) {
+                          <code>{{ event.requestId }}</code>
+                        } @else {
+                          —
+                        }
+                      </dd>
+                      <dt i18n="@@adminAudit.field.integrityFormatVersion">
+                        Integrity format version
+                      </dt>
+                      <dd>{{ event.integrityFormatVersion }}</dd>
+                      <dt i18n="@@adminAudit.field.previousHash">Previous hash</dt>
+                      <dd><code class="admin-audit__hash">{{ event.previousHash }}</code></dd>
+                      <dt i18n="@@adminAudit.field.eventHash">Event hash</dt>
+                      <dd><code class="admin-audit__hash">{{ event.eventHash }}</code></dd>
+                    </dl>
+                  </details>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (loadingMore()) {
+        <p role="status" i18n="@@adminAudit.loadingMore">Loading more audit events...</p>
+      }
+      @if (loadMoreError()) {
+        <app-admin-audit-error [error]="loadMoreError()" />
+        <button type="button" (click)="loadMore()" i18n="@@adminAudit.action.retry">Retry</button>
+      }
+      @if (!endReached()) {
+        <button type="button" [disabled]="loadingMore()" (click)="loadMore()">
+          <span i18n="@@adminAudit.action.loadMore">Load more</span>
+        </button>
+      } @else {
+        <p role="status" i18n="@@adminAudit.endReached">End of audit events</p>
+      }
+    } @else {
+      <p role="status" i18n="@@adminAudit.empty">No audit events found</p>
+    }
+  }
+
+  <section class="admin-audit__verification" aria-labelledby="audit-verification-title">
+    <h2 id="audit-verification-title" i18n="@@adminAudit.verification.title">Integrity</h2>
+    <p i18n="@@adminAudit.verification.description">
+      Verification checks the complete audit chain and runs only when requested.
+    </p>
+    <button type="button" [disabled]="verifying()" (click)="verify()">
+      @if (verifying()) {
+        <span i18n="@@adminAudit.verification.verifying">Verifying...</span>
+      } @else {
+        <span i18n="@@adminAudit.action.verify">Verify integrity</span>
+      }
+    </button>
+
+    @if (verificationError()) {
+      <app-admin-audit-error [error]="verificationError()" />
+    }
+    @if (verification(); as verification) {
+      @if (verification.valid) {
+        <div class="admin-audit__verification-result" role="status">
+          <p i18n="@@adminAudit.verification.valid">Integrity valid</p>
+          <dl>
+            <dt i18n="@@adminAudit.field.chainId">Chain ID</dt>
+            <dd><code>{{ verification.chainId }}</code></dd>
+            <dt i18n="@@adminAudit.verification.checkedEvents">Checked events</dt>
+            <dd>{{ verification.checkedEvents }}</dd>
+          </dl>
+        </div>
+      } @else {
+        <div class="admin-audit__verification-result admin-audit__verification-result--invalid">
+          <p role="alert" i18n="@@adminAudit.verification.invalid">
+            Integrity verification failed
+          </p>
+          <dl>
+            <dt i18n="@@adminAudit.field.chainId">Chain ID</dt>
+            <dd><code>{{ verification.chainId }}</code></dd>
+            <dt i18n="@@adminAudit.verification.failure">Failure</dt>
+            <dd>{{ failureLabel(verification.failure) }}</dd>
+            @if (verification.failedSequence !== null) {
+              <dt i18n="@@adminAudit.verification.failedSequence">Failed sequence</dt>
+              <dd>{{ verification.failedSequence }}</dd>
+            }
+            <dt i18n="@@adminAudit.verification.checkedEvents">Checked events</dt>
+            <dd>{{ verification.checkedEvents }}</dd>
+          </dl>
+        </div>
+      }
+    }
+  </section>
+</main>

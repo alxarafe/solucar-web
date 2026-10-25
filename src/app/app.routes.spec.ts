@@ -218,4 +218,74 @@ describe('session routing', () => {
       }
     });
   }
+
+  it('protects /admin/audit from anonymous users with an internal returnUrl', async () => {
+    const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/auth/me')
+      .flush(null, { status: 401, statusText: 'Unauthorized' });
+    await bootstrap;
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/admin/audit');
+    const router = TestBed.inject(Router);
+    expect(router.url.split('?')[0]).toBe('/login');
+    expect(router.parseUrl(router.url).queryParams['returnUrl']).toBe('/admin/audit');
+  });
+
+  it.each([
+    { roles: [] as string[], permissions: [] as string[] },
+    { roles: ['system-admin'], permissions: [] as string[] },
+    { roles: [] as string[], permissions: ['audit.configure'] },
+    { roles: [] as string[], permissions: ['users.manage', 'roles.manage'] },
+  ])('forbids /admin/audit without audit.read', async ({ roles, permissions }) => {
+    const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/auth/me')
+      .flush({
+        id: 'admin-id',
+        username: 'admin',
+        email: 'admin@example.test',
+        roles,
+        permissions,
+      });
+    await bootstrap;
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/admin/audit', Forbidden);
+    expect(TestBed.inject(Router).url).toBe('/forbidden');
+    expect(TestBed.inject(AuthSessionService).status()).toBe('authenticated');
+  });
+
+  it('allows /admin/audit with audit.read and no roles', async () => {
+    const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/auth/me').flush({
+      id: 'auditor-id',
+      username: 'auditor',
+      email: 'auditor@example.test',
+      roles: [],
+      permissions: ['audit.read'],
+    });
+    await bootstrap;
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/admin/audit');
+    expect(TestBed.inject(Router).url).toBe('/admin/audit');
+    http.expectOne('/api/admin/audit-events?afterSequence=0&limit=50').flush([]);
+  });
+
+  it('allows /admin/audit when audit.read coexists with roles.manage', async () => {
+    const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/auth/me').flush({
+      id: 'auditor-id',
+      username: 'auditor',
+      email: 'auditor@example.test',
+      roles: [],
+      permissions: ['roles.manage', 'audit.read'],
+    });
+    await bootstrap;
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/admin/audit');
+    expect(TestBed.inject(Router).url).toBe('/admin/audit');
+    http.expectOne('/api/admin/audit-events?afterSequence=0&limit=50').flush([]);
+  });
 });

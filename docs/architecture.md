@@ -35,6 +35,7 @@ Solucar is the Angular web frontend for the Alixar ERP. It owns presentation, na
 - Angular built-in CSRF handling for same-origin non-safe requests
 - User administration (`features/admin-users`) protected by `users.manage`
 - Role administration (`features/admin-roles`) protected by `roles.manage`
+- Audit event viewer (`features/admin-audit`) protected by `audit.read`
 - Contact feature (`features/contact`) — create and retrieve contacts via Alixar canonical API
 - Accept-Language header derived from `LOCALE_ID`
 - Development proxy for `/api/**` → `host.docker.internal:48081`
@@ -87,6 +88,7 @@ src/app/
     ├── auth/         # Login and forbidden views
     ├── admin-users/  # User administration and User → Roles assignment
     ├── admin-roles/  # Role administration and Role → Permissions assignment
+    ├── admin-audit/  # Read-only audit event viewer and integrity verification
     └── contact/      # Contact management (create, retrieve)
 ```
 
@@ -178,6 +180,7 @@ All HTTP communication with the Alixar canonical API is centralized in `core/api
   - `createContact(request: CreateContactRequest): Observable<CreateContactResponse>`
 - `AdminUsersApi` — typed user list/detail/create, username/status changes, password reset and complete role assignment replacement; administrative state stays local to the feature
 - `AdminRolesApi` — typed role list/detail/create, name changes, complete permission replacement, deletion and the backend permission catalogue; it owns the `AdminRole` contract shared with user administration
+- `AdminAuditApi` — read-only audit event queries with keyset pagination and filters, plus explicit audit-chain integrity verification; it owns `AuditEvent`, `AuditEventQuery` and `AuditVerification`
 - `AuthApi` — typed session operations:
   - `login(request: LoginRequest): Observable<AuthIdentity>`
   - `me(): Observable<CurrentUser>`
@@ -202,7 +205,7 @@ Authentication uses HTTP SESSION, deliberately without PAT or JWT. Every auth re
 
 Authorization follows `USER → ROLES → PERMISSIONS`. Solucar never grants access from role names and does not model direct user permissions or per-user denies. `AuthSessionService.hasPermission()` checks only the effective permissions returned by Alixar. Permission checks are a presentation concern: Alixar remains the authority and must enforce authorization on every protected operation. A browser-side permission check is never treated as a security boundary.
 
-`requirePermission(permission)` produces a functional route guard. It waits for an unresolved bootstrap before deciding. Anonymous or unauthenticated users are sent to `/login` with the requested internal URL as `returnUrl`; authenticated users without the required permission are sent to `/forbidden`. A missing permission never logs the user out. `/admin/users`, `/admin/users/new` and `/admin/users/:id` require `users.manage`; `/admin/roles`, `/admin/roles/new` and `/admin/roles/:code` require `roles.manage`; `/contacts` remains public. Navigation entries can declare `label`, `route` and `requiredPermission`; only entries whose permission is effective are visible. Users and Roles navigation entries are independent, so a user may see one, both or neither.
+`requirePermission(permission)` produces a functional route guard. It waits for an unresolved bootstrap before deciding. Anonymous or unauthenticated users are sent to `/login` with the requested internal URL as `returnUrl`; authenticated users without the required permission are sent to `/forbidden`. A missing permission never logs the user out. `/admin/users`, `/admin/users/new` and `/admin/users/:id` require `users.manage`; `/admin/roles`, `/admin/roles/new` and `/admin/roles/:code` require `roles.manage`; `/admin/audit` requires `audit.read`; `/contacts` remains public. Navigation entries can declare `label`, `route` and `requiredPermission`; only entries whose permission is effective are visible. Users, Roles and Audit navigation entries are independent, so a user may see any combination or none.
 
 ## CSRF and Same-Origin
 
@@ -212,7 +215,7 @@ All API URLs are relative (`/api/...`). Development uses the proxy described bel
 
 `GET /api/auth/me` is a safe request that also gives Alixar an opportunity to issue or renew the CSRF cookie. Solucar uses it before retrying a CSRF-rejected login and after logout.
 
-The `/contacts` route remains public. User administration routes require `users.manage` and role administration routes require `roles.manage`. Alixar still enforces authorization server-side.
+The `/contacts` route remains public. User administration routes require `users.manage`, role administration routes require `roles.manage` and the audit viewer requires `audit.read`. Alixar still enforces authorization server-side.
 
 ## Development Proxy
 
@@ -312,3 +315,40 @@ including audit) and network failure. It displays useful localized ProblemDetail
 detail as secondary information. A 403 never logs out. Removing `roles.manage`
 from a role the administrator holds is allowed by Alixar; the next request may
 therefore be denied by the backend and is handled as an ordinary 403.
+
+## Audit event viewer
+
+`/admin/audit` requires `audit.read`; the Audit navigation entry is filtered by
+that same effective permission. `audit.configure` alone does not grant access to
+events or verification. The viewer is read-only and owns no audit configuration.
+
+The viewer reads `GET /api/admin/audit-events` with only the filters supported by
+Alixar: `afterSequence`, `limit`, `action`, `resourceType`, `resourceId`,
+`actorUserId` and `result`. There is no date, actor-username, page, size, sort or
+total contract. Results are ascending by `sequence`. Keyset pagination starts at
+`afterSequence=0` and advances with the last loaded sequence; the UI appends
+batches, reports how many events are loaded and never displays page numbers or a
+fabricated total. A batch shorter than the limit marks the current end. Refresh
+discards the current list and reloads from the beginning with the applied
+filters. Load-more failures keep the existing events visible.
+
+The main list shows sequence, date, actor, action, resource type, resource ID and
+result. Each event can be expanded inline to inspect the complete contract,
+including `chainId`, `requestId`, `integrityFormatVersion` and the full
+`previousHash` and `eventHash`. Nullable actor, authentication type, resource ID
+and request ID values are supported. Action and resource-type selectors send the
+canonical Alixar values; results are localized only for presentation.
+
+Integrity verification is explicit and manual:
+`GET /api/admin/audit-events/verification` runs only when the user requests it,
+never on load, filter, refresh or load more. A valid result reports
+`checkedEvents`; an invalid result reports the canonical failure code and
+`failedSequence` without attributing tampering, manipulation or another cause.
+Known failure codes are localized and unknown future codes are shown
+canonically.
+
+Audit queries distinguish invalid query parameters (400
+`AUDIT_INVALID_QUERY`), expired session (401), forbidden (403), temporary
+unavailability (503) and network failure. A 403 never logs out. Audit
+configuration and read-policy UI remain out of scope and reserved for
+`audit.configure`.
