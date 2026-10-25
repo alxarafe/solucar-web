@@ -40,7 +40,20 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 - Username changes, explicit account activation/deactivation, administrative password reset
 - Read-only role catalogue and replacement of User → Roles assignments, including zero roles
 - Email is entered on creation and read-only afterward; no direct user permissions
-- Role CRUD, role permission editing, deletion and audit UI remain outside this feature
+- Audit UI remains outside this feature
+
+### Role administration
+
+- `/admin/roles`, `/admin/roles/new`, `/admin/roles/:code` require `roles.manage`
+- Role list without pagination, ordered by Alixar; creation, detail and name editing
+- Role → Permissions editor driven by the real `GET /api/admin/permissions` catalogue
+- Complete permission replacement in one `PUT`, including an empty collection
+- Codes are normalized and validated by Alixar; role codes are immutable after creation
+- `builtIn` roles are immutable: no rename, permission change or deletion controls
+- Deletion requires explicit confirmation; a role in use returns `409 ADMIN_ROLE_IN_USE`
+  and the role is preserved
+- User → Roles assignment remains owned by user administration; roles never receive
+  direct user permissions
 
 ### Contact
 
@@ -61,7 +74,7 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 
 ## Backend boundary
 
-- All HTTP communication centralized in `core/api` and `core/auth` (`ContactApi`, `AdminUsersApi`, `AuthApi`, `acceptLanguageInterceptor`)
+- All HTTP communication centralized in `core/api` and `core/auth` (`ContactApi`, `AdminUsersApi`, `AdminRolesApi`, `AuthApi`, `acceptLanguageInterceptor`)
 - No business rules in frontend — Alixar is the authority
 - No database schema knowledge — no `llx_*` names in frontend
 - No Dolibarr vocabulary as internal model — no `fk_soc`, `socid`, `llx_*`
@@ -93,6 +106,7 @@ See [Development](development.md) for full workflow details.
 
 - Self-service password recovery, account self-service and remember-me
 - Broad ERP UI beyond the current Contact slice
+- Audit user interface
 - Automated end-to-end validation against a running Alixar instance
 - Dynamic in-place language switching
 

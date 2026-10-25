@@ -9,6 +9,10 @@ import {
   ADMIN_USERS_PATH,
 } from './features/admin-users/admin-users-navigation';
 import {
+  ADMIN_ROLES_NEW_PATH,
+  ADMIN_ROLES_PATH,
+} from './features/admin-roles/admin-roles-navigation';
+import {
   DEFAULT_AUTHENTICATED_PATH,
   FORBIDDEN_PATH,
   LOGIN_PATH,
@@ -36,6 +40,24 @@ export const routes: Routes = [
     canActivate: [requirePermission(Permission.UsersManage)],
     loadComponent: () =>
       import('./features/admin-users/admin-user-detail').then((m) => m.AdminUserDetail),
+  },
+  {
+    path: ADMIN_ROLES_PATH.slice(1),
+    canActivate: [requirePermission(Permission.RolesManage)],
+    loadComponent: () =>
+      import('./features/admin-roles/admin-roles-list').then((m) => m.AdminRolesList),
+  },
+  {
+    path: ADMIN_ROLES_NEW_PATH.slice(1),
+    canActivate: [requirePermission(Permission.RolesManage)],
+    loadComponent: () =>
+      import('./features/admin-roles/admin-role-create').then((m) => m.AdminRoleCreate),
+  },
+  {
+    path: `${ADMIN_ROLES_PATH.slice(1)}/:code`,
+    canActivate: [requirePermission(Permission.RolesManage)],
+    loadComponent: () =>
+      import('./features/admin-roles/admin-role-detail').then((m) => m.AdminRoleDetail),
   },
   { path: '**', redirectTo: DEFAULT_AUTHENTICATED_PATH },
 ];

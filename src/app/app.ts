@@ -6,6 +6,7 @@ import { LOGIN_PATH } from './core/auth/auth-navigation';
 import { NavigationEntry, visibleNavigationEntries } from './core/navigation/navigation-entry';
 import { Permission } from './core/auth/permission';
 import { ADMIN_USERS_PATH } from './features/admin-users/admin-users-navigation';
+import { ADMIN_ROLES_PATH } from './features/admin-roles/admin-roles-navigation';
 
 @Component({
   imports: [RouterLink, RouterOutlet],
@@ -25,6 +26,11 @@ export class App {
       label: $localize`:@@adminUsers.title:Users`,
       route: ADMIN_USERS_PATH,
       requiredPermission: Permission.UsersManage,
+    },
+    {
+      label: $localize`:@@adminRoles.title:Roles`,
+      route: ADMIN_ROLES_PATH,
+      requiredPermission: Permission.RolesManage,
     },
   ];
   readonly visibleNavigation = computed(() =>

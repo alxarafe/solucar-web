@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { AdminRole } from '../../core/api/admin-users-api';
+import { AdminRole } from '../../core/api/admin-roles-api';
 
 @Component({
   selector: 'app-admin-role-picker',
