@@ -7,7 +7,10 @@ import { NavigationEntry, visibleNavigationEntries } from './core/navigation/nav
 import { Permission } from './core/auth/permission';
 import { ADMIN_USERS_PATH } from './features/admin-users/admin-users-navigation';
 import { ADMIN_ROLES_PATH } from './features/admin-roles/admin-roles-navigation';
-import { ADMIN_AUDIT_PATH } from './features/admin-audit/admin-audit-navigation';
+import {
+  ADMIN_AUDIT_PATH,
+  ADMIN_AUDIT_CONFIGURATION_PATH,
+} from './features/admin-audit/admin-audit-navigation';
 
 @Component({
   imports: [RouterLink, RouterOutlet],
@@ -37,6 +40,11 @@ export class App {
       label: $localize`:@@adminAudit.title:Audit`,
       route: ADMIN_AUDIT_PATH,
       requiredPermission: Permission.AuditRead,
+    },
+    {
+      label: $localize`:@@adminAuditConfiguration.title:Audit configuration`,
+      route: ADMIN_AUDIT_CONFIGURATION_PATH,
+      requiredPermission: Permission.AuditConfigure,
     },
   ];
   readonly visibleNavigation = computed(() =>

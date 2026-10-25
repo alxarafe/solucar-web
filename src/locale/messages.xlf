@@ -1623,6 +1623,320 @@
           <context context-type="linenumber">35</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="adminAuditConfiguration.title" datatype="html">
+        <source>Audit configuration</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.ts</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">2,3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.error.unexpected" datatype="html">
+        <source>Unable to complete the audit configuration request.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-error.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-error.ts</context>
+          <context context-type="linenumber">49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.error.invalidMode" datatype="html">
+        <source>Select a valid audit mode.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-error.ts</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.error.invalidPolicy" datatype="html">
+        <source>Check the read audit policy.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-error.ts</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.error.required" datatype="html">
+        <source>Complete the required fields.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-error.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.error.validation" datatype="html">
+        <source>Check the audit configuration values.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-error.ts</context>
+          <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.error.sessionExpired" datatype="html">
+        <source>Your session has expired. Sign in again.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-error.ts</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.error.forbidden" datatype="html">
+        <source>You do not have permission to configure auditing.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-error.ts</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.error.unavailable" datatype="html">
+        <source>Audit is temporarily unavailable. Please try again.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-error.ts</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.error.network" datatype="html">
+        <source>Unable to communicate with Alixar.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-error.ts</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.action.signIn" datatype="html">
+        <source> Sign in again </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-error.ts</context>
+          <context context-type="linenumber">68,73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.off" datatype="html">
+        <source>Off</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.basic" datatype="html">
+        <source>Basic</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.selective" datatype="html">
+        <source>Selective</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.offDescription" datatype="html">
+        <source>OFF disables ordinary persistent auditing. Mandatory audit-policy changes may still be recorded.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.basicDescription" datatype="html">
+        <source>Records the instrumented security and administration baseline. Read-policy rules are stored but not active.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.selectiveDescription" datatype="html">
+        <source>Records the BASIC baseline and additionally applies the configured read-audit policy.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.level.none" datatype="html">
+        <source>None</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.level.queryOnly" datatype="html">
+        <source>Query only</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.level.queryAndObject" datatype="html">
+        <source>Query and object</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.level.noneDescription" datatype="html">
+        <source>No reads of this resource type are audited by this policy.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.level.queryOnlyDescription" datatype="html">
+        <source>In SELECTIVE mode, audits query and list reads, but not single-object reads.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.level.queryAndObjectDescription" datatype="html">
+        <source>In SELECTIVE mode, audits query, list and single-object reads.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.resource.user" datatype="html">
+        <source>User reads</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.resource.role" datatype="html">
+        <source>Role reads</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration-labels.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.title" datatype="html">
+        <source>Audit mode</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">4,6</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">29,30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.loading" datatype="html">
+        <source> Loading audit configuration... </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">7,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.retry" datatype="html">
+        <source> Retry </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">14,18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">81,85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.current" datatype="html">
+        <source>Current mode</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">20,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.updatedAt" datatype="html">
+        <source>Last mode update</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">22,24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.selection" datatype="html">
+        <source>Select mode</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">31,33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.save" datatype="html">
+        <source> Save mode </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">46,48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.saving" datatype="html">
+        <source>Saving mode...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">52,54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.mode.saved" datatype="html">
+        <source>Configuration saved</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">55,59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.policy.title" datatype="html">
+        <source>Read audit policy</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">60,61</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">88,89</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.policy.selective" datatype="html">
+        <source> Read policy applies only in selective mode. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">62,64</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.policy.prepare" datatype="html">
+        <source> Rules can be prepared in any mode. Changing mode preserves the stored policy. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">65,67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.policy.inactive" datatype="html">
+        <source> The stored read policy is currently inactive. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">69,73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.policy.loading" datatype="html">
+        <source> Loading read audit policy... </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">74,78</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.policy.save" datatype="html">
+        <source> Save read policy </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">109,111</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.policy.saving" datatype="html">
+        <source>Saving read policy...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">115,117</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminAuditConfiguration.policy.saved" datatype="html">
+        <source>Read policy saved</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-audit/admin-audit-configuration.html</context>
+          <context context-type="linenumber">118,122</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

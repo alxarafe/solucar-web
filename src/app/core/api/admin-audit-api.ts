@@ -2,6 +2,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
+const AUDIT_CONFIGURATION_PATH = '/api/admin/audit-configuration';
+const AUDIT_READ_POLICY_PATH = `${AUDIT_CONFIGURATION_PATH}/read-policy`;
+
 const AUDIT_EVENTS_PATH = '/api/admin/audit-events';
 const AUDIT_VERIFICATION_PATH = `${AUDIT_EVENTS_PATH}/verification`;
 
@@ -89,9 +92,49 @@ export interface AuditVerification {
   failedSequence: number | null;
 }
 
+export const AUDIT_MODES = ['OFF', 'BASIC', 'SELECTIVE'] as const;
+export const AUDIT_READ_LEVELS = ['NONE', 'QUERY_ONLY', 'QUERY_AND_OBJECT'] as const;
+// This contractual subset is intentionally independent of the event viewer catalogue.
+export const AUDIT_CONFIGURABLE_RESOURCE_TYPES = ['USER', 'ROLE'] as const;
+export type AuditMode = (typeof AUDIT_MODES)[number];
+export type AuditReadLevel = (typeof AUDIT_READ_LEVELS)[number];
+export type AuditConfigurableResourceType = (typeof AUDIT_CONFIGURABLE_RESOURCE_TYPES)[number];
+
+export interface AuditConfiguration {
+  id: string;
+  mode: AuditMode;
+  updatedAt: string;
+}
+
+export interface AuditReadPolicyRule {
+  resourceType: AuditConfigurableResourceType;
+  readLevel: AuditReadLevel;
+}
+
+export interface AuditReadPolicy {
+  configurationId: string;
+  rules: AuditReadPolicyRule[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class AdminAuditApi {
   private readonly http = inject(HttpClient);
+
+  getConfiguration(): Observable<AuditConfiguration> {
+    return this.http.get<AuditConfiguration>(AUDIT_CONFIGURATION_PATH);
+  }
+
+  updateConfiguration(mode: AuditMode): Observable<AuditConfiguration> {
+    return this.http.put<AuditConfiguration>(AUDIT_CONFIGURATION_PATH, { mode });
+  }
+
+  getReadPolicy(): Observable<AuditReadPolicy> {
+    return this.http.get<AuditReadPolicy>(AUDIT_READ_POLICY_PATH);
+  }
+
+  replaceReadPolicy(rules: AuditReadPolicyRule[]): Observable<AuditReadPolicy> {
+    return this.http.put<AuditReadPolicy>(AUDIT_READ_POLICY_PATH, { rules });
+  }
 
   listEvents(query: AuditEventQuery): Observable<AuditEvent[]> {
     let params = new HttpParams();

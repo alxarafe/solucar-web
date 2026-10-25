@@ -12,7 +12,10 @@ import {
   ADMIN_ROLES_NEW_PATH,
   ADMIN_ROLES_PATH,
 } from './features/admin-roles/admin-roles-navigation';
-import { ADMIN_AUDIT_PATH } from './features/admin-audit/admin-audit-navigation';
+import {
+  ADMIN_AUDIT_PATH,
+  ADMIN_AUDIT_CONFIGURATION_PATH,
+} from './features/admin-audit/admin-audit-navigation';
 import {
   DEFAULT_AUTHENTICATED_PATH,
   FORBIDDEN_PATH,
@@ -65,6 +68,14 @@ export const routes: Routes = [
     canActivate: [requirePermission(Permission.AuditRead)],
     loadComponent: () =>
       import('./features/admin-audit/admin-audit-events').then((m) => m.AdminAuditEvents),
+  },
+  {
+    path: ADMIN_AUDIT_CONFIGURATION_PATH.slice(1),
+    canActivate: [requirePermission(Permission.AuditConfigure)],
+    loadComponent: () =>
+      import('./features/admin-audit/admin-audit-configuration').then(
+        (m) => m.AdminAuditConfiguration,
+      ),
   },
   { path: '**', redirectTo: DEFAULT_AUTHENTICATED_PATH },
 ];

@@ -36,6 +36,7 @@ Solucar is the Angular web frontend for the Alixar ERP. It owns presentation, na
 - User administration (`features/admin-users`) protected by `users.manage`
 - Role administration (`features/admin-roles`) protected by `roles.manage`
 - Audit event viewer (`features/admin-audit`) protected by `audit.read`
+- Independent audit configuration in the same feature, protected by `audit.configure`
 - Contact feature (`features/contact`) — create and retrieve contacts via Alixar canonical API
 - Accept-Language header derived from `LOCALE_ID`
 - Development proxy for `/api/**` → `host.docker.internal:48081`
@@ -88,7 +89,7 @@ src/app/
     ├── auth/         # Login and forbidden views
     ├── admin-users/  # User administration and User → Roles assignment
     ├── admin-roles/  # Role administration and Role → Permissions assignment
-    ├── admin-audit/  # Read-only audit event viewer and integrity verification
+    ├── admin-audit/  # Audit events, integrity verification and independent configuration
     └── contact/      # Contact management (create, retrieve)
 ```
 
@@ -180,7 +181,7 @@ All HTTP communication with the Alixar canonical API is centralized in `core/api
   - `createContact(request: CreateContactRequest): Observable<CreateContactResponse>`
 - `AdminUsersApi` — typed user list/detail/create, username/status changes, password reset and complete role assignment replacement; administrative state stays local to the feature
 - `AdminRolesApi` — typed role list/detail/create, name changes, complete permission replacement, deletion and the backend permission catalogue; it owns the `AdminRole` contract shared with user administration
-- `AdminAuditApi` — read-only audit event queries with keyset pagination and filters, plus explicit audit-chain integrity verification; it owns `AuditEvent`, `AuditEventQuery` and `AuditVerification`
+- `AdminAuditApi` — audit event queries with keyset pagination and filters, plus explicit audit-chain integrity verification; it owns `AuditEvent`, `AuditEventQuery` and `AuditVerification`, plus typed mode and read-policy configuration operations
 - `AuthApi` — typed session operations:
   - `login(request: LoginRequest): Observable<AuthIdentity>`
   - `me(): Observable<CurrentUser>`
@@ -350,5 +351,61 @@ canonically.
 Audit queries distinguish invalid query parameters (400
 `AUDIT_INVALID_QUERY`), expired session (401), forbidden (403), temporary
 unavailability (503) and network failure. A 403 never logs out. Audit
-configuration and read-policy UI remain out of scope and reserved for
-`audit.configure`.
+configuration and read policy use the independent route described below.
+
+## Audit configuration
+
+`/admin/audit/configuration` is lazy-loaded and requires only `audit.configure`.
+Its navigation entry is independent of `/admin/audit`, which still requires
+`audit.read`. Neither permission implies the other; role names never grant access.
+Alixar permits configuration GETs with either permission, but PUTs require
+`audit.configure`; this frontend screen deliberately requires the latter throughout.
+
+`AdminAuditApi` owns `AuditConfiguration`, `AuditMode`, `AuditReadPolicy`,
+`AuditReadPolicyRule`, `AuditReadLevel` and the explicit configurable resource subset.
+It uses only GET/PUT `/api/admin/audit-configuration` and GET/PUT
+`/api/admin/audit-configuration/read-policy`. No AuthApi changes are involved.
+
+Mode semantics follow Alixar:
+
+- `OFF`: ordinary persistent audit is disabled. Mandatory configuration/policy
+  changes can still be recorded. A warning appears beside the explicit Save mode action.
+- `BASIC`: records the explicitly instrumented security and administration baseline.
+  Read-policy rules remain stored but inactive.
+- `SELECTIVE`: always includes the BASIC baseline and adds configured read auditing.
+
+Only `USER` and `ROLE` are configurable. Each has a fixed selector:
+
+- `NONE`: no reads audited by this policy; represented by absence of a persisted rule.
+- `QUERY_ONLY`: query/list reads in SELECTIVE; single-object reads are not covered.
+- `QUERY_AND_OBJECT`: query/list and single-object reads in SELECTIVE.
+
+Read policy can be prepared in OFF or BASIC. It is active only in SELECTIVE.
+Changing mode never clears or modifies policy. Each policy PUT replaces the entire
+collection; the UI sends both resources exactly once, including NONE, and reconstructs
+omitted response rules as NONE. It does not use the viewer's larger resource catalogue.
+
+Mode and policy have separate requests, dirty states, loading/saving states, errors
+and success messages; there is no atomic save-all contract. A partial load failure
+keeps the successful section usable, with a retry for the failed section. Each section
+prevents overlapping requests; subscriptions end on component destruction.
+After PUT, the backend response becomes current state. `updatedAt` is displayed only
+for mode configuration and is never inferred from policy updates.
+
+Alixar records mandatory mode and per-resource policy change events; the frontend
+never emits extra audit events. Requests retain same-origin SESSION and Angular's
+native XSRF handling. A 403 preserves the session; no permission polling is added.
+400 codes `AUDIT_INVALID_MODE`, `AUDIT_INVALID_READ_POLICY` and `VALIDATION_REQUIRED`
+have localized messages; 401 offers explicit sign-in, 503 and transport failures
+have distinct messages, and useful ProblemDetail detail remains secondary.
+
+Backend inspection found no dedicated HTTP code/handler for
+`AuditConfigurationMissingException` in `AuditExceptionHandler`; unexpected failures
+therefore use the generic configuration error with retry. No missing-configuration
+code or timestamp for read policy is invented.
+
+The real HTTP/proxy smoke also observed that the timestamp string returned by a
+mode PUT can differ from a subsequent GET after persistence. The UI retains the
+PUT response as required and does not derive a policy timestamp. Comparing GET
+before and after policy replacement confirmed that the global mode timestamp
+remains unchanged.

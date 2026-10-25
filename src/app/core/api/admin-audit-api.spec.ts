@@ -1,7 +1,15 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { AdminAuditApi, AuditEvent, AuditVerification } from './admin-audit-api';
+import {
+  AdminAuditApi,
+  AuditEvent,
+  AuditVerification,
+  AuditConfiguration,
+  AuditReadPolicy,
+  AuditReadPolicyRule,
+  AUDIT_MODES,
+} from './admin-audit-api';
 
 const EVENT: AuditEvent = {
   id: '8f796219-e501-44e8-a4ab-4c014821ba58',
@@ -85,5 +93,74 @@ describe('AdminAuditApi', () => {
     expect(req.request.method).toBe('GET');
     expect(req.request.withCredentials).toBe(false);
     req.flush(VERIFICATION);
+  });
+});
+
+describe('AdminAuditApi configuration', () => {
+  let api: AdminAuditApi;
+  let http: HttpTestingController;
+  const configuration: AuditConfiguration = {
+    id: 'config-id',
+    mode: 'BASIC',
+    updatedAt: '2026-10-25T10:00:00Z',
+  };
+  const policy: AuditReadPolicy = {
+    configurationId: 'config-id',
+    rules: [{ resourceType: 'USER', readLevel: 'QUERY_ONLY' }],
+  };
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    api = TestBed.inject(AdminAuditApi);
+    http = TestBed.inject(HttpTestingController);
+  });
+  afterEach(() => http.verify());
+
+  it('gets configuration', () => {
+    api.getConfiguration().subscribe((response) => expect(response).toEqual(configuration));
+    const req = http.expectOne('/api/admin/audit-configuration');
+    expect(req.request.method).toBe('GET');
+    req.flush(configuration);
+  });
+
+  it.each(AUDIT_MODES)('updates mode %s', (mode) => {
+    const updated = { ...configuration, mode };
+    api.updateConfiguration(mode).subscribe((response) => expect(response).toEqual(updated));
+    const req = http.expectOne('/api/admin/audit-configuration');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({ mode });
+    expect(req.request.withCredentials).toBe(false);
+    req.flush(updated);
+  });
+
+  it('gets read policy', () => {
+    api.getReadPolicy().subscribe((response) => expect(response).toEqual(policy));
+    const req = http.expectOne('/api/admin/audit-configuration/read-policy');
+    expect(req.request.method).toBe('GET');
+    req.flush(policy);
+  });
+
+  it.each<{ rules: AuditReadPolicyRule[] }>([
+    {
+      rules: [
+        { resourceType: 'USER', readLevel: 'QUERY_ONLY' },
+        { resourceType: 'ROLE', readLevel: 'QUERY_AND_OBJECT' },
+      ],
+    },
+    { rules: [] },
+    {
+      rules: [
+        { resourceType: 'USER', readLevel: 'NONE' },
+        { resourceType: 'ROLE', readLevel: 'QUERY_ONLY' },
+      ],
+    },
+  ])('replaces the complete policy %#', ({ rules }) => {
+    api.replaceReadPolicy(rules).subscribe((response) => expect(response).toEqual(policy));
+    const req = http.expectOne('/api/admin/audit-configuration/read-policy');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({ rules });
+    expect(req.request.withCredentials).toBe(false);
+    req.flush(policy);
   });
 });

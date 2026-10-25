@@ -1,0 +1,121 @@
+<main class="audit-configuration">
+  <h1 i18n="@@adminAuditConfiguration.title">Audit configuration</h1>
+  <section aria-labelledby="mode-title">
+    <h2 id="mode-title" i18n="@@adminAuditConfiguration.mode.title">Audit mode</h2>
+    @if (modeLoading()) {
+      <p role="status" i18n="@@adminAuditConfiguration.mode.loading">
+        Loading audit configuration...
+      </p>
+    }
+    @if (modeError()) {
+      <app-admin-audit-configuration-error [error]="modeError()" />
+      @if (!configuration() && !modeLoading()) {
+        <button type="button" (click)="loadMode()" i18n="@@adminAuditConfiguration.retry">
+          Retry
+        </button>
+      }
+    }
+    @if (configuration(); as configuration) {
+      <dl>
+        <dt i18n="@@adminAuditConfiguration.mode.current">Current mode</dt>
+        <dd>{{ modeLabel(configuration.mode) }}</dd>
+        <dt i18n="@@adminAuditConfiguration.mode.updatedAt">Last mode update</dt>
+        <dd>
+          <time [attr.datetime]="configuration.updatedAt">{{ configuration.updatedAt }}</time>
+        </dd>
+      </dl>
+      <form [formGroup]="modeForm" (ngSubmit)="saveMode()">
+        <fieldset [disabled]="modeSaving()">
+          <legend i18n="@@adminAuditConfiguration.mode.title">Audit mode</legend>
+          <label for="audit-mode" i18n="@@adminAuditConfiguration.mode.selection"
+            >Select mode</label
+          >
+          <select id="audit-mode" formControlName="mode" aria-describedby="mode-description">
+            @for (mode of modes; track mode) {
+              <option [ngValue]="mode">{{ modeLabel(mode) }}</option>
+            }
+          </select>
+          <p id="mode-description" [class.warning]="modeForm.controls.mode.value === 'OFF'">
+            {{ modeDescription(modeForm.controls.mode.value) }}
+          </p>
+          <button
+            type="submit"
+            [disabled]="!modeDirty()"
+            i18n="@@adminAuditConfiguration.mode.save"
+          >
+            Save mode
+          </button>
+        </fieldset>
+      </form>
+    }
+    @if (modeSaving()) {
+      <p role="status" i18n="@@adminAuditConfiguration.mode.saving">Saving mode...</p>
+    }
+    @if (modeSaved() && !modeDirty()) {
+      <p role="status" i18n="@@adminAuditConfiguration.mode.saved">Configuration saved</p>
+    }
+  </section>
+
+  <section aria-labelledby="policy-title">
+    <h2 id="policy-title" i18n="@@adminAuditConfiguration.policy.title">Read audit policy</h2>
+    <p i18n="@@adminAuditConfiguration.policy.selective">
+      Read policy applies only in selective mode.
+    </p>
+    <p i18n="@@adminAuditConfiguration.policy.prepare">
+      Rules can be prepared in any mode. Changing mode preserves the stored policy.
+    </p>
+    @if (configuration() && configuration()!.mode !== 'SELECTIVE') {
+      <p role="status" i18n="@@adminAuditConfiguration.policy.inactive">
+        The stored read policy is currently inactive.
+      </p>
+    }
+    @if (policyLoading()) {
+      <p role="status" i18n="@@adminAuditConfiguration.policy.loading">
+        Loading read audit policy...
+      </p>
+    }
+    @if (policyError()) {
+      <app-admin-audit-configuration-error [error]="policyError()" />
+      @if (!policy() && !policyLoading()) {
+        <button type="button" (click)="loadPolicy()" i18n="@@adminAuditConfiguration.retry">
+          Retry
+        </button>
+      }
+    }
+    @if (policy()) {
+      <form [formGroup]="policyForm" (ngSubmit)="savePolicy()">
+        <fieldset [disabled]="policySaving()">
+          <legend i18n="@@adminAuditConfiguration.policy.title">Read audit policy</legend>
+          @for (resource of resources; track resource) {
+            <label [for]="'read-' + resource">{{ resourceLabel(resource) }}</label>
+            <select
+              [id]="'read-' + resource"
+              [formControlName]="resource"
+              [attr.aria-describedby]="'description-' + resource"
+            >
+              @for (level of levels; track level) {
+                <option [ngValue]="level">{{ readLevelLabel(level) }}</option>
+              }
+            </select>
+            <p [id]="'description-' + resource">
+              {{ readLevelDescription(policyForm.controls[resource].value) }}
+            </p>
+          }
+          <button
+            type="submit"
+            [disabled]="!policyDirty()"
+            i18n="@@adminAuditConfiguration.policy.save"
+          >
+            Save read policy
+          </button>
+        </fieldset>
+      </form>
+    }
+    @if (policySaving()) {
+      <p role="status" i18n="@@adminAuditConfiguration.policy.saving">Saving read policy...</p>
+    }
+    @if (policySaved() && !policyDirty()) {
+      <p role="status" i18n="@@adminAuditConfiguration.policy.saved">Read policy saved</p>
+    }
+  </section>
+</main>

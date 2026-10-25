@@ -47,7 +47,7 @@ The `requirePermission()` guard, `/forbidden` view and permission-aware
 navigation metadata protect `/admin/users`, `/admin/users/new` and
 `/admin/users/:id` with `users.manage`, `/admin/roles`, `/admin/roles/new`
 and `/admin/roles/:code` with `roles.manage`, and `/admin/audit` with
-`audit.read`.
+`audit.read`. `/admin/audit/configuration` independently requires `audit.configure`.
 Frontend permission checks are UX only; Alixar must still enforce `403`.
 
 ### Manual session smoke test
@@ -109,6 +109,18 @@ authenticated user without `audit.read` receives `403` and does not see the Audi
 entry. A real browser is required to prove cookie and CSRF behavior; an
 HTTP/proxy smoke alone is not browser E2E. Destroy only disposable containers
 and volumes afterward.
+
+### Manual audit configuration smoke
+
+Use a disposable Alixar database. Through the Solucar proxy, log in and check `/me`
+for `audit.configure`. GET configuration and read policy; PUT BASIC, then SELECTIVE;
+replace policy with USER=QUERY_ONLY and ROLE=QUERY_AND_OBJECT and GET to confirm
+persistence. Set USER=NONE and verify its rule is omitted; PUT OFF and confirm the
+remaining policy is preserved. Confirm PUT returns 403 without audit.configure.
+With audit.read, inspect mandatory mode and per-resource policy change events.
+The UI must also permit configuration without audit.read and deny the viewer.
+An HTTP/proxy smoke is not browser E2E. Destroy all disposable containers, networks,
+volumes and credentials afterward. Do not alter the product proxy for smoke networking.
 
 ## Configuration
 
