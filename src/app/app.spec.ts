@@ -107,11 +107,59 @@ describe('App', () => {
       roles: [],
       permissions: ['users.manage', 'roles.manage'],
     });
-    auth.hasPermission.mockReturnValue(true);
+    auth.hasPermission.mockImplementation(
+      (permission) => permission === 'users.manage' || permission === 'roles.manage',
+    );
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     const links = [...fixture.nativeElement.querySelectorAll('.app__nav-link')];
     expect(links.map((link) => link.textContent.trim())).toEqual(['Users', 'Roles']);
+  });
+
+  it('shows Audit only when audit.read is effective', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({ ...CURRENT_USER, roles: [], permissions: ['audit.read'] });
+    auth.hasPermission.mockImplementation((permission) => permission === 'audit.read');
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const links = [...fixture.nativeElement.querySelectorAll('.app__nav-link')];
+    expect(links.length).toBe(1);
+    expect(links[0].textContent.trim()).toBe('Audit');
+    expect(links[0].getAttribute('href')).toBe('/admin/audit');
+  });
+
+  it('does not show Audit when only audit.configure is effective', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({ ...CURRENT_USER, roles: [], permissions: ['audit.configure'] });
+    auth.hasPermission.mockImplementation((permission) => permission === 'audit.configure');
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.app__nav-link')).toBeNull();
+  });
+
+  it('shows Users, Roles and Audit independently when all permissions are effective', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({
+      ...CURRENT_USER,
+      roles: [],
+      permissions: ['users.manage', 'roles.manage', 'audit.read'],
+    });
+    auth.hasPermission.mockImplementation((permission) =>
+      ['users.manage', 'roles.manage', 'audit.read'].includes(permission),
+    );
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const links = [...fixture.nativeElement.querySelectorAll('.app__nav-link')];
+    expect(links.map((link) => link.textContent.trim())).toEqual(['Users', 'Roles', 'Audit']);
+  });
+
+  it('hides Audit for a system-admin without effective audit.read', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({ ...CURRENT_USER, roles: ['system-admin'], permissions: [] });
+    auth.hasPermission.mockReturnValue(false);
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.app__nav-link')).toBeNull();
   });
 
   it('shows Users without Roles when only users.manage is effective', () => {

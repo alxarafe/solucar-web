@@ -45,8 +45,9 @@ interceptor or copy the cookie manually.
 and `permissions`; Solucar keeps them in memory and exposes `hasPermission()`.
 The `requirePermission()` guard, `/forbidden` view and permission-aware
 navigation metadata protect `/admin/users`, `/admin/users/new` and
-`/admin/users/:id` with `users.manage`, and `/admin/roles`, `/admin/roles/new`
-and `/admin/roles/:code` with `roles.manage`.
+`/admin/users/:id` with `users.manage`, `/admin/roles`, `/admin/roles/new`
+and `/admin/roles/:code` with `roles.manage`, and `/admin/audit` with
+`audit.read`.
 Frontend permission checks are UX only; Alixar must still enforce `403`.
 
 ### Manual session smoke test
@@ -92,6 +93,21 @@ list. If practical, verify that a built-in role exposes no mutation controls and
 that deleting a role assigned to a user returns `409 ADMIN_ROLE_IN_USE` without
 changing the view. A real browser is required to prove cookie and CSRF behavior;
 an HTTP/proxy smoke alone is not browser E2E. Destroy only disposable containers
+and volumes afterward.
+
+### Manual audit smoke
+
+Use a disposable Alixar database and a user whose effective permissions include
+`audit.read`, optionally without `users.manage` or `roles.manage`. Sign in through
+Solucar and verify `/me`, the Audit navigation entry and `/admin/audit`. Confirm
+that events load in ascending `sequence` order, apply the real `action`,
+`resourceType` and `result` filters, and verify keyset navigation: each load-more
+request must use `afterSequence` equal to the last loaded sequence. Open an event
+detail and inspect the full hashes. Run Verify integrity explicitly and confirm
+that it is not triggered by loading, filtering or refreshing. Confirm that an
+authenticated user without `audit.read` receives `403` and does not see the Audit
+entry. A real browser is required to prove cookie and CSRF behavior; an
+HTTP/proxy smoke alone is not browser E2E. Destroy only disposable containers
 and volumes afterward.
 
 ## Configuration
