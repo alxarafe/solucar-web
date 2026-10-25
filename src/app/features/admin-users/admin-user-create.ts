@@ -3,11 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-import {
-  ADMIN_USER_PASSWORD_MIN_LENGTH,
-  AdminRole,
-  AdminUsersApi,
-} from '../../core/api/admin-users-api';
+import { AdminRole, AdminRolesApi } from '../../core/api/admin-roles-api';
+import { ADMIN_USER_PASSWORD_MIN_LENGTH, AdminUsersApi } from '../../core/api/admin-users-api';
 import { AdminRolePicker } from './admin-role-picker';
 import { AdminUserError } from './admin-user-error';
 import { ADMIN_USERS_PATH } from './admin-users-navigation';
@@ -20,6 +17,7 @@ import { ADMIN_USERS_PATH } from './admin-users-navigation';
 })
 export class AdminUserCreate implements OnInit {
   private readonly api = inject(AdminUsersApi);
+  private readonly rolesApi = inject(AdminRolesApi);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   readonly usersPath = ADMIN_USERS_PATH;
@@ -45,8 +43,8 @@ export class AdminUserCreate implements OnInit {
     if (this.loading() || this.submitting()) return;
     this.loading.set(true);
     this.error.set(null);
-    this.api
-      .listRoles()
+    this.rolesApi
+      .list()
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         finalize(() => this.loading.set(false)),

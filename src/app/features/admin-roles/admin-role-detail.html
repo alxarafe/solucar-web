@@ -1,0 +1,97 @@
+<main class="admin-roles">
+  <a [routerLink]="rolesPath" i18n="@@adminRoles.action.back">Back to roles</a>
+  <h1 i18n="@@adminRoles.detail.title">Role details</h1>
+  @if (loading()) {
+    <p role="status" i18n="@@adminRoles.loading">Loading roles...</p>
+  }
+  @if (error()) {
+    <app-admin-role-error [error]="error()" />
+  }
+  @if (success()) {
+    <p role="status">{{ success() }}</p>
+  }
+  @if (role(); as role) {
+    <dl>
+      <dt i18n="@@adminRoles.field.code">Role code</dt>
+      <dd><code>{{ role.code }}</code></dd>
+      <dt i18n="@@adminRoles.field.name">Role name</dt>
+      <dd>{{ role.name }}</dd>
+      <dt i18n="@@adminRoles.field.builtIn">Built-in</dt>
+      <dd>
+        @if (role.builtIn) {
+          <span i18n="@@adminRoles.builtIn.yes">Built-in</span>
+          <span i18n="@@adminRoles.builtIn.protected">Protected role</span>
+        } @else {
+          <span i18n="@@adminRoles.builtIn.no">Custom</span>
+        }
+      </dd>
+      <dt i18n="@@adminRoles.field.permissions">Permissions</dt>
+      <dd>
+        @if (role.permissionCodes.length) {
+          {{ role.permissionCodes.join(', ') }}
+        } @else {
+          <span i18n="@@adminRoles.permissions.none">No permissions assigned</span>
+        }
+      </dd>
+    </dl>
+
+    @if (role.builtIn) {
+      <p class="admin-roles__note" i18n="@@adminRoles.builtIn.immutable">
+        This built-in role cannot be modified.
+      </p>
+    } @else {
+      <form [formGroup]="nameForm" (ngSubmit)="saveName()">
+        <fieldset [disabled]="busy()">
+          <legend i18n="@@adminRoles.name.title">Change role name</legend>
+          <label for="edit-role-name" i18n="@@adminRoles.field.name">Role name</label>
+          <input id="edit-role-name" formControlName="name" autocomplete="off" required />
+          @if (nameForm.touched && nameForm.invalid) {
+            <p role="alert" i18n="@@adminRoles.validation.name">Enter a role name.</p>
+          }
+          <button type="submit" i18n="@@adminRoles.action.save">Save</button>
+        </fieldset>
+      </form>
+
+      <form (submit)="$event.preventDefault(); savePermissions()">
+        <app-admin-permission-picker
+          [permissions]="permissions()"
+          [selected]="selectedPermissions()"
+          (selectedChange)="selectedPermissions.set($event)"
+          [disabled]="busy()"
+        />
+        <button type="submit" [disabled]="busy()" i18n="@@adminRoles.action.savePermissions">
+          Save permissions
+        </button>
+      </form>
+
+      <section>
+        <h2 i18n="@@adminRoles.delete.title">Delete role</h2>
+        @if (!confirmingDelete()) {
+          <button type="button" [disabled]="busy()" (click)="requestDelete()">
+            <span i18n="@@adminRoles.action.delete">Delete role</span>
+          </button>
+        } @else {
+          <p i18n="@@adminRoles.delete.confirm">
+            Delete this role? This action cannot be undone.
+          </p>
+          <button
+            type="button"
+            [disabled]="busy()"
+            (click)="confirmDelete()"
+            i18n="@@adminRoles.action.confirm"
+          >
+            Confirm
+          </button>
+          <button
+            type="button"
+            [disabled]="busy()"
+            (click)="cancelDelete()"
+            i18n="@@adminRoles.action.cancel"
+          >
+            Cancel
+          </button>
+        }
+      </section>
+    }
+  }
+</main>

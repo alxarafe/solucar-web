@@ -3,7 +3,6 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 const USERS_PATH = '/api/admin/users';
-const ROLES_PATH = '/api/admin/roles';
 export const ADMIN_USERS_PAGE_SIZE = 20;
 export const ADMIN_USER_PASSWORD_MIN_LENGTH = 12;
 
@@ -36,13 +35,6 @@ export interface CreateAdminUser {
   email: string;
   password: string;
   roleCodes: string[];
-}
-
-export interface AdminRole {
-  code: string;
-  name: string;
-  builtIn: boolean;
-  permissionCodes: string[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -78,11 +70,6 @@ export class AdminUsersApi {
 
   replaceRoles(id: string, roleCodes: string[]): Observable<AdminUser> {
     return this.http.put<AdminUser>(`${this.userPath(id)}/roles`, { roleCodes });
-  }
-
-  // Read-only catalogue for assigning roles; no role administration is exposed.
-  listRoles(): Observable<AdminRole[]> {
-    return this.http.get<AdminRole[]>(ROLES_PATH);
   }
 
   private userPath(id: string): string {

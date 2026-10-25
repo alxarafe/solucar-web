@@ -88,6 +88,51 @@ describe('App', () => {
     expect(fixture.nativeElement.querySelector('.app__nav-link')).toBeNull();
   });
 
+  it('shows Roles only when roles.manage is effective', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({ ...CURRENT_USER, roles: [], permissions: ['roles.manage'] });
+    auth.hasPermission.mockImplementation((permission) => permission === 'roles.manage');
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const links = fixture.nativeElement.querySelectorAll('.app__nav-link');
+    expect(links.length).toBe(1);
+    expect(links[0].textContent.trim()).toBe('Roles');
+    expect(links[0].getAttribute('href')).toBe('/admin/roles');
+  });
+
+  it('shows Users and Roles independently when both permissions are effective', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({
+      ...CURRENT_USER,
+      roles: [],
+      permissions: ['users.manage', 'roles.manage'],
+    });
+    auth.hasPermission.mockReturnValue(true);
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const links = [...fixture.nativeElement.querySelectorAll('.app__nav-link')];
+    expect(links.map((link) => link.textContent.trim())).toEqual(['Users', 'Roles']);
+  });
+
+  it('shows Users without Roles when only users.manage is effective', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({ ...CURRENT_USER, roles: [], permissions: ['users.manage'] });
+    auth.hasPermission.mockImplementation((permission) => permission === 'users.manage');
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const links = [...fixture.nativeElement.querySelectorAll('.app__nav-link')];
+    expect(links.map((link) => link.textContent.trim())).toEqual(['Users']);
+  });
+
+  it('hides both administration entries without administration permissions', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({ ...CURRENT_USER, roles: ['system-admin'], permissions: [] });
+    auth.hasPermission.mockReturnValue(false);
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.app__nav-link')).toBeNull();
+  });
+
   it('should clear the frontend session and navigate to login after logout', async () => {
     auth.status.set('authenticated');
     auth.currentUser.set(CURRENT_USER);

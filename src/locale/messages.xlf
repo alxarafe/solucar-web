@@ -723,6 +723,400 @@
           <context context-type="linenumber">122</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="adminRoles.action.back" datatype="html">
+        <source>Back to roles</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-create.html</context>
+          <context context-type="linenumber">2,3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">2,3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.action.cancel" datatype="html">
+        <source> Cancel </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">91,93</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.action.confirm" datatype="html">
+        <source> Confirm </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">83,85</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.action.create" datatype="html">
+        <source> Create role </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-create.html</context>
+          <context context-type="linenumber">48,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.action.delete" datatype="html">
+        <source>Delete role</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">71,73</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.action.new" datatype="html">
+        <source>New role</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-create.html</context>
+          <context context-type="linenumber">3,5</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">4,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.action.retry" datatype="html">
+        <source>Retry</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-create.html</context>
+          <context context-type="linenumber">11,13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">11,13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.action.save" datatype="html">
+        <source>Save</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">51,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.action.savePermissions" datatype="html">
+        <source> Save permissions </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">63,67</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.action.signIn" datatype="html">
+        <source> Sign in again </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">77,80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.action.view" datatype="html">
+        <source>View role</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">47,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.builtIn.immutable" datatype="html">
+        <source> This built-in role cannot be modified. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">40,43</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.builtIn.no" datatype="html">
+        <source>Custom</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">25,28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.builtIn.protected" datatype="html">
+        <source>Protected role</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">23,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.builtIn.yes" datatype="html">
+        <source>Built-in</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">22,23</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">33,35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.code.help" datatype="html">
+        <source> Lowercase letters, digits and single hyphens (for example warehouse-manager). The code cannot be changed later. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-create.html</context>
+          <context context-type="linenumber">24,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.delete.confirm" datatype="html">
+        <source> Delete this role? This action cannot be undone. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">75,77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.delete.title" datatype="html">
+        <source>Delete role</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">68,69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.detail.title" datatype="html">
+        <source>Role details</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">3,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.empty" datatype="html">
+        <source>No roles found</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">56,60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.error.builtInImmutable" datatype="html">
+        <source>This built-in role cannot be modified.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.error.conflict" datatype="html">
+        <source>The change conflicts with the current data.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.error.duplicateCode" datatype="html">
+        <source>A role with this code already exists.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.error.forbidden" datatype="html">
+        <source>You do not have permission to manage roles.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.error.network" datatype="html">
+        <source>Unable to communicate with Alixar.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.error.notFound" datatype="html">
+        <source>The requested role or permission was not found.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.error.roleInUse" datatype="html">
+        <source>This role is in use and cannot be deleted.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.error.sessionExpired" datatype="html">
+        <source>Your session has expired. Sign in again.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.error.unavailable" datatype="html">
+        <source>Role administration is temporarily unavailable. Please try again.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">54</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.error.unexpected" datatype="html">
+        <source>Unable to complete the role administration request.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.error.validation" datatype="html">
+        <source>Check the information entered.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-error.ts</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.field.builtIn" datatype="html">
+        <source>Built-in</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">19,21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">21,22</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.field.code" datatype="html">
+        <source>Role code</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-create.html</context>
+          <context context-type="linenumber">15,17</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">15,16</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">19,20</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.field.details" datatype="html">
+        <source>Details</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">23,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.field.name" datatype="html">
+        <source>Role name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-create.html</context>
+          <context context-type="linenumber">27,28</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">17,18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">46,47</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">20,21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.field.permissions" datatype="html">
+        <source>Permissions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-permission-picker.ts</context>
+          <context context-type="linenumber">8,9</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">28,30</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">22,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.loading" datatype="html">
+        <source>Loading roles...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">5,8</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">7,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.name.title" datatype="html">
+        <source>Change role name</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">45,46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.permissions.loading" datatype="html">
+        <source>Loading permissions...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-create.html</context>
+          <context context-type="linenumber">5,8</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.permissions.none" datatype="html">
+        <source>No permissions assigned</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">33,38</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">42,44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.permissions.success" datatype="html">
+        <source>Permissions saved successfully.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.ts</context>
+          <context context-type="linenumber">107</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.permissions.unavailable" datatype="html">
+        <source>No permissions available.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-permission-picker.ts</context>
+          <context context-type="linenumber">20,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.save.success" datatype="html">
+        <source>Role saved successfully.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.ts</context>
+          <context context-type="linenumber">83</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.title" datatype="html">
+        <source>Roles</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-roles-list.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.validation.code" datatype="html">
+        <source> Use lowercase letters, digits and single hyphens, up to 100 characters. </source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-create.html</context>
+          <context context-type="linenumber">31,34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="adminRoles.validation.name" datatype="html">
+        <source>Enter a role name.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-create.html</context>
+          <context context-type="linenumber">35,37</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/admin-roles/admin-role-detail.html</context>
+          <context context-type="linenumber">49,51</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -45,7 +45,8 @@ interceptor or copy the cookie manually.
 and `permissions`; Solucar keeps them in memory and exposes `hasPermission()`.
 The `requirePermission()` guard, `/forbidden` view and permission-aware
 navigation metadata protect `/admin/users`, `/admin/users/new` and
-`/admin/users/:id` with `users.manage`.
+`/admin/users/:id` with `users.manage`, and `/admin/roles`, `/admin/roles/new`
+and `/admin/roles/:code` with `roles.manage`.
 Frontend permission checks are UX only; Alixar must still enforce `403`.
 
 ### Manual session smoke test
@@ -78,6 +79,20 @@ disposable containers and volumes afterward; Alixar has no administrative delete
 If the development proxy cannot reach a loopback-only Alixar via
 `host.docker.internal`, use temporary smoke-only networking/proxy configuration.
 Do not add a product dependency or change the permanent deployment architecture.
+
+### Manual role administration smoke
+
+Use a disposable Alixar database and a user whose effective permissions include
+`roles.manage`, optionally without any role name. Sign in through Solucar and
+verify `/me`, the Roles navigation entry, role listing and the backend permission
+catalogue. Create a temporary role with zero permissions, verify the normalized
+code returned by Alixar, open its detail, rename it and replace its permissions,
+including an empty collection. Then delete it and confirm it disappears from the
+list. If practical, verify that a built-in role exposes no mutation controls and
+that deleting a role assigned to a user returns `409 ADMIN_ROLE_IN_USE` without
+changing the view. A real browser is required to prove cookie and CSRF behavior;
+an HTTP/proxy smoke alone is not browser E2E. Destroy only disposable containers
+and volumes afterward.
 
 ## Configuration
 

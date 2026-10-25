@@ -4,9 +4,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { EMPTY, Observable, catchError, finalize, forkJoin, switchMap } from 'rxjs';
+import { AdminRole, AdminRolesApi } from '../../core/api/admin-roles-api';
 import {
   ADMIN_USER_PASSWORD_MIN_LENGTH,
-  AdminRole,
   AdminUser,
   AdminUsersApi,
 } from '../../core/api/admin-users-api';
@@ -22,6 +22,7 @@ import { ADMIN_USERS_PATH } from './admin-users-navigation';
 })
 export class AdminUserDetail implements OnInit {
   private readonly api = inject(AdminUsersApi);
+  private readonly rolesApi = inject(AdminRolesApi);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
@@ -52,7 +53,7 @@ export class AdminUserDetail implements OnInit {
           this.passwordForm.reset();
           return forkJoin({
             user: this.api.get(params.get('id')!),
-            roles: this.api.listRoles(),
+            roles: this.rolesApi.list(),
           }).pipe(
             catchError((error: unknown) => {
               this.error.set(error);

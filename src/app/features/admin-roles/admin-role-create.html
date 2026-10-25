@@ -1,0 +1,52 @@
+<main class="admin-roles">
+  <a [routerLink]="rolesPath" i18n="@@adminRoles.action.back">Back to roles</a>
+  <h1 i18n="@@adminRoles.action.new">New role</h1>
+  @if (loading()) {
+    <p role="status" i18n="@@adminRoles.permissions.loading">Loading permissions...</p>
+  }
+  @if (error()) {
+    <app-admin-role-error [error]="error()" />
+  }
+  @if (!catalogReady() && !loading()) {
+    <button type="button" (click)="loadPermissions()" i18n="@@adminRoles.action.retry">Retry</button>
+  }
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <fieldset [disabled]="submitting() || !catalogReady()">
+      <label for="new-role-code" i18n="@@adminRoles.field.code">Role code</label>
+      <input
+        id="new-role-code"
+        formControlName="code"
+        autocomplete="off"
+        required
+        aria-describedby="role-code-help"
+      />
+      <p id="role-code-help" i18n="@@adminRoles.code.help">
+        Lowercase letters, digits and single hyphens (for example warehouse-manager). The code
+        cannot be changed later.
+      </p>
+      <label for="new-role-name" i18n="@@adminRoles.field.name">Role name</label>
+      <input id="new-role-name" formControlName="name" autocomplete="off" required />
+      @if (form.controls.code.touched && form.controls.code.invalid) {
+        <p role="alert" i18n="@@adminRoles.validation.code">
+          Use lowercase letters, digits and single hyphens, up to 100 characters.
+        </p>
+      }
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <p role="alert" i18n="@@adminRoles.validation.name">Enter a role name.</p>
+      }
+      <app-admin-permission-picker
+        [permissions]="permissions()"
+        [selected]="selectedPermissions()"
+        (selectedChange)="selectedPermissions.set($event)"
+        [disabled]="submitting() || !catalogReady()"
+      />
+      <button
+        type="submit"
+        [disabled]="submitting() || !catalogReady()"
+        i18n="@@adminRoles.action.create"
+      >
+        Create role
+      </button>
+    </fieldset>
+  </form>
+</main>

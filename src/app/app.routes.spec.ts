@@ -135,4 +135,87 @@ describe('session routing', () => {
       }
     });
   }
+
+  it('forbids /admin/users when only roles.manage is effective', async () => {
+    const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/auth/me')
+      .flush({
+        id: 'admin-id',
+        username: 'admin',
+        email: 'admin@example.test',
+        roles: [],
+        permissions: ['roles.manage'],
+      });
+    await bootstrap;
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/admin/users', Forbidden);
+    expect(TestBed.inject(Router).url).toBe('/forbidden');
+  });
+
+  for (const path of ['/admin/roles', '/admin/roles/new', '/admin/roles/role-code']) {
+    it(`protects ${path} from anonymous users with an internal returnUrl`, async () => {
+      const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
+      TestBed.inject(HttpTestingController)
+        .expectOne('/api/auth/me')
+        .flush(null, { status: 401, statusText: 'Unauthorized' });
+      await bootstrap;
+      const harness = await RouterTestingHarness.create();
+      await harness.navigateByUrl(path);
+      const router = TestBed.inject(Router);
+      expect(router.url.split('?')[0]).toBe('/login');
+      expect(router.parseUrl(router.url).queryParams['returnUrl']).toBe(path);
+    });
+
+    it.each([
+      { roles: [] as string[], permissions: [] as string[] },
+      { roles: ['system-admin'], permissions: [] as string[] },
+      { roles: [] as string[], permissions: ['users.manage'] },
+    ])(`forbids ${path} without roles.manage`, async ({ roles, permissions }) => {
+      const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
+      TestBed.inject(HttpTestingController)
+        .expectOne('/api/auth/me')
+        .flush({
+          id: 'admin-id',
+          username: 'admin',
+          email: 'admin@example.test',
+          roles,
+          permissions,
+        });
+      await bootstrap;
+      const harness = await RouterTestingHarness.create();
+      await harness.navigateByUrl(path, Forbidden);
+      expect(TestBed.inject(Router).url).toBe('/forbidden');
+      expect(TestBed.inject(AuthSessionService).status()).toBe('authenticated');
+    });
+
+    it(`allows ${path} with roles.manage and no roles`, async () => {
+      const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
+      const http = TestBed.inject(HttpTestingController);
+      http.expectOne('/api/auth/me').flush({
+        id: 'admin-id',
+        username: 'admin',
+        email: 'admin@example.test',
+        roles: [],
+        permissions: ['roles.manage'],
+      });
+      await bootstrap;
+      const harness = await RouterTestingHarness.create();
+      await harness.navigateByUrl(path);
+      expect(TestBed.inject(Router).url).toBe(path);
+      if (path === '/admin/roles') {
+        http.expectOne('/api/admin/roles').flush([]);
+      } else if (path === '/admin/roles/new') {
+        http.expectOne('/api/admin/permissions').flush([]);
+      } else {
+        http.expectOne('/api/admin/roles/role-code').flush({
+          code: 'role-code',
+          name: 'Role code',
+          builtIn: false,
+          permissionCodes: [],
+        });
+        http.expectOne('/api/admin/permissions').flush([]);
+      }
+    });
+  }
 });

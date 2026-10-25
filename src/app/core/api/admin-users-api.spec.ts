@@ -106,14 +106,4 @@ describe('AdminUsersApi', () => {
     expect(req.request.body).toEqual({ roleCodes: [] });
     req.flush({ ...USER, roles: [] });
   });
-
-  it('reads the complete role catalogue', () => {
-    const roles = [
-      { code: 'accounting', name: 'Accounting', builtIn: false, permissionCodes: ['audit.read'] },
-    ];
-    api.listRoles().subscribe((result) => expect(result).toEqual(roles));
-    const req = http.expectOne('/api/admin/roles');
-    expect(req.request.method).toBe('GET');
-    req.flush(roles);
-  });
 });

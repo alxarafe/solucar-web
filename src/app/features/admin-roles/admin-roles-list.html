@@ -1,0 +1,59 @@
+<main class="admin-roles">
+  <header>
+    <h1 i18n="@@adminRoles.title">Roles</h1>
+    <a [routerLink]="newPath" i18n="@@adminRoles.action.new">New role</a>
+  </header>
+  @if (loading()) {
+    <p role="status" i18n="@@adminRoles.loading">Loading roles...</p>
+  }
+  @if (error()) {
+    <app-admin-role-error [error]="error()" />
+    <button type="button" (click)="load()" i18n="@@adminRoles.action.retry">Retry</button>
+  }
+  @if (roles(); as roles) {
+    @if (roles.length) {
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" i18n="@@adminRoles.field.code">Role code</th>
+              <th scope="col" i18n="@@adminRoles.field.name">Role name</th>
+              <th scope="col" i18n="@@adminRoles.field.builtIn">Built-in</th>
+              <th scope="col" i18n="@@adminRoles.field.permissions">Permissions</th>
+              <th scope="col" i18n="@@adminRoles.field.details">Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (role of roles; track role.code) {
+              <tr>
+                <td>{{ role.code }}</td>
+                <td>{{ role.name }}</td>
+                <td>
+                  @if (role.builtIn) {
+                    <span i18n="@@adminRoles.builtIn.yes">Built-in</span>
+                  } @else {
+                    <span i18n="@@adminRoles.builtIn.no">Custom</span>
+                  }
+                </td>
+                <td>
+                  @if (role.permissionCodes.length) {
+                    {{ role.permissionCodes.join(', ') }}
+                  } @else {
+                    <span i18n="@@adminRoles.permissions.none">No permissions assigned</span>
+                  }
+                </td>
+                <td>
+                  <a [routerLink]="[rolesPath, role.code]" i18n="@@adminRoles.action.view"
+                    >View role</a
+                  >
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p role="status" i18n="@@adminRoles.empty">No roles found</p>
+    }
+  }
+</main>
