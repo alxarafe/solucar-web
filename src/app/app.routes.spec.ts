@@ -219,6 +219,58 @@ describe('session routing', () => {
     });
   }
 
+  it.each([
+    { roles: [], permissions: [] },
+    { roles: ['system-admin'], permissions: [] },
+    { roles: [], permissions: ['audit.read'] },
+    { roles: [], permissions: ['audit.configure'] },
+    { roles: [], permissions: ['audit.read', 'audit.configure'] },
+  ])(
+    'enforces both audit routes independently for $permissions and roles $roles',
+    async ({ roles, permissions }) => {
+      const auth = TestBed.inject(AuthSessionService);
+      const http = TestBed.inject(HttpTestingController);
+      const bootstrap = auth.bootstrap();
+      http
+        .expectOne('/api/auth/me')
+        .flush({ id: 'admin', username: 'admin', email: 'admin@example.test', roles, permissions });
+      await bootstrap;
+      const harness = await RouterTestingHarness.create();
+      for (const [path, permission] of [
+        ['/admin/audit/configuration', 'audit.configure'],
+        ['/admin/audit', 'audit.read'],
+      ]) {
+        await harness.navigateByUrl(path);
+        const allowed = new Set<string>(permissions).has(permission);
+        expect(TestBed.inject(Router).url).toBe(allowed ? path : '/forbidden');
+        if (allowed && permission === 'audit.configure') {
+          http
+            .expectOne('/api/admin/audit-configuration')
+            .flush({ id: 'config', mode: 'BASIC', updatedAt: '2026-10-25T10:00:00Z' });
+          http
+            .expectOne('/api/admin/audit-configuration/read-policy')
+            .flush({ configurationId: 'config', rules: [] });
+        } else if (allowed) {
+          http.expectOne('/api/admin/audit-events?afterSequence=0&limit=50').flush([]);
+        }
+        expect(auth.status()).toBe('authenticated');
+      }
+    },
+  );
+
+  it('redirects anonymous configuration visits to login', async () => {
+    const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/auth/me')
+      .flush(null, { status: 401, statusText: 'Unauthorized' });
+    await bootstrap;
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/admin/audit/configuration');
+    const router = TestBed.inject(Router);
+    expect(router.url.split('?')[0]).toBe('/login');
+    expect(router.parseUrl(router.url).queryParams['returnUrl']).toBe('/admin/audit/configuration');
+  });
+
   it('protects /admin/audit from anonymous users with an internal returnUrl', async () => {
     const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
     TestBed.inject(HttpTestingController)

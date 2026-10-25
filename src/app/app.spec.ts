@@ -128,13 +128,15 @@ describe('App', () => {
     expect(links[0].getAttribute('href')).toBe('/admin/audit');
   });
 
-  it('does not show Audit when only audit.configure is effective', () => {
+  it('shows configuration independently when only audit.configure is effective', () => {
     auth.status.set('authenticated');
     auth.currentUser.set({ ...CURRENT_USER, roles: [], permissions: ['audit.configure'] });
     auth.hasPermission.mockImplementation((permission) => permission === 'audit.configure');
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('.app__nav-link')).toBeNull();
+    const links = [...fixture.nativeElement.querySelectorAll('.app__nav-link')];
+    expect(links.map((link) => link.textContent.trim())).toEqual(['Audit configuration']);
+    expect(links[0].getAttribute('href')).toBe('/admin/audit/configuration');
   });
 
   it('shows Users, Roles and Audit independently when all permissions are effective', () => {
@@ -180,6 +182,31 @@ describe('App', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.app__nav-link')).toBeNull();
   });
+
+  it.each([
+    { roles: [], permissions: [], expected: [] },
+    { roles: ['system-admin'], permissions: [], expected: [] },
+    { roles: [], permissions: ['audit.read'], expected: ['Audit'] },
+    { roles: [], permissions: ['audit.configure'], expected: ['Audit configuration'] },
+    {
+      roles: [],
+      permissions: ['audit.read', 'audit.configure'],
+      expected: ['Audit', 'Audit configuration'],
+    },
+  ])(
+    'keeps audit navigation independent for $permissions and roles $roles',
+    ({ roles, permissions, expected }) => {
+      auth.status.set('authenticated');
+      auth.currentUser.set({ ...CURRENT_USER, roles, permissions });
+      auth.hasPermission.mockImplementation((permission) =>
+        new Set<string>(permissions).has(permission),
+      );
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const links = [...fixture.nativeElement.querySelectorAll('.app__nav-link')];
+      expect(links.map((link) => link.textContent.trim())).toEqual(expected);
+    },
+  );
 
   it('should clear the frontend session and navigate to login after logout', async () => {
     auth.status.set('authenticated');

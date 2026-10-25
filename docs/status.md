@@ -68,8 +68,17 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 - Inline expandable detail with the complete event contract, including full hashes
 - Manual integrity verification via `GET /api/admin/audit-events/verification`;
   invalid results report the canonical failure without attributing a cause
-- `audit.configure` does not grant access to events or verification; audit
-  configuration and read-policy UI remain outside this slice
+- `audit.configure` does not grant access to events or verification; configuration has its own independent permission
+
+### Audit configuration
+
+- `/admin/audit/configuration` and its independent navigation entry require `audit.configure`
+- Mode and read policy load and save independently, with separate feedback and retries
+- OFF disables ordinary persistent audit; BASIC records the instrumented security/administration
+  baseline; SELECTIVE adds the configured read policy to the BASIC baseline
+- Fixed USER and ROLE selectors with NONE, QUERY_ONLY and QUERY_AND_OBJECT
+- Missing persisted rules mean NONE; policy is stored in all modes and active only in SELECTIVE
+- Backend responses are authoritative; mode changes preserve the policy
 
 ### Contact
 
@@ -122,7 +131,6 @@ See [Development](development.md) for full workflow details.
 
 - Self-service password recovery, account self-service and remember-me
 - Broad ERP UI beyond the current Contact slice
-- Audit configuration and audit read-policy UI
 - Automated end-to-end validation against a running Alixar instance
 - Dynamic in-place language switching
 
