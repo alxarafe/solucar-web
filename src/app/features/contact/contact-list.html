@@ -1,0 +1,124 @@
+<main class="contact contact--list">
+  <header class="contact__header">
+    <div>
+      <h1 class="contact__title" i18n="@@contact.page.title">Contacts</h1>
+    </div>
+    @if (canCreate()) {
+      <a class="contact__link" [routerLink]="newPath" i18n="@@contact.action.new">New contact</a>
+    }
+  </header>
+
+  <section class="contact__section" aria-labelledby="contact-filter-title">
+    <h2 id="contact-filter-title" class="contact__section-title" i18n="@@contact.list.filter.title">
+      Filter contacts
+    </h2>
+
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilter()" class="contact__form">
+      <div class="contact__field-row">
+        <label for="thirdPartyIdFilter" class="contact__label">
+          <span i18n="@@contact.field.thirdPartyId">Third party ID</span>
+        </label>
+        <input
+          id="thirdPartyIdFilter"
+          type="number"
+          formControlName="thirdPartyId"
+          class="contact__input"
+          [class.contact__input--invalid]="
+            filterForm.controls.thirdPartyId.invalid && filterForm.controls.thirdPartyId.touched
+          "
+          min="1"
+        />
+      </div>
+
+      <div class="contact__filter-actions">
+        <button
+          type="submit"
+          class="contact__button"
+          [disabled]="loading()"
+          i18n="@@contact.list.filter.apply"
+        >
+          Apply filter
+        </button>
+        <button
+          type="button"
+          class="contact__button"
+          [disabled]="loading()"
+          (click)="clearFilter()"
+          i18n="@@contact.list.filter.clear"
+        >
+          Clear filter
+        </button>
+      </div>
+    </form>
+  </section>
+
+  @if (loading()) {
+    <p role="status" i18n="@@contact.list.loading">Loading contacts...</p>
+  }
+
+  @if (error()) {
+    <div class="contact__error-banner" role="alert">
+      {{ error() }}
+    </div>
+    <button type="button" class="contact__button" (click)="load()" i18n="@@contact.action.retry">
+      Retry
+    </button>
+  }
+
+  @if (result(); as page) {
+    @if (page.items.length) {
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col" i18n="@@contact.list.column.id">ID</th>
+              <th scope="col" i18n="@@contact.field.lastName">Last name</th>
+              <th scope="col" i18n="@@contact.field.firstName">First name</th>
+              <th scope="col" i18n="@@contact.field.email">Email</th>
+              <th scope="col" i18n="@@contact.field.thirdPartyId">Third party ID</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (contact of page.items; track contact.id) {
+              <tr>
+                <td>{{ contact.id }}</td>
+                <td>{{ contact.lastName }}</td>
+                <td>{{ contact.firstName ?? '—' }}</td>
+                <td>{{ contact.email ?? '—' }}</td>
+                <td>{{ contact.thirdPartyId ?? '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p role="status" i18n="@@contact.list.empty">No contacts found</p>
+    }
+
+    <nav
+      class="pagination"
+      aria-label="Contact pages"
+      i18n-aria-label="@@contact.list.pagination.label"
+    >
+      <button
+        type="button"
+        [disabled]="loading() || page.page === 0"
+        (click)="this.page(-1)"
+        i18n="@@contact.list.action.previous"
+      >
+        Previous
+      </button>
+      <span i18n="@@contact.list.pagination.summary"
+        >Page {{ page.page + 1 }} · {{ page.total }} contacts</span
+      >
+      <button
+        type="button"
+        [disabled]="loading() || (page.page + 1) * page.size >= page.total"
+        (click)="this.page(1)"
+        i18n="@@contact.list.action.next"
+      >
+        Next
+      </button>
+    </nav>
+  }
+</main>

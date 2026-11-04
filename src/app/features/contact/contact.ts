@@ -1,12 +1,10 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ContactApi, Contact, CreateContactRequest } from '../../core/api/contact-api';
+import { AuthSessionService } from '../../core/auth/auth-session.service';
+import { Permission } from '../../core/auth/permission';
+import { contactErrorMessage } from './contact-error';
 
 @Component({
   selector: 'app-contact',
@@ -16,6 +14,7 @@ import { ContactApi, Contact, CreateContactRequest } from '../../core/api/contac
 })
 export class ContactComponent {
   private readonly contactApi = inject(ContactApi);
+  private readonly auth = inject(AuthSessionService);
   private readonly fb = inject(FormBuilder);
 
   readonly searchForm: FormGroup = this.fb.group({
@@ -38,13 +37,13 @@ export class ContactComponent {
   readonly searchButtonText = computed(() =>
     this.searchLoading()
       ? $localize`:@@contact.action.searching:Searching...`
-      : $localize`:@@contact.action.search:Search`
+      : $localize`:@@contact.action.search:Search`,
   );
 
   readonly createButtonText = computed(() =>
     this.createLoading()
       ? $localize`:@@contact.action.creating:Creating...`
-      : $localize`:@@contact.action.create:Create contact`
+      : $localize`:@@contact.action.create:Create contact`,
   );
 
   searchContact(): void {
@@ -62,7 +61,7 @@ export class ContactComponent {
         this.searchLoading.set(false);
       },
       error: (err) => {
-        this.error.set(this.extractErrorDetail(err));
+        this.error.set(contactErrorMessage(err));
         this.searchLoading.set(false);
       },
     });
@@ -87,10 +86,12 @@ export class ContactComponent {
       next: (response) => {
         this.createdId.set(response.id);
         this.createLoading.set(false);
-        this.fetchCreatedContact(response.id);
+        if (this.auth.hasPermission(Permission.ContactsRead)) {
+          this.fetchCreatedContact(response.id);
+        }
       },
       error: (err) => {
-        this.error.set(this.extractErrorDetail(err));
+        this.error.set(contactErrorMessage(err));
         this.createLoading.set(false);
       },
     });
@@ -102,23 +103,8 @@ export class ContactComponent {
         this.contact.set(contact);
       },
       error: (err) => {
-        this.error.set(this.extractErrorDetail(err));
+        this.error.set(contactErrorMessage(err));
       },
     });
-  }
-
-  private extractErrorDetail(err: unknown): string {
-    if (err && typeof err === 'object' && 'error' in err) {
-      const httpError = err as { error: unknown };
-      if (
-        httpError.error &&
-        typeof httpError.error === 'object' &&
-        'detail' in httpError.error
-      ) {
-        const problemDetail = httpError.error as { detail: string };
-        return problemDetail.detail;
-      }
-    }
-    return $localize`:@@contact.error.unexpected:Unable to communicate with Alixar.`;
   }
 }

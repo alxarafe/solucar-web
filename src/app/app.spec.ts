@@ -68,6 +68,43 @@ describe('App', () => {
     expect(compiled.querySelector('.app__logout')?.textContent?.trim()).toBe('Log out');
   });
 
+  it('shows Contacts only when contacts.read is effective', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({ ...CURRENT_USER, roles: [], permissions: ['contacts.read'] });
+    auth.hasPermission.mockImplementation((permission) => permission === 'contacts.read');
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const links = [...fixture.nativeElement.querySelectorAll('.app__nav-link')];
+    expect(links.length).toBe(1);
+    expect(links[0].textContent.trim()).toBe('Contacts');
+    expect(links[0].getAttribute('href')).toBe('/contacts');
+  });
+
+  it('hides Contacts when only contacts.manage is effective', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({ ...CURRENT_USER, roles: [], permissions: ['contacts.manage'] });
+    auth.hasPermission.mockImplementation((permission) => permission === 'contacts.manage');
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.app__nav-link')).toBeNull();
+  });
+
+  it('shows Contacts independently from administration entries', () => {
+    auth.status.set('authenticated');
+    auth.currentUser.set({
+      ...CURRENT_USER,
+      roles: [],
+      permissions: ['contacts.read', 'users.manage'],
+    });
+    auth.hasPermission.mockImplementation((permission) =>
+      ['contacts.read', 'users.manage'].includes(permission),
+    );
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const links = [...fixture.nativeElement.querySelectorAll('.app__nav-link')];
+    expect(links.map((link) => link.textContent.trim())).toEqual(['Contacts', 'Users']);
+  });
+
   it('shows Users only when users.manage is effective', () => {
     auth.status.set('authenticated');
     auth.currentUser.set({ ...CURRENT_USER, roles: [], permissions: ['users.manage'] });

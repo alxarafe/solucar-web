@@ -30,6 +30,56 @@ describe('ContactApi', () => {
     expect(api).toBeTruthy();
   });
 
+  describe('listContacts', () => {
+    it('should issue GET /api/contacts with default page and size', () => {
+      const page = {
+        items: [
+          {
+            id: 1,
+            lastName: 'Doe',
+            firstName: 'John',
+            email: 'john@example.test',
+            thirdPartyId: 10,
+          },
+        ],
+        page: 0,
+        size: 20,
+        total: 1,
+      };
+
+      api.listContacts().subscribe((result) => {
+        expect(result).toEqual(page);
+      });
+
+      const req = httpMock.expectOne('/api/contacts?page=0&size=20');
+      expect(req.request.method).toBe('GET');
+      req.flush(page);
+    });
+
+    it('should send the optional ThirdParty filter', () => {
+      api.listContacts({ page: 2, size: 20, thirdPartyId: 10 }).subscribe();
+
+      const req = httpMock.expectOne('/api/contacts?page=2&size=20&thirdPartyId=10');
+      expect(req.request.method).toBe('GET');
+      req.flush({ items: [], page: 2, size: 20, total: 0 });
+    });
+
+    it('should omit an absent ThirdParty filter', () => {
+      api.listContacts({ page: 1, size: 50, thirdPartyId: null }).subscribe();
+
+      const req = httpMock.expectOne('/api/contacts?page=1&size=50');
+      expect(req.request.method).toBe('GET');
+      req.flush({ items: [], page: 1, size: 50, total: 0 });
+    });
+
+    it('should send Accept-Language header', () => {
+      api.listContacts().subscribe();
+
+      const req = httpMock.expectOne('/api/contacts?page=0&size=20');
+      expect(req.request.headers.get('Accept-Language')).toBe('en');
+    });
+  });
+
   describe('getContact', () => {
     it('should issue GET /api/contacts/:id and map response', () => {
       const mockContact: Contact = {

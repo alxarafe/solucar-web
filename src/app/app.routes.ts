@@ -1,7 +1,9 @@
 import { Routes } from '@angular/router';
 import { Login } from './features/auth/login/login';
 import { Forbidden } from './features/auth/forbidden/forbidden';
+import { ContactListComponent } from './features/contact/contact-list';
 import { ContactComponent } from './features/contact/contact';
+import { CONTACTS_NEW_PATH, CONTACTS_PATH } from './features/contact/contact-navigation';
 import { Permission } from './core/auth/permission';
 import { requirePermission } from './core/auth/permission.guard';
 import {
@@ -26,7 +28,16 @@ export const routes: Routes = [
   { path: '', redirectTo: DEFAULT_AUTHENTICATED_PATH, pathMatch: 'full' },
   { path: LOGIN_PATH.slice(1), component: Login },
   { path: FORBIDDEN_PATH.slice(1), component: Forbidden },
-  { path: 'contacts', component: ContactComponent },
+  {
+    path: CONTACTS_NEW_PATH.slice(1),
+    canActivate: [requirePermission(Permission.ContactsManage)],
+    component: ContactComponent,
+  },
+  {
+    path: CONTACTS_PATH.slice(1),
+    canActivate: [requirePermission(Permission.ContactsRead)],
+    component: ContactListComponent,
+  },
   {
     path: ADMIN_USERS_PATH.slice(1),
     canActivate: [requirePermission(Permission.UsersManage)],

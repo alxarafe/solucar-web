@@ -182,6 +182,102 @@
           <context context-type="linenumber">3,6</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="contact.action.new" datatype="html">
+        <source>New contact</source>
+        <target>Nuevo contacto</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">7,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.list.filter.title" datatype="html">
+        <source> Filter contacts </source>
+        <target>Filtrar contactos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">13,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.list.filter.apply" datatype="html">
+        <source> Apply filter </source>
+        <target>Aplicar filtro</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">40,42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.list.filter.clear" datatype="html">
+        <source> Clear filter </source>
+        <target>Borrar filtro</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">49,51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.list.loading" datatype="html">
+        <source>Loading contacts...</source>
+        <target>Cargando contactos...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">56,60</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.action.retry" datatype="html">
+        <source> Retry </source>
+        <target>Reintentar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">64,68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.list.column.id" datatype="html">
+        <source>ID</source>
+        <target>ID</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">75</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.list.empty" datatype="html">
+        <source>No contacts found</source>
+        <target>No se encontraron contactos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">95,99</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.list.pagination.label" datatype="html">
+        <source>Contact pages</source>
+        <target>Páginas de contactos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">100,101</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.list.action.previous" datatype="html">
+        <source> Previous </source>
+        <target>Anterior</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">109,111</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.list.pagination.summary" datatype="html">
+        <source>Page <x id="INTERPOLATION" equiv-text="{{ page.page + 1 }}"/> · <x id="INTERPOLATION_1" equiv-text="{{ page.total }}"/> contacts</source>
+        <target>Página <x id="INTERPOLATION" equiv-text="{{ page.page + 1 }}"/> · <x id="INTERPOLATION_1" equiv-text="{{ page.total }}"/> contactos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">112,114</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.list.action.next" datatype="html">
+        <source> Next </source>
+        <target>Siguiente</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">120,124</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="contact.search.title" datatype="html">
         <source>Find contact</source>
         <target>Buscar contacto</target>
@@ -314,8 +410,8 @@
         <source>Unable to communicate with Alixar.</source>
         <target>No se puede comunicar con Alixar.</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/features/contact/contact.ts</context>
-          <context context-type="linenumber">122</context>
+          <context context-type="sourcefile">src/app/features/contact/contact-error.ts</context>
+          <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
       <trans-unit id="adminUsers.title" datatype="html">
