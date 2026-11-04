@@ -77,8 +77,10 @@ Use a disposable Alixar database with a user whose effective permissions include
 and `/contacts`, page through server results, apply and clear the optional
 `thirdPartyId` filter and check that the list shows ID, last name, first name,
 email and Third-party ID. Verify that a read-only user does not see create
-controls and that `/contacts/new` requires `contacts.manage`. With a manager,
-create a contact and retrieve it by ID to confirm the existing create/read flow.
+controls and that `/contacts/new` requires `contacts.manage`. With a manager
+that also has `contacts.read`, create a contact and retrieve it by ID to confirm
+the create/read flow. With a manage-only user, confirm creation success still
+shows the returned ID and no follow-up contact read is attempted.
 A real browser is required to prove cookie and CSRF behavior; an HTTP/proxy smoke
 alone is not browser E2E. Destroy only disposable containers and volumes afterward.
 

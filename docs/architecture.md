@@ -238,7 +238,11 @@ Production builds use relative `/api/...` URLs directly; the proxy is developmen
 when that permission is effective. `/contacts/new` independently requires
 `contacts.manage`, preserving the existing create and find-by-ID functionality
 for authorized users. A read-only user never receives create controls; a
-manage-only user can reach creation directly without gaining list access.
+manage-only user can reach creation directly without gaining list access. After
+a successful creation the UI always shows the returned ID, but it requests the
+new contact with `GET /api/contacts/{id}` only when `contacts.read` is effective.
+A manage-only user therefore sees creation success without a forbidden follow-up
+read.
 
 The list reads `GET /api/contacts?page={page}&size={size}` through
 `ContactApi.listContacts()`. Pages are zero-based with a default size of 20 and

@@ -2,6 +2,8 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ContactApi, Contact, CreateContactRequest } from '../../core/api/contact-api';
+import { AuthSessionService } from '../../core/auth/auth-session.service';
+import { Permission } from '../../core/auth/permission';
 import { contactErrorMessage } from './contact-error';
 
 @Component({
@@ -12,6 +14,7 @@ import { contactErrorMessage } from './contact-error';
 })
 export class ContactComponent {
   private readonly contactApi = inject(ContactApi);
+  private readonly auth = inject(AuthSessionService);
   private readonly fb = inject(FormBuilder);
 
   readonly searchForm: FormGroup = this.fb.group({
@@ -83,7 +86,9 @@ export class ContactComponent {
       next: (response) => {
         this.createdId.set(response.id);
         this.createLoading.set(false);
-        this.fetchCreatedContact(response.id);
+        if (this.auth.hasPermission(Permission.ContactsRead)) {
+          this.fetchCreatedContact(response.id);
+        }
       },
       error: (err) => {
         this.error.set(contactErrorMessage(err));

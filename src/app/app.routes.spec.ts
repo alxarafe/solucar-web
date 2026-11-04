@@ -104,6 +104,27 @@ describe('session routing', () => {
     expect(TestBed.inject(Router).url).toBe('/contacts/new');
   });
 
+  it('allows both contact routes with contacts.read and contacts.manage', async () => {
+    const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
+    const http = TestBed.inject(HttpTestingController);
+    http.expectOne('/api/auth/me').flush({
+      id: 'contact-editor',
+      username: 'editor',
+      email: 'editor@example.test',
+      roles: [],
+      permissions: ['contacts.read', 'contacts.manage'],
+    });
+    await bootstrap;
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/contacts', ContactListComponent);
+    http
+      .expectOne('/api/contacts?page=0&size=20')
+      .flush({ items: [], page: 0, size: 20, total: 0 });
+
+    await harness.navigateByUrl('/contacts/new', ContactComponent);
+    expect(TestBed.inject(Router).url).toBe('/contacts/new');
+  });
+
   it('should redirect an authenticated /login visit to its internal destination', async () => {
     const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
     TestBed.inject(HttpTestingController)

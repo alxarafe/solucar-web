@@ -5,17 +5,31 @@ import { LOCALE_ID } from '@angular/core';
 import { vi } from 'vitest';
 import { ContactComponent } from './contact';
 import { acceptLanguageInterceptor } from '../../core/api/accept-language.interceptor';
+import { AuthSessionService } from '../../core/auth/auth-session.service';
+import { Permission } from '../../core/auth/permission';
+
+class AuthSessionStub {
+  constructor(private readonly permissions: readonly string[]) {}
+
+  hasPermission(permission: string): boolean {
+    return this.permissions.includes(permission);
+  }
+}
 
 describe('ContactComponent', () => {
   let httpMock: HttpTestingController;
 
-  function setup(locale: 'en' | 'es' = 'en') {
+  function setup(
+    locale: 'en' | 'es' = 'en',
+    permissions: readonly string[] = [Permission.ContactsRead, Permission.ContactsManage],
+  ) {
     TestBed.configureTestingModule({
       imports: [ContactComponent],
       providers: [
         provideHttpClient(withInterceptors([acceptLanguageInterceptor])),
         provideHttpClientTesting(),
         { provide: LOCALE_ID, useValue: locale },
+        { provide: AuthSessionService, useValue: new AuthSessionStub(permissions) },
       ],
     });
     httpMock = TestBed.inject(HttpTestingController);
@@ -168,6 +182,58 @@ describe('ContactComponent', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.contact__success')?.textContent?.trim()).toBe('Contact created with ID 27');
+  });
+
+  it('should not retrieve the created contact without contacts.read', () => {
+    const fixture = setup('en', [Permission.ContactsManage]);
+    const component = fixture.componentInstance;
+
+    component.createForm.patchValue({
+      lastName: 'Doe',
+      firstName: 'John',
+      email: 'john@example.test',
+      thirdPartyId: null,
+    });
+    fixture.detectChanges();
+
+    const form = getCreateForm(fixture);
+    expect(form).toBeTruthy();
+    form!.dispatchEvent(new Event('submit'));
+    fixture.detectChanges();
+
+    const postReq = httpMock.expectOne('/api/contacts');
+    expect(postReq.request.method).toBe('POST');
+    postReq.flush({ id: 27 });
+    fixture.detectChanges();
+
+    httpMock.expectNone('/api/contacts/27');
+    expect(component.createdId()).toBe(27);
+    expect(component.contact()).toBeNull();
+    expect(component.error()).toBeNull();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.contact__success')?.textContent?.trim()).toBe(
+      'Contact created with ID 27',
+    );
+  });
+
+  it('should keep creation success visible when the post-create read is forbidden', () => {
+    const fixture = setup();
+    const { getReq, component } = submitCreateForm(fixture, {
+      lastName: 'Doe',
+      firstName: 'John',
+      email: 'john@example.test',
+      thirdPartyId: null,
+    });
+
+    getReq.flush({ detail: 'Forbidden' }, { status: 403, statusText: 'Forbidden' });
+    fixture.detectChanges();
+
+    expect(component.createdId()).toBe(27);
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.contact__success')?.textContent?.trim()).toBe(
+      'Contact created with ID 27',
+    );
   });
 
   it('should automatically retrieve created contact after POST', () => {
