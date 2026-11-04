@@ -5,6 +5,7 @@ import { AuthSessionService } from './core/auth/auth-session.service';
 import { LOGIN_PATH } from './core/auth/auth-navigation';
 import { NavigationEntry, visibleNavigationEntries } from './core/navigation/navigation-entry';
 import { Permission } from './core/auth/permission';
+import { CONTACTS_PATH } from './features/contact/contact-navigation';
 import { ADMIN_USERS_PATH } from './features/admin-users/admin-users-navigation';
 import { ADMIN_ROLES_PATH } from './features/admin-roles/admin-roles-navigation';
 import {
@@ -26,6 +27,11 @@ export class App {
   readonly logoutError = signal<AuthError | null>(null);
 
   readonly navigationEntries: readonly NavigationEntry[] = [
+    {
+      label: $localize`:@@contact.page.title:Contacts`,
+      route: CONTACTS_PATH,
+      requiredPermission: Permission.ContactsRead,
+    },
     {
       label: $localize`:@@adminUsers.title:Users`,
       route: ADMIN_USERS_PATH,

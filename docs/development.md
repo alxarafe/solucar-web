@@ -41,14 +41,16 @@ Angular `HttpClient` handles the `XSRF-TOKEN` cookie and `X-XSRF-TOKEN` header
 automatically for same-origin non-safe requests. Do not add a custom CSRF
 interceptor or copy the cookie manually.
 
-`/contacts` remains public. `GET /api/auth/me` now includes effective `roles`
+`/contacts` requires `contacts.read` and `/contacts/new` requires `contacts.manage`. `GET /api/auth/me` now includes effective `roles`
 and `permissions`; Solucar keeps them in memory and exposes `hasPermission()`.
 The `requirePermission()` guard, `/forbidden` view and permission-aware
 navigation metadata protect `/admin/users`, `/admin/users/new` and
 `/admin/users/:id` with `users.manage`, `/admin/roles`, `/admin/roles/new`
 and `/admin/roles/:code` with `roles.manage`, and `/admin/audit` with
-`audit.read`. `/admin/audit/configuration` independently requires `audit.configure`.
-Frontend permission checks are UX only; Alixar must still enforce `403`.
+`audit.read`. `/contacts` and `/contacts/new` independently require
+`contacts.read` and `contacts.manage`. `/admin/audit/configuration` independently
+requires `audit.configure`. Frontend permission checks are UX only; Alixar must
+still enforce `403`.
 
 ### Manual session smoke test
 
@@ -67,6 +69,18 @@ Frontend permission checks are UX only; Alixar must still enforce `403`.
 
 This manual flow is required when browser cookie and CSRF behavior must be
 proven; unit tests alone do not prove real browser/session integration.
+
+### Manual contact smoke
+
+Use a disposable Alixar database with a user whose effective permissions include
+`contacts.read`. Sign in through Solucar, verify the Contacts navigation entry
+and `/contacts`, page through server results, apply and clear the optional
+`thirdPartyId` filter and check that the list shows ID, last name, first name,
+email and Third-party ID. Verify that a read-only user does not see create
+controls and that `/contacts/new` requires `contacts.manage`. With a manager,
+create a contact and retrieve it by ID to confirm the existing create/read flow.
+A real browser is required to prove cookie and CSRF behavior; an HTTP/proxy smoke
+alone is not browser E2E. Destroy only disposable containers and volumes afterward.
 
 ### Manual user administration smoke
 

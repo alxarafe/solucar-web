@@ -31,7 +31,7 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 - **Navigation metadata**: entries declare `label`, `route` and `requiredPermission`; only effective entries are visible
 - **Backend authority**: frontend checks are UX only; Alixar must enforce authorization and return `403` for forbidden operations
 
-`/contacts` remains public. User administration routes use the permission guard; see [Architecture](architecture.md#user-administration) for the contract and authorization boundaries.
+`/contacts` requires `contacts.read` and `/contacts/new` requires `contacts.manage`. User administration routes use the permission guard; see [Architecture](architecture.md#contact-list) for the contract and authorization boundaries.
 
 ### User administration
 
@@ -82,10 +82,14 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 
 ### Contact
 
-- **Route**: `/contacts` as the main application route
+- **List route**: `/contacts` requires `contacts.read`; the Contacts navigation entry uses the same permission
+- **Creation route**: `/contacts/new` independently requires `contacts.manage`; read-only users never receive create controls
+- **Canonical list**: `GET /api/contacts?page={page}&size={size}` via `ContactApi.listContacts()`, with optional exact `thirdPartyId`
+- **Pagination**: server-side, zero-based pages, default size 20, Alixar ordering; Previous/Next use the returned `page`, `size` and `total`
+- **List UI**: table with ID, last name, first name, email and Third-party ID; loading, empty results and API errors are explicit
 - **Canonical read**: `GET /api/contacts/{id}` via `ContactApi.getContact(id)`
 - **Canonical creation**: `POST /api/contacts` via `ContactApi.createContact(request)`
-- **Frontend API types**: `Contact`, `CreateContactRequest`, `CreateContactResponse`, `ProblemDetail` — mirror the Alixar canonical API exactly
+- **Frontend API types**: `Contact`, `ContactPage`, `ContactQuery`, `CreateContactRequest`, `CreateContactResponse`, `ProblemDetail` — mirror the Alixar canonical API exactly
 - **Error handling**: RFC 9457 `ProblemDetail` responses handled; Alixar-localized `detail` displayed directly; frontend-owned fallback for network/unexpected errors
 - **Shared error type**: `ProblemDetail` is defined in `core/api` and reused by Contact and authentication
 
