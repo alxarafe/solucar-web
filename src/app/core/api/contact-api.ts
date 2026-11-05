@@ -73,4 +73,8 @@ export class ContactApi {
       headers: new HttpHeaders({ 'Content-Type': CONTACT_MERGE_PATCH_MEDIA_TYPE }),
     });
   }
+
+  deleteContact(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
 }

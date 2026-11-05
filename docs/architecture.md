@@ -37,7 +37,7 @@ Solucar is the Angular web frontend for the Alixar ERP. It owns presentation, na
 - Role administration (`features/admin-roles`) protected by `roles.manage`
 - Audit event viewer (`features/admin-audit`) protected by `audit.read`
 - Independent audit configuration in the same feature, protected by `audit.configure`
-- Contact feature (`features/contact`) — paginated contact list, create, retrieve and edit contacts via Alixar canonical API
+- Contact feature (`features/contact`) — paginated contact list, create, retrieve, edit and delete contacts via Alixar canonical API
 - Accept-Language header derived from `LOCALE_ID`
 - Development proxy for `/api/**` → `host.docker.internal:48081`
 - Docker-only development environment
@@ -90,7 +90,7 @@ src/app/
     ├── admin-users/  # User administration and User → Roles assignment
     ├── admin-roles/  # Role administration and Role → Permissions assignment
     ├── admin-audit/  # Audit events, integrity verification and independent configuration
-    └── contact/      # Contact management (list, create, retrieve, edit)
+    └── contact/      # Contact management (list, create, retrieve, edit, delete)
 ```
 
 ## Fundamental Rules
@@ -181,6 +181,7 @@ All HTTP communication with the Alixar canonical API is centralized in `core/api
   - `getContact(id: number): Observable<Contact>`
   - `createContact(request: CreateContactRequest): Observable<CreateContactResponse>`
   - `updateContact(id: number, request: UpdateContactRequest): Observable<Contact>`
+  - `deleteContact(id: number): Observable<void>`
 - `AdminUsersApi` — typed user list/detail/create, username/status changes, password reset and complete role assignment replacement; administrative state stays local to the feature
 - `AdminRolesApi` — typed role list/detail/create, name changes, complete permission replacement, deletion and the backend permission catalogue; it owns the `AdminRole` contract shared with user administration
 - `AdminAuditApi` — audit event queries with keyset pagination and filters, plus explicit audit-chain integrity verification; it owns `AuditEvent`, `AuditEventQuery` and `AuditVerification`, plus typed mode and read-policy configuration operations
@@ -268,8 +269,19 @@ explicit `null`, and an unchanged form never issues a request. The successful
 response becomes the new displayed state. A failed update preserves the entered
 values and shows Alixar's localized detail without reporting success. `lastName`
 must not be empty or whitespace-only and `thirdPartyId`, when provided, must be a
-positive integer; these are UX validations only. Contact deletion is not
-implemented.
+positive integer; these are UX validations only.
+
+Deletion remains on `/contacts/:id/edit` and therefore keeps both
+`contacts.read` and `contacts.manage`. The initial Delete action only reveals an
+inline confirmation with the Contact ID and name; it does not issue a request.
+The confirmation warns that deletion is permanent and that unsaved changes will
+be discarded. Cancel leaves the Contact untouched, and the confirm action sends
+`DELETE /api/contacts/{id}` through `ContactApi.deleteContact(id)` with no
+request body. Duplicate requests are prevented while the mutation is in
+progress. Only `204 No Content` is treated as success: the UI navigates to
+`/contacts` and does not issue a follow-up Contact read. A failed deletion
+retains the loaded Contact, shows Alixar's localized detail or the localized
+fallback, and never reports success.
 
 ## ProblemDetail Error Handling
 

@@ -1,7 +1,7 @@
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { EMPTY, catchError, finalize, switchMap } from 'rxjs';
 import { Contact, ContactApi, UpdateContactRequest } from '../../core/api/contact-api';
 import { contactErrorMessage } from './contact-error';
@@ -17,6 +17,7 @@ import { contactNonBlankValidator, positiveIntegerValidator } from './contact-va
 export class ContactEditComponent implements OnInit {
   private readonly contactApi = inject(ContactApi);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly fb = inject(FormBuilder);
 
@@ -25,9 +26,16 @@ export class ContactEditComponent implements OnInit {
   readonly contact = signal<Contact | null>(null);
   readonly loading = signal(true);
   readonly saving = signal(false);
+  readonly deleting = signal(false);
+  readonly confirmingDelete = signal(false);
   readonly changed = signal(false);
   readonly error = signal<string | null>(null);
   readonly success = signal<string | null>(null);
+  readonly contactName = computed(() => {
+    const contact = this.contact();
+    if (!contact) return '';
+    return contact.firstName ? `${contact.lastName}, ${contact.firstName}` : contact.lastName;
+  });
   readonly form = this.fb.group({
     lastName: this.fb.nonNullable.control('', [Validators.required, contactNonBlankValidator]),
     firstName: this.fb.control<string | null>(null),
@@ -52,6 +60,8 @@ export class ContactEditComponent implements OnInit {
           this.original.set(null);
           this.loading.set(true);
           this.saving.set(false);
+          this.deleting.set(false);
+          this.confirmingDelete.set(false);
           this.changed.set(false);
           this.error.set(null);
           this.success.set(null);
@@ -70,7 +80,7 @@ export class ContactEditComponent implements OnInit {
 
   save(): void {
     const original = this.original();
-    if (!original || this.loading() || this.saving()) return;
+    if (!original || this.loading() || this.saving() || this.deleting()) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -92,6 +102,39 @@ export class ContactEditComponent implements OnInit {
         next: (contact) => {
           this.applyContact(contact);
           this.success.set($localize`:@@contact.edit.success:Contact saved successfully.`);
+        },
+        error: (error: unknown) => this.error.set(contactErrorMessage(error)),
+      });
+  }
+
+  requestDelete(): void {
+    if (!this.contact() || this.loading() || this.saving() || this.deleting()) return;
+    this.confirmingDelete.set(true);
+  }
+
+  cancelDelete(): void {
+    if (this.deleting()) return;
+    this.confirmingDelete.set(false);
+  }
+
+  confirmDelete(): void {
+    const contact = this.contact();
+    if (!contact || !this.confirmingDelete() || this.saving() || this.deleting()) return;
+    this.deleting.set(true);
+    this.error.set(null);
+    this.success.set(null);
+    this.contactApi
+      .deleteContact(contact.id)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.deleting.set(false)),
+      )
+      .subscribe({
+        next: () => {
+          this.confirmingDelete.set(false);
+          this.contact.set(null);
+          this.original.set(null);
+          void this.router.navigate([CONTACTS_PATH]);
         },
         error: (error: unknown) => this.error.set(contactErrorMessage(error)),
       });
