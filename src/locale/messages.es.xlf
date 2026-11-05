@@ -414,6 +414,86 @@
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="contact.action.back" datatype="html">
+        <source>Back to contacts</source>
+        <target>Volver a contactos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.action.edit" datatype="html">
+        <source>Edit</source>
+        <target>Editar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.list.column.actions" datatype="html">
+        <source>Actions</source>
+        <target>Acciones</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.edit.title" datatype="html">
+        <source>Edit contact #<x id="INTERPOLATION" equiv-text="{{ contactId() }}"/></source>
+        <target>Editar contacto #<x id="INTERPOLATION" equiv-text="{{ contactId() }}"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.edit.loading" datatype="html">
+        <source>Loading contact...</source>
+        <target>Cargando contacto...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.edit.details" datatype="html">
+        <source>Contact details</source>
+        <target>Datos del contacto</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.validation.thirdPartyIdPositive" datatype="html">
+        <source>Third party ID must be a positive integer.</source>
+        <target>El ID de tercero debe ser un entero positivo.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.edit.saving" datatype="html">
+        <source>Saving...</source>
+        <target>Guardando...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.edit.save" datatype="html">
+        <source>Save changes</source>
+        <target>Guardar cambios</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">97</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.edit.success" datatype="html">
+        <source>Contact saved successfully.</source>
+        <target>Contacto guardado correctamente.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.ts</context>
+          <context context-type="linenumber">94</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="adminUsers.title" datatype="html">
         <source>Users</source>
         <target>Usuarios</target>

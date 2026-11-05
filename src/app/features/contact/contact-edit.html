@@ -1,0 +1,119 @@
+<main class="contact contact--edit">
+  <header class="contact__header">
+    <h1 class="contact__title" i18n="@@contact.edit.title">Edit contact #{{ contactId() }}</h1>
+  </header>
+
+  <a [routerLink]="contactsPath" i18n="@@contact.action.back">Back to contacts</a>
+
+  @if (loading()) {
+    <p role="status" i18n="@@contact.edit.loading">Loading contact...</p>
+  }
+
+  @if (error()) {
+    <div class="contact__error-banner" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  @if (success()) {
+    <div class="contact__success" role="status">{{ success() }}</div>
+  }
+
+  @if (contact()) {
+    <section class="contact__section" aria-labelledby="edit-title">
+      <h2 id="edit-title" class="contact__section-title" i18n="@@contact.edit.details">
+        Contact details
+      </h2>
+
+      <form [formGroup]="form" (ngSubmit)="save()" class="contact__form">
+        <div class="contact__field-row">
+          <label for="edit-lastName" class="contact__label contact__label--required">
+            <span i18n="@@contact.field.lastName">Last name</span>
+            <span class="contact__required" aria-hidden="true">*</span>
+          </label>
+          <input
+            id="edit-lastName"
+            type="text"
+            formControlName="lastName"
+            class="contact__input"
+            [class.contact__input--invalid]="
+              form.controls.lastName.invalid && form.controls.lastName.touched
+            "
+            autocomplete="family-name"
+          />
+          @if (
+            form.controls.lastName.touched &&
+            (form.controls.lastName.hasError('required') ||
+              form.controls.lastName.hasError('nonBlank'))
+          ) {
+            <span class="contact__error" i18n="@@contact.validation.lastNameRequired"
+              >Last name is required.</span
+            >
+          }
+        </div>
+
+        <div class="contact__field-row">
+          <label for="edit-firstName" class="contact__label" i18n="@@contact.field.firstName"
+            >First name</label
+          >
+          <input
+            id="edit-firstName"
+            type="text"
+            formControlName="firstName"
+            class="contact__input"
+            autocomplete="given-name"
+          />
+        </div>
+
+        <div class="contact__field-row">
+          <label for="edit-email" class="contact__label" i18n="@@contact.field.email">Email</label>
+          <input
+            id="edit-email"
+            type="email"
+            formControlName="email"
+            class="contact__input"
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="contact__field-row">
+          <label for="edit-thirdPartyId" class="contact__label" i18n="@@contact.field.thirdPartyId"
+            >Third party ID</label
+          >
+          <input
+            id="edit-thirdPartyId"
+            type="number"
+            formControlName="thirdPartyId"
+            class="contact__input"
+            [class.contact__input--invalid]="
+              form.controls.thirdPartyId.invalid && form.controls.thirdPartyId.touched
+            "
+            min="1"
+            step="1"
+          />
+          @if (
+            form.controls.thirdPartyId.touched &&
+            form.controls.thirdPartyId.hasError('positiveInteger')
+          ) {
+            <span class="contact__error" i18n="@@contact.validation.thirdPartyIdPositive"
+              >Third party ID must be a positive integer.</span
+            >
+          }
+        </div>
+
+        <button
+          type="submit"
+          class="contact__button"
+          [disabled]="form.invalid || !changed() || saving()"
+        >
+          @if (saving()) {
+            <span class="contact__button-spinner" aria-hidden="true"></span>
+            <span i18n="@@contact.edit.saving">Saving...</span>
+          } @else {
+            <span i18n="@@contact.edit.save">Save changes</span>
+          }
+        </button>
+      </form>
+    </section>
+  }
+</main>

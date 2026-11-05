@@ -12,7 +12,7 @@ import {
 import { AuthSessionService } from '../../core/auth/auth-session.service';
 import { Permission } from '../../core/auth/permission';
 import { contactErrorMessage } from './contact-error';
-import { CONTACTS_NEW_PATH } from './contact-navigation';
+import { contactEditPath, CONTACTS_NEW_PATH } from './contact-navigation';
 
 @Component({
   selector: 'app-contact-list',
@@ -26,6 +26,7 @@ export class ContactListComponent implements OnInit {
   private readonly auth = inject(AuthSessionService);
 
   readonly newPath = CONTACTS_NEW_PATH;
+  readonly editPath = contactEditPath;
   readonly filterForm = inject(FormBuilder).group({
     thirdPartyId: [null as number | null, [Validators.min(1)]],
   });
@@ -33,6 +34,7 @@ export class ContactListComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly result = signal<ContactPage | null>(null);
   readonly canCreate = computed(() => this.auth.hasPermission(Permission.ContactsManage));
+  readonly canEdit = this.canCreate;
   private query: ContactQuery = { page: 0, size: CONTACTS_PAGE_SIZE };
 
   ngOnInit(): void {

@@ -835,6 +835,76 @@
           <context context-type="linenumber">11</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="contact.action.back" datatype="html">
+        <source>Back to contacts</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.action.edit" datatype="html">
+        <source>Edit</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">94</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.list.column.actions" datatype="html">
+        <source>Actions</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-list.html</context>
+          <context context-type="linenumber">80</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.edit.title" datatype="html">
+        <source>Edit contact #<x id="INTERPOLATION" equiv-text="{{ contactId() }}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.edit.loading" datatype="html">
+        <source>Loading contact...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.edit.details" datatype="html">
+        <source>Contact details</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">24</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.validation.thirdPartyIdPositive" datatype="html">
+        <source>Third party ID must be a positive integer.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.edit.saving" datatype="html">
+        <source>Saving...</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.edit.save" datatype="html">
+        <source>Save changes</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">97</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.edit.success" datatype="html">
+        <source>Contact saved successfully.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.ts</context>
+          <context context-type="linenumber">94</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="adminRoles.action.back" datatype="html">
         <source>Back to roles</source>
         <context-group purpose="location">

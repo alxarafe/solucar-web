@@ -37,7 +37,7 @@ Solucar is the Angular web frontend for the Alixar ERP. It owns presentation, na
 - Role administration (`features/admin-roles`) protected by `roles.manage`
 - Audit event viewer (`features/admin-audit`) protected by `audit.read`
 - Independent audit configuration in the same feature, protected by `audit.configure`
-- Contact feature (`features/contact`) — paginated contact list, create and retrieve contacts via Alixar canonical API
+- Contact feature (`features/contact`) — paginated contact list, create, retrieve and edit contacts via Alixar canonical API
 - Accept-Language header derived from `LOCALE_ID`
 - Development proxy for `/api/**` → `host.docker.internal:48081`
 - Docker-only development environment
@@ -90,7 +90,7 @@ src/app/
     ├── admin-users/  # User administration and User → Roles assignment
     ├── admin-roles/  # Role administration and Role → Permissions assignment
     ├── admin-audit/  # Audit events, integrity verification and independent configuration
-    └── contact/      # Contact management (list, create, retrieve)
+    └── contact/      # Contact management (list, create, retrieve, edit)
 ```
 
 ## Fundamental Rules
@@ -180,6 +180,7 @@ All HTTP communication with the Alixar canonical API is centralized in `core/api
   - `listContacts(query?: ContactQuery): Observable<ContactPage>`
   - `getContact(id: number): Observable<Contact>`
   - `createContact(request: CreateContactRequest): Observable<CreateContactResponse>`
+  - `updateContact(id: number, request: UpdateContactRequest): Observable<Contact>`
 - `AdminUsersApi` — typed user list/detail/create, username/status changes, password reset and complete role assignment replacement; administrative state stays local to the feature
 - `AdminRolesApi` — typed role list/detail/create, name changes, complete permission replacement, deletion and the backend permission catalogue; it owns the `AdminRole` contract shared with user administration
 - `AdminAuditApi` — audit event queries with keyset pagination and filters, plus explicit audit-chain integrity verification; it owns `AuditEvent`, `AuditEventQuery` and `AuditVerification`, plus typed mode and read-policy configuration operations
@@ -188,7 +189,7 @@ All HTTP communication with the Alixar canonical API is centralized in `core/api
   - `me(): Observable<CurrentUser>`
   - `logout(): Observable<void>`
 - `acceptLanguageInterceptor` — functional HTTP interceptor that adds `Accept-Language` header derived from Angular's `LOCALE_ID` to all `/api/**` requests
-- TypeScript contracts mirror the canonical API exactly (`Contact`, `ContactPage`, `ContactQuery`, `CreateContactRequest`, `CreateContactResponse`, `AuthIdentity`, `CurrentUser`, `ProblemDetail`)
+- TypeScript contracts mirror the canonical API exactly (`Contact`, `ContactPage`, `ContactQuery`, `CreateContactRequest`, `CreateContactResponse`, `UpdateContactRequest`, `AuthIdentity`, `CurrentUser`, `ProblemDetail`)
 
 No generic repositories, facades, or adapter layers exist. The boundary is concrete and minimal.
 
@@ -207,7 +208,7 @@ Authentication uses HTTP SESSION, deliberately without PAT or JWT. Every auth re
 
 Authorization follows `USER → ROLES → PERMISSIONS`. Solucar never grants access from role names and does not model direct user permissions or per-user denies. `AuthSessionService.hasPermission()` checks only the effective permissions returned by Alixar. Permission checks are a presentation concern: Alixar remains the authority and must enforce authorization on every protected operation. A browser-side permission check is never treated as a security boundary.
 
-`requirePermission(permission)` produces a functional route guard. It waits for an unresolved bootstrap before deciding. Anonymous or unauthenticated users are sent to `/login` with the requested internal URL as `returnUrl`; authenticated users without the required permission are sent to `/forbidden`. A missing permission never logs the user out. `/admin/users`, `/admin/users/new` and `/admin/users/:id` require `users.manage`; `/admin/roles`, `/admin/roles/new` and `/admin/roles/:code` require `roles.manage`; `/admin/audit` requires `audit.read`; `/contacts` requires `contacts.read`; `/contacts/new` requires `contacts.manage`. Navigation entries can declare `label`, `route` and `requiredPermission`; only entries whose permission is effective are visible. Contacts, Users, Roles and Audit navigation entries are independent, so a user may see any combination or none.
+`requirePermission(permission)` produces a functional route guard. It waits for an unresolved bootstrap before deciding. Anonymous or unauthenticated users are sent to `/login` with the requested internal URL as `returnUrl`; authenticated users without the required permission are sent to `/forbidden`. A missing permission never logs the user out. `/admin/users`, `/admin/users/new` and `/admin/users/:id` require `users.manage`; `/admin/roles`, `/admin/roles/new` and `/admin/roles/:code` require `roles.manage`; `/admin/audit` requires `audit.read`; `/contacts` requires `contacts.read`; `/contacts/new` requires `contacts.manage`; `/contacts/:id/edit` requires both `contacts.read` and `contacts.manage`. Navigation entries can declare `label`, `route` and `requiredPermission`; only entries whose permission is effective are visible. Contacts, Users, Roles and Audit navigation entries are independent, so a user may see any combination or none.
 
 ## CSRF and Same-Origin
 
@@ -217,7 +218,7 @@ All API URLs are relative (`/api/...`). Development uses the proxy described bel
 
 `GET /api/auth/me` is a safe request that also gives Alixar an opportunity to issue or renew the CSRF cookie. Solucar uses it before retrying a CSRF-rejected login and after logout.
 
-`/contacts` requires `contacts.read`; `/contacts/new` independently requires `contacts.manage`. User administration routes require `users.manage`, role administration routes require `roles.manage` and the audit viewer requires `audit.read`. Alixar still enforces authorization server-side.
+`/contacts` requires `contacts.read`; `/contacts/new` independently requires `contacts.manage`; `/contacts/:id/edit` requires both. User administration routes require `users.manage`, role administration routes require `roles.manage` and the audit viewer requires `audit.read`. Alixar still enforces authorization server-side.
 
 ## Development Proxy
 
@@ -254,7 +255,21 @@ an exact server-side filter. Applying or clearing it resets the query to page 0.
 Rows show ID, last name, first name, email and Third-party ID, with `—` for
 nullable fields. Loading, empty results and API errors are explicit; errors show
 Alixar's `ProblemDetail.detail` when available and otherwise the localized
-fallback. The list does not implement contact update or deletion.
+fallback. When `contacts.manage` is effective, each row also exposes an Edit
+action; read-only users do not receive it.
+
+`/contacts/:id/edit` requires both `contacts.read` and `contacts.manage`. It loads
+the current Contact through `GET /api/contacts/{id}`, populates a reactive form
+and keeps the Contact ID read-only. `lastName`, `firstName`, `email` and
+`thirdPartyId` are editable. Saving sends `PATCH /api/contacts/{id}` with
+`Content-Type: application/merge-patch+json` and only the fields whose effective
+values changed. Omitted fields stay unchanged, clearing an optional field sends
+explicit `null`, and an unchanged form never issues a request. The successful
+response becomes the new displayed state. A failed update preserves the entered
+values and shows Alixar's localized detail without reporting success. `lastName`
+must not be empty or whitespace-only and `thirdPartyId`, when provided, must be a
+positive integer; these are UX validations only. Contact deletion is not
+implemented.
 
 ## ProblemDetail Error Handling
 

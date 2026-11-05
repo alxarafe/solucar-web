@@ -41,14 +41,15 @@ Angular `HttpClient` handles the `XSRF-TOKEN` cookie and `X-XSRF-TOKEN` header
 automatically for same-origin non-safe requests. Do not add a custom CSRF
 interceptor or copy the cookie manually.
 
-`/contacts` requires `contacts.read` and `/contacts/new` requires `contacts.manage`. `GET /api/auth/me` now includes effective `roles`
+`GET /api/auth/me` now includes effective `roles`
 and `permissions`; Solucar keeps them in memory and exposes `hasPermission()`.
 The `requirePermission()` guard, `/forbidden` view and permission-aware
 navigation metadata protect `/admin/users`, `/admin/users/new` and
 `/admin/users/:id` with `users.manage`, `/admin/roles`, `/admin/roles/new`
 and `/admin/roles/:code` with `roles.manage`, and `/admin/audit` with
-`audit.read`. `/contacts` and `/contacts/new` independently require
-`contacts.read` and `contacts.manage`. `/admin/audit/configuration` independently
+`audit.read`. `/contacts` requires
+`contacts.read`; `/contacts/new` independently requires `contacts.manage`; and
+`/contacts/:id/edit` requires both. `/admin/audit/configuration` independently
 requires `audit.configure`. Frontend permission checks are UX only; Alixar must
 still enforce `403`.
 
@@ -76,11 +77,16 @@ Use a disposable Alixar database with a user whose effective permissions include
 `contacts.read`. Sign in through Solucar, verify the Contacts navigation entry
 and `/contacts`, page through server results, apply and clear the optional
 `thirdPartyId` filter and check that the list shows ID, last name, first name,
-email and Third-party ID. Verify that a read-only user does not see create
-controls and that `/contacts/new` requires `contacts.manage`. With a manager
-that also has `contacts.read`, create a contact and retrieve it by ID to confirm
-the create/read flow. With a manage-only user, confirm creation success still
-shows the returned ID and no follow-up contact read is attempted.
+email and Third-party ID. Verify that a read-only user does not see create or
+edit controls and that `/contacts/new` and `/contacts/:id/edit` are forbidden.
+With a manager that also has `contacts.read`, create a contact and retrieve it by
+ID to confirm the create/read flow, then open its Edit action, change only one
+field, save and verify the request uses `application/merge-patch+json` with only
+the changed field. Clear an optional field and verify the request body contains
+explicit `null`; save an unchanged form and verify no request is issued. With a
+manage-only user, confirm creation success still shows the returned ID, no
+follow-up contact read is attempted, the Edit action is hidden and
+`/contacts/:id/edit` is forbidden because GET requires `contacts.read`.
 A real browser is required to prove cookie and CSRF behavior; an HTTP/proxy smoke
 alone is not browser E2E. Destroy only disposable containers and volumes afterward.
 
