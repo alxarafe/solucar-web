@@ -76,6 +76,9 @@
               <th scope="col" i18n="@@contact.field.firstName">First name</th>
               <th scope="col" i18n="@@contact.field.email">Email</th>
               <th scope="col" i18n="@@contact.field.thirdPartyId">Third party ID</th>
+              @if (canEdit()) {
+                <th scope="col" i18n="@@contact.list.column.actions">Actions</th>
+              }
             </tr>
           </thead>
           <tbody>
@@ -86,6 +89,16 @@
                 <td>{{ contact.firstName ?? '—' }}</td>
                 <td>{{ contact.email ?? '—' }}</td>
                 <td>{{ contact.thirdPartyId ?? '—' }}</td>
+                @if (canEdit()) {
+                  <td>
+                    <a
+                      class="contact__link"
+                      [routerLink]="editPath(contact.id)"
+                      i18n="@@contact.action.edit"
+                      >Edit</a
+                    >
+                  </td>
+                }
               </tr>
             }
           </tbody>

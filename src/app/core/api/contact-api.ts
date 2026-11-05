@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export const CONTACTS_PAGE_SIZE = 20;
+export const CONTACT_MERGE_PATCH_MEDIA_TYPE = 'application/merge-patch+json';
 
 export interface Contact {
   id: number;
@@ -36,6 +37,13 @@ export interface CreateContactResponse {
   id: number;
 }
 
+export interface UpdateContactRequest {
+  lastName?: string;
+  firstName?: string | null;
+  email?: string | null;
+  thirdPartyId?: number | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ContactApi {
   private readonly baseUrl = '/api/contacts';
@@ -58,5 +66,11 @@ export class ContactApi {
 
   createContact(request: CreateContactRequest): Observable<CreateContactResponse> {
     return this.http.post<CreateContactResponse>(this.baseUrl, request);
+  }
+
+  updateContact(id: number, request: UpdateContactRequest): Observable<Contact> {
+    return this.http.patch<Contact>(`${this.baseUrl}/${id}`, request, {
+      headers: new HttpHeaders({ 'Content-Type': CONTACT_MERGE_PATCH_MEDIA_TYPE }),
+    });
   }
 }

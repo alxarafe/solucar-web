@@ -193,6 +193,21 @@ describe('ContactListComponent', () => {
     expect(link?.textContent?.trim()).toBe('New contact');
   });
 
+  it('does not expose contact editing without contacts.manage', () => {
+    setup(false);
+    flush();
+    expect(fixture.nativeElement.querySelector('a[href="/contacts/1/edit"]')).toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain('Actions');
+  });
+
+  it('offers contact editing with contacts.manage', () => {
+    setup(true);
+    flush();
+    const link = fixture.nativeElement.querySelector('a[href="/contacts/1/edit"]');
+    expect(link?.textContent?.trim()).toBe('Edit');
+    expect(fixture.nativeElement.textContent).toContain('Actions');
+  });
+
   it('does not render any @contact. marker in visible UI text', () => {
     setup();
     flush();

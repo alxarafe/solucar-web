@@ -7,6 +7,7 @@ import { routes } from './app.routes';
 import { AuthSessionService } from './core/auth/auth-session.service';
 import { ContactComponent } from './features/contact/contact';
 import { ContactListComponent } from './features/contact/contact-list';
+import { ContactEditComponent } from './features/contact/contact-edit';
 import { Login } from './features/auth/login/login';
 import { Forbidden } from './features/auth/forbidden/forbidden';
 
@@ -19,7 +20,7 @@ describe('session routing', () => {
 
   afterEach(() => TestBed.inject(HttpTestingController).verify());
 
-  for (const path of ['/contacts', '/contacts/new']) {
+  for (const path of ['/contacts', '/contacts/new', '/contacts/1/edit']) {
     it(`protects ${path} from anonymous users with an internal returnUrl`, async () => {
       const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
       TestBed.inject(HttpTestingController)
@@ -87,6 +88,40 @@ describe('session routing', () => {
     expect(TestBed.inject(Router).url).toBe('/forbidden');
   });
 
+  it('forbids /contacts/1/edit with contacts.read alone', async () => {
+    const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/auth/me')
+      .flush({
+        id: 'contact-reader',
+        username: 'reader',
+        email: 'reader@example.test',
+        roles: [],
+        permissions: ['contacts.read'],
+      });
+    await bootstrap;
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/contacts/1/edit', Forbidden);
+    expect(TestBed.inject(Router).url).toBe('/forbidden');
+  });
+
+  it('forbids /contacts/1/edit with contacts.manage alone because GET requires contacts.read', async () => {
+    const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
+    TestBed.inject(HttpTestingController)
+      .expectOne('/api/auth/me')
+      .flush({
+        id: 'contact-manager',
+        username: 'manager',
+        email: 'manager@example.test',
+        roles: [],
+        permissions: ['contacts.manage'],
+      });
+    await bootstrap;
+    const harness = await RouterTestingHarness.create();
+    await harness.navigateByUrl('/contacts/1/edit', Forbidden);
+    expect(TestBed.inject(Router).url).toBe('/forbidden');
+  });
+
   it('allows /contacts/new with contacts.manage and no contacts.read', async () => {
     const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
     TestBed.inject(HttpTestingController)
@@ -104,7 +139,7 @@ describe('session routing', () => {
     expect(TestBed.inject(Router).url).toBe('/contacts/new');
   });
 
-  it('allows both contact routes with contacts.read and contacts.manage', async () => {
+  it('allows list, creation and editing with contacts.read and contacts.manage', async () => {
     const bootstrap = TestBed.inject(AuthSessionService).bootstrap();
     const http = TestBed.inject(HttpTestingController);
     http.expectOne('/api/auth/me').flush({
@@ -123,6 +158,16 @@ describe('session routing', () => {
 
     await harness.navigateByUrl('/contacts/new', ContactComponent);
     expect(TestBed.inject(Router).url).toBe('/contacts/new');
+
+    await harness.navigateByUrl('/contacts/1/edit', ContactEditComponent);
+    expect(TestBed.inject(Router).url).toBe('/contacts/1/edit');
+    http.expectOne('/api/contacts/1').flush({
+      id: 1,
+      lastName: 'Doe',
+      firstName: 'John',
+      email: 'john@example.test',
+      thirdPartyId: null,
+    });
   });
 
   it('should redirect an authenticated /login visit to its internal destination', async () => {

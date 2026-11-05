@@ -3,7 +3,12 @@ import { Login } from './features/auth/login/login';
 import { Forbidden } from './features/auth/forbidden/forbidden';
 import { ContactListComponent } from './features/contact/contact-list';
 import { ContactComponent } from './features/contact/contact';
-import { CONTACTS_NEW_PATH, CONTACTS_PATH } from './features/contact/contact-navigation';
+import { ContactEditComponent } from './features/contact/contact-edit';
+import {
+  CONTACTS_EDIT_SEGMENT,
+  CONTACTS_NEW_PATH,
+  CONTACTS_PATH,
+} from './features/contact/contact-navigation';
 import { Permission } from './core/auth/permission';
 import { requirePermission } from './core/auth/permission.guard';
 import {
@@ -32,6 +37,14 @@ export const routes: Routes = [
     path: CONTACTS_NEW_PATH.slice(1),
     canActivate: [requirePermission(Permission.ContactsManage)],
     component: ContactComponent,
+  },
+  {
+    path: `${CONTACTS_PATH.slice(1)}/:id/${CONTACTS_EDIT_SEGMENT}`,
+    canActivate: [
+      requirePermission(Permission.ContactsRead),
+      requirePermission(Permission.ContactsManage),
+    ],
+    component: ContactEditComponent,
   },
   {
     path: CONTACTS_PATH.slice(1),

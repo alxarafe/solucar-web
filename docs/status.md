@@ -31,7 +31,7 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 - **Navigation metadata**: entries declare `label`, `route` and `requiredPermission`; only effective entries are visible
 - **Backend authority**: frontend checks are UX only; Alixar must enforce authorization and return `403` for forbidden operations
 
-`/contacts` requires `contacts.read` and `/contacts/new` requires `contacts.manage`. User administration routes use the permission guard; see [Architecture](architecture.md#contact-list) for the contract and authorization boundaries.
+`/contacts` requires `contacts.read`, `/contacts/new` requires `contacts.manage`, and `/contacts/:id/edit` requires both. User administration routes use the permission guard; see [Architecture](architecture.md#contact-list) for the contract and authorization boundaries.
 
 ### User administration
 
@@ -84,13 +84,16 @@ Solucar communicates **exclusively** with the **Alixar canonical API**. It does 
 
 - **List route**: `/contacts` requires `contacts.read`; the Contacts navigation entry uses the same permission
 - **Creation route**: `/contacts/new` independently requires `contacts.manage`; read-only users never receive create controls
+- **Editing route**: `/contacts/:id/edit` requires both `contacts.read` and `contacts.manage`; the list exposes an Edit action only when `contacts.manage` is effective
 - **Canonical list**: `GET /api/contacts?page={page}&size={size}` via `ContactApi.listContacts()`, with optional exact `thirdPartyId`
 - **Pagination**: server-side, zero-based pages, default size 20, Alixar ordering; Previous/Next use the returned `page`, `size` and `total`
 - **List UI**: table with ID, last name, first name, email and Third-party ID; loading, empty results and API errors are explicit
-- **Canonical read**: `GET /api/contacts/{id}` via `ContactApi.getContact(id)`
+- **Canonical read**: `GET /api/contacts/{id}` via `ContactApi.getContact(id)` loads the edit form
 - **Canonical creation**: `POST /api/contacts` via `ContactApi.createContact(request)`
-- **Frontend API types**: `Contact`, `ContactPage`, `ContactQuery`, `CreateContactRequest`, `CreateContactResponse`, `ProblemDetail` — mirror the Alixar canonical API exactly
-- **Error handling**: RFC 9457 `ProblemDetail` responses handled; Alixar-localized `detail` displayed directly; frontend-owned fallback for network/unexpected errors
+- **Canonical update**: `PATCH /api/contacts/{id}` with `Content-Type: application/merge-patch+json` via `ContactApi.updateContact(id, request)`; the successful response is the complete updated Contact
+- **Merge-patch UI**: only changed fields are sent; omitted fields remain unchanged; clearing an optional field sends explicit `null`; unchanged values never trigger a request; Contact ID is read-only and never sent
+- **Frontend API types**: `Contact`, `ContactPage`, `ContactQuery`, `CreateContactRequest`, `CreateContactResponse`, `UpdateContactRequest`, `ProblemDetail` — mirror the Alixar canonical API exactly
+- **Error handling**: RFC 9457 `ProblemDetail` responses handled; Alixar-localized `detail` displayed directly; frontend-owned fallback for network/unexpected errors; failed updates preserve entered values and never show success
 - **Shared error type**: `ProblemDetail` is defined in `core/api` and reused by Contact and authentication
 
 ### Authentication errors

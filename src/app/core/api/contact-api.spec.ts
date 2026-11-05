@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { LOCALE_ID } from '@angular/core';
-import { ContactApi, Contact, CreateContactRequest } from './contact-api';
+import { ContactApi, Contact, CreateContactRequest, UpdateContactRequest } from './contact-api';
 import { acceptLanguageInterceptor } from './accept-language.interceptor';
 
 describe('ContactApi', () => {
@@ -172,6 +172,60 @@ describe('ContactApi', () => {
 
       const req = httpMock.expectOne('/api/contacts');
       expect(req.request.headers.get('Accept-Language')).toBe('en');
+    });
+  });
+
+  describe('updateContact', () => {
+    const updated: Contact = {
+      id: 42,
+      lastName: 'Smith',
+      firstName: null,
+      email: 'jane@example.test',
+      thirdPartyId: 5,
+    };
+
+    it('should issue PATCH /api/contacts/:id with merge-patch content type and return the contact', () => {
+      const request: UpdateContactRequest = {
+        lastName: 'Smith',
+        firstName: null,
+        email: 'jane@example.test',
+        thirdPartyId: 5,
+      };
+
+      api.updateContact(42, request).subscribe((contact) => {
+        expect(contact).toEqual(updated);
+      });
+
+      const req = httpMock.expectOne('/api/contacts/42');
+      expect(req.request.method).toBe('PATCH');
+      expect(req.request.headers.get('Content-Type')).toBe('application/merge-patch+json');
+      expect(req.request.body).toEqual(request);
+      expect(req.request.body).not.toHaveProperty('id');
+      req.flush(updated);
+    });
+
+    it('should omit unchanged fields from the patch body', () => {
+      api.updateContact(42, { firstName: 'Jane' }).subscribe();
+
+      const req = httpMock.expectOne('/api/contacts/42');
+      expect(req.request.body).toEqual({ firstName: 'Jane' });
+      req.flush(updated);
+    });
+
+    it('should send explicit null to clear an optional field', () => {
+      api.updateContact(42, { email: null }).subscribe();
+
+      const req = httpMock.expectOne('/api/contacts/42');
+      expect(req.request.body).toEqual({ email: null });
+      req.flush(updated);
+    });
+
+    it('should send Accept-Language header', () => {
+      api.updateContact(42, { lastName: 'Smith' }).subscribe();
+
+      const req = httpMock.expectOne('/api/contacts/42');
+      expect(req.request.headers.get('Accept-Language')).toBe('en');
+      req.flush(updated);
     });
   });
 });
