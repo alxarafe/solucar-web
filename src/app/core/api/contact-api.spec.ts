@@ -228,4 +228,31 @@ describe('ContactApi', () => {
       req.flush(updated);
     });
   });
+
+  describe('deleteContact', () => {
+    it('should issue DELETE /api/contacts/:id with an empty body and complete on 204', () => {
+      let completed = false;
+
+      api.deleteContact(42).subscribe({
+        complete: () => {
+          completed = true;
+        },
+      });
+
+      const req = httpMock.expectOne('/api/contacts/42');
+      expect(req.request.method).toBe('DELETE');
+      expect(req.request.body).toBeNull();
+      expect(req.request.headers.get('Content-Type')).toBeNull();
+      req.flush(null, { status: 204, statusText: 'No Content' });
+      expect(completed).toBe(true);
+    });
+
+    it('should send Accept-Language header', () => {
+      api.deleteContact(42).subscribe();
+
+      const req = httpMock.expectOne('/api/contacts/42');
+      expect(req.request.headers.get('Accept-Language')).toBe('en');
+      req.flush(null, { status: 204, statusText: 'No Content' });
+    });
+  });
 });

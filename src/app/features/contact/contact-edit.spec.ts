@@ -1,8 +1,9 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
+import { vi } from 'vitest';
 import { Contact } from '../../core/api/contact-api';
 import { ContactEditComponent } from './contact-edit';
 
@@ -19,6 +20,7 @@ const CONTACT_URL = '/api/contacts/42';
 describe('ContactEditComponent', () => {
   let fixture: ComponentFixture<ContactEditComponent>;
   let http: HttpTestingController;
+  let navigateSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -34,6 +36,7 @@ describe('ContactEditComponent', () => {
       ],
     });
     http = TestBed.inject(HttpTestingController);
+    navigateSpy = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     fixture = TestBed.createComponent(ContactEditComponent);
     fixture.detectChanges();
   });
@@ -58,6 +61,21 @@ describe('ContactEditComponent', () => {
 
   function change(value: Partial<Contact>): void {
     component().form.patchValue(value);
+    fixture.detectChanges();
+  }
+
+  function button(text: string): HTMLButtonElement {
+    const match = [...fixture.nativeElement.querySelectorAll('button')].find(
+      (element: HTMLButtonElement) => element.textContent?.trim() === text,
+    );
+    expect(match).toBeTruthy();
+    return match as HTMLButtonElement;
+  }
+
+  function startDeletion(): void {
+    button('Delete contact').click();
+    fixture.detectChanges();
+    button('Delete permanently').click();
     fixture.detectChanges();
   }
 
@@ -275,6 +293,150 @@ describe('ContactEditComponent', () => {
 
     expect(button.textContent).toContain('Save changes');
     expect(component().saving()).toBe(false);
+  });
+
+  it('offers deletion only after the contact has loaded', () => {
+    expect(component().contact()).toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain('Delete contact');
+    flushLoad();
+    expect(button('Delete contact')).toBeTruthy();
+  });
+
+  it('does not send DELETE before explicit confirmation', () => {
+    flushLoad();
+
+    button('Delete contact').click();
+    fixture.detectChanges();
+
+    http.expectNone(CONTACT_URL);
+    expect(component().confirmingDelete()).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('This action is permanent');
+    expect(fixture.nativeElement.textContent).toContain('Delete contact #42 (Doe, John)?');
+  });
+
+  it('cancels the confirmation without sending DELETE', () => {
+    flushLoad();
+    button('Delete contact').click();
+    fixture.detectChanges();
+
+    button('Cancel').click();
+    fixture.detectChanges();
+
+    http.expectNone(CONTACT_URL);
+    expect(component().confirmingDelete()).toBe(false);
+    expect(component().contact()).toEqual(CONTACT);
+    expect(button('Delete contact')).toBeTruthy();
+  });
+
+  it('warns that unsaved changes will be discarded', () => {
+    flushLoad();
+    change({ lastName: 'Smith' });
+
+    button('Delete contact').click();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Unsaved changes will be discarded.');
+  });
+
+  it('deletes after confirmation, navigates to Contacts and never reads the contact again', () => {
+    flushLoad();
+    startDeletion();
+
+    const req = http.expectOne(CONTACT_URL);
+    expect(req.request.method).toBe('DELETE');
+    expect(req.request.body).toBeNull();
+    expect(component().success()).toBeNull();
+    expect(navigateSpy).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.querySelector('.contact__success')).toBeNull();
+
+    req.flush(null, { status: 204, statusText: 'No Content' });
+    fixture.detectChanges();
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/contacts']);
+    expect(component().contact()).toBeNull();
+    http.expectNone(CONTACT_URL);
+  });
+
+  it('prevents duplicate DELETE requests', () => {
+    flushLoad();
+    button('Delete contact').click();
+    fixture.detectChanges();
+
+    const confirmButton = button('Delete permanently');
+    confirmButton.click();
+    confirmButton.click();
+    fixture.detectChanges();
+
+    const requests = http.match(CONTACT_URL);
+    expect(requests.length).toBe(1);
+
+    requests[0].flush(null, { status: 204, statusText: 'No Content' });
+    fixture.detectChanges();
+    expect(navigateSpy).toHaveBeenCalledWith(['/contacts']);
+  });
+
+  it.each([
+    { status: 404, code: 'CONTACT_NOT_FOUND', detail: 'Contact with ID 42 not found.' },
+    { status: 403, code: 'FORBIDDEN', detail: 'You are not allowed to delete this contact.' },
+    {
+      status: 503,
+      code: 'AUDIT_UNAVAILABLE',
+      detail: 'Audit is temporarily unavailable.',
+    },
+  ])(
+    'keeps the contact and shows the canonical detail after a $status failure',
+    ({ status, code, detail }) => {
+      flushLoad();
+      startDeletion();
+
+      http
+        .expectOne(CONTACT_URL)
+        .flush(
+          { type: 'urn:alixar:error', title: 'Error', status, detail, code },
+          { status, statusText: 'Error' },
+        );
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('[role=alert]').textContent).toContain(detail);
+      expect(component().contact()).toEqual(CONTACT);
+      expect(component().success()).toBeNull();
+      expect(navigateSpy).not.toHaveBeenCalled();
+      expect(component().deleting()).toBe(false);
+    },
+  );
+
+  it('keeps the contact and shows the localized fallback on a network failure', () => {
+    flushLoad();
+    startDeletion();
+
+    http
+      .expectOne(CONTACT_URL)
+      .error(new ProgressEvent('error'), { status: 0, statusText: 'Unknown Error' });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[role=alert]').textContent).toContain(
+      'Unable to communicate with Alixar.',
+    );
+    expect(component().contact()).toEqual(CONTACT);
+    expect(component().success()).toBeNull();
+    expect(navigateSpy).not.toHaveBeenCalled();
+  });
+
+  it('shows a deleting state and disables the actions until the response arrives', () => {
+    flushLoad();
+    startDeletion();
+
+    const confirmButton = fixture.nativeElement.querySelectorAll(
+      '.contact__filter-actions button',
+    )[0];
+    expect(confirmButton.disabled).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('Deleting...');
+    expect(fixture.nativeElement.querySelector('form button[type=submit]').disabled).toBe(true);
+
+    http.expectOne(CONTACT_URL).flush(null, { status: 204, statusText: 'No Content' });
+    fixture.detectChanges();
+
+    expect(component().deleting()).toBe(false);
   });
 
   it('does not render any @contact. marker in visible UI text', () => {

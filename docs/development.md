@@ -83,10 +83,16 @@ With a manager that also has `contacts.read`, create a contact and retrieve it b
 ID to confirm the create/read flow, then open its Edit action, change only one
 field, save and verify the request uses `application/merge-patch+json` with only
 the changed field. Clear an optional field and verify the request body contains
-explicit `null`; save an unchanged form and verify no request is issued. With a
-manage-only user, confirm creation success still shows the returned ID, no
-follow-up contact read is attempted, the Edit action is hidden and
-`/contacts/:id/edit` is forbidden because GET requires `contacts.read`.
+explicit `null`; save an unchanged form and verify no request is issued. Then
+delete the disposable contact: verify the initial Delete action and Cancel send
+no request, the confirmation identifies the Contact ID and name, and confirming
+sends `DELETE /api/contacts/{id}` with no body. A `204` response must navigate
+to `/contacts` without a follow-up Contact read. Exercise a failed deletion and
+verify the loaded Contact remains visible with Alixar's detail or the localized
+fallback and no success message. With a manage-only user, confirm creation
+success still shows the returned ID, no follow-up contact read is attempted, the
+Edit action is hidden and `/contacts/:id/edit` is forbidden because GET requires
+`contacts.read`.
 A real browser is required to prove cookie and CSRF behavior; an HTTP/proxy smoke
 alone is not browser E2E. Destroy only disposable containers and volumes afterward.
 

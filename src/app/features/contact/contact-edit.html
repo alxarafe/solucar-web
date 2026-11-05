@@ -104,7 +104,7 @@
         <button
           type="submit"
           class="contact__button"
-          [disabled]="form.invalid || !changed() || saving()"
+          [disabled]="form.invalid || !changed() || saving() || deleting()"
         >
           @if (saving()) {
             <span class="contact__button-spinner" aria-hidden="true"></span>
@@ -114,6 +114,62 @@
           }
         </button>
       </form>
+    </section>
+
+    <section class="contact__section" aria-labelledby="delete-title">
+      <h2 id="delete-title" class="contact__section-title" i18n="@@contact.delete.title">
+        Delete contact
+      </h2>
+
+      @if (!confirmingDelete()) {
+        <button
+          type="button"
+          class="contact__button contact__button--danger"
+          [disabled]="saving() || deleting()"
+          (click)="requestDelete()"
+          i18n="@@contact.delete.action"
+        >
+          Delete contact
+        </button>
+      } @else {
+        <div class="contact__error-banner" role="alert" aria-labelledby="delete-confirmation">
+          <p id="delete-confirmation" i18n="@@contact.delete.confirm">
+            Delete contact #{{ contact()!.id }} ({{ contactName() }})?
+          </p>
+          <p class="contact__error" i18n="@@contact.delete.warning">
+            This action is permanent and cannot be undone.
+          </p>
+          @if (changed()) {
+            <p class="contact__error" i18n="@@contact.delete.unsaved">
+              Unsaved changes will be discarded.
+            </p>
+          }
+          <div class="contact__filter-actions">
+            <button
+              type="button"
+              class="contact__button contact__button--danger"
+              [disabled]="deleting() || saving()"
+              (click)="confirmDelete()"
+            >
+              @if (deleting()) {
+                <span class="contact__button-spinner" aria-hidden="true"></span>
+                <span i18n="@@contact.delete.deleting">Deleting...</span>
+              } @else {
+                <span i18n="@@contact.delete.confirmAction">Delete permanently</span>
+              }
+            </button>
+            <button
+              type="button"
+              class="contact__button"
+              [disabled]="deleting()"
+              (click)="cancelDelete()"
+              i18n="@@contact.delete.cancel"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      }
     </section>
   }
 </main>

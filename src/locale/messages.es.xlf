@@ -475,7 +475,7 @@
         <target>Guardando...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
-          <context context-type="linenumber">95</context>
+          <context context-type="linenumber">111,113</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contact.edit.save" datatype="html">
@@ -483,7 +483,71 @@
         <target>Guardar cambios</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
-          <context context-type="linenumber">97</context>
+          <context context-type="linenumber">113,115</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.delete.title" datatype="html">
+        <source> Delete contact </source>
+        <target>Eliminar contacto</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">121,124</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.delete.action" datatype="html">
+        <source> Delete contact </source>
+        <target>Eliminar contacto</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">132,134</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.delete.confirm" datatype="html">
+        <source> Delete contact #<x id="INTERPOLATION" equiv-text="{{ contact()!.id }}"/> (<x id="INTERPOLATION_1" equiv-text="{{ contactName() }}"/>)? </source>
+        <target>¿Eliminar el contacto #<x id="INTERPOLATION" equiv-text="{{ contact()!.id }}"/> (<x id="INTERPOLATION_1" equiv-text="{{ contactName() }}"/>)?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">137,139</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.delete.warning" datatype="html">
+        <source> This action is permanent and cannot be undone. </source>
+        <target>Esta acción es permanente y no se puede deshacer.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">140,142</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.delete.unsaved" datatype="html">
+        <source> Unsaved changes will be discarded. </source>
+        <target>Los cambios sin guardar se descartarán.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">144,146</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.delete.deleting" datatype="html">
+        <source>Deleting...</source>
+        <target>Eliminando...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">156,158</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.delete.confirmAction" datatype="html">
+        <source>Delete permanently</source>
+        <target>Eliminar permanentemente</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">158,160</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contact.delete.cancel" datatype="html">
+        <source> Cancel </source>
+        <target>Cancelar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/contact/contact-edit.html</context>
+          <context context-type="linenumber">168,170</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contact.edit.success" datatype="html">
@@ -491,7 +555,7 @@
         <target>Contacto guardado correctamente.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/features/contact/contact-edit.ts</context>
-          <context context-type="linenumber">94</context>
+          <context context-type="linenumber">104</context>
         </context-group>
       </trans-unit>
       <trans-unit id="adminUsers.title" datatype="html">
